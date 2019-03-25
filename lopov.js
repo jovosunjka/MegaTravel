@@ -1,1 +1,3 @@
-alert("Ja sam lopov!")
+(function() {
+  alert("Ja sam lopov!")
+})()
