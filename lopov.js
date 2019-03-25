@@ -1,0 +1,1 @@
+alert("Ja sam lopov!")
