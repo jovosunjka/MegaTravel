@@ -1,6 +1,6 @@
-package com.bsep.SIEMCenter.controller;
+package com.bsep.WindowsAgent.controller;
 
-import com.bsep.SIEMCenter.service.interfaces.IRestTemplateWrapper;
+import com.bsep.WindowsAgent.service.interfaces.IRestTemplateWrapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

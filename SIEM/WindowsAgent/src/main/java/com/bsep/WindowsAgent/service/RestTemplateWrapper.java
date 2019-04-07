@@ -1,6 +1,6 @@
-package com.bsep.SIEMCenter.service;
+package com.bsep.WindowsAgent.service;
 
-import com.bsep.SIEMCenter.service.interfaces.IRestTemplateWrapper;
+import com.bsep.WindowsAgent.service.interfaces.IRestTemplateWrapper;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
