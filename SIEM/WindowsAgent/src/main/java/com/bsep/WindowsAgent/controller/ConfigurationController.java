@@ -1,6 +1,7 @@
 package com.bsep.WindowsAgent.controller;
 
 import com.bsep.WindowsAgent.controller.dto.AddressDto;
+import com.bsep.WindowsAgent.controller.dto.AppInfoDto;
 import com.bsep.WindowsAgent.controller.dto.ErrorDto;
 import com.bsep.WindowsAgent.model.Address;
 import com.bsep.WindowsAgent.model.Addresses;
@@ -36,24 +37,22 @@ public class ConfigurationController
         _modelMapperWrapper = modelMapperWrapper;
     }
 
-    @RequestMapping(value = "/address", method = RequestMethod.GET)
-    public ResponseEntity getAddress()
+    @RequestMapping(value = "/app-info", method = RequestMethod.GET)
+    public ResponseEntity<AppInfoDto> getAppInfo()
     {
-        String address = _globalProperties.getAddress();
-        return new ResponseEntity<>(address, HttpStatus.OK);
+        AppInfoDto appInfoDto = new AppInfoDto()
+        {{
+            setAddress(_globalProperties.getAddress());
+            setCanPublishToApp(_globalProperties.canPublishToApp());
+            setCanSubscribeToApp(_globalProperties.canSubscribeToApp());
+        }};
+        return new ResponseEntity<>(appInfoDto, HttpStatus.OK);
     }
 
     @RequestMapping(value = "/subscribers", method = RequestMethod.GET)
     public ResponseEntity getSubscribers() throws  IOException
     {
         Addresses addresses = _communicationConfigurationService.readFromFile(_globalProperties.getSubscribersPath());
-        return new ResponseEntity<>(addresses, HttpStatus.OK);
-    }
-
-    @RequestMapping(value = "/publishers", method = RequestMethod.GET)
-    public ResponseEntity getPublishers() throws  IOException
-    {
-        Addresses addresses = _communicationConfigurationService.readFromFile(_globalProperties.getPublishersPath());
         return new ResponseEntity<>(addresses, HttpStatus.OK);
     }
 
@@ -73,26 +72,7 @@ public class ConfigurationController
         Address address = _modelMapperWrapper.get().map(addressDto, Address.class);
         addresses.getAddresses().add(address);
         _communicationConfigurationService.writeToFile(addresses, _globalProperties.getSubscribersPath());
-        return new ResponseEntity<>(HttpStatus.OK);
-    }
-
-    @RequestMapping(value = "/publishers/add", method = RequestMethod.POST)
-    public ResponseEntity addPublisher(@RequestBody AddressDto addressDto) throws  IOException
-    {
-        if(addressDto.getAddress().equals(_globalProperties.getAddress())){
-            return new ResponseEntity<>(new ErrorDto("Publisher address can not be added"), HttpStatus.BAD_REQUEST);
-        }
-        Addresses addresses = _communicationConfigurationService.readFromFile(_globalProperties.getPublishersPath());
-        boolean addressExists = addresses.getAddresses().stream()
-                .anyMatch(obj -> obj.getAddress().equals(addressDto.getAddress()));
-        if(addressExists) {
-            return new ResponseEntity<>(new ErrorDto("Publisher address already added"), HttpStatus.BAD_REQUEST);
-        }
-
-        Address address = _modelMapperWrapper.get().map(addressDto, Address.class);
-        addresses.getAddresses().add(address);
-        _communicationConfigurationService.writeToFile(addresses, _globalProperties.getPublishersPath());
-        return new ResponseEntity<>(HttpStatus.OK);
+        return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
     @RequestMapping(value = "/subscribers/remove", method = RequestMethod.POST)
@@ -104,18 +84,6 @@ public class ConfigurationController
             return new ResponseEntity<>(new ErrorDto("Subscriber address does not exist"), HttpStatus.BAD_REQUEST);
         }
         _communicationConfigurationService.writeToFile(addresses, _globalProperties.getSubscribersPath());
-        return new ResponseEntity<>(HttpStatus.OK);
-    }
-
-    @RequestMapping(value = "/publishers/remove", method = RequestMethod.POST)
-    public ResponseEntity removePublisher(@RequestBody AddressDto addressDto) throws  IOException
-    {
-        Addresses addresses = _communicationConfigurationService.readFromFile(_globalProperties.getPublishersPath());
-        boolean removed = addresses.getAddresses().removeIf(obj -> obj.getAddress().equals(addressDto.getAddress()));
-        if(!removed){
-            return new ResponseEntity<>(new ErrorDto("Publisher address does not exist"), HttpStatus.BAD_REQUEST);
-        }
-        _communicationConfigurationService.writeToFile(addresses, _globalProperties.getPublishersPath());
         return new ResponseEntity<>(HttpStatus.OK);
     }
 }

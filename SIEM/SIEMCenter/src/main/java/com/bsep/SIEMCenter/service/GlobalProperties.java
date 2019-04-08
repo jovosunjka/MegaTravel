@@ -6,7 +6,7 @@ import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Service;
 
 @Service
-@PropertySource("classpath:application.properties")
+@PropertySource("classpath:configuration.properties")
 public class GlobalProperties implements IGlobalProperties {
 
     @Value("${server.servlet.context-path}")
@@ -21,20 +21,30 @@ public class GlobalProperties implements IGlobalProperties {
     @Value("${publishers-path}")
     private String publishersPath;
 
-    @Value("${subscribers-path}")
-    private String subscribersPath;
+    @Value("${canSubscribeToApp}")
+    private boolean canSubscribeToApp;
 
+    @Value("${canPublishToApp}")
+    private boolean canPublishToApp;
+
+    @Override
     public String getAddress() {
         return baseUrl + port + contextPath;
     }
 
+    @Override
     public String getPublishersPath() {
         return publishersPath;
     }
 
-    public String getSubscribersPath() {
-        return subscribersPath;
+    @Override
+    public boolean canSubscribeToApp() {
+        return canSubscribeToApp;
     }
 
+    @Override
+    public boolean canPublishToApp() {
+        return canPublishToApp;
+    }
 }
 
