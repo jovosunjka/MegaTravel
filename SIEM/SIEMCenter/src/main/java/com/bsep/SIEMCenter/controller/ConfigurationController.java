@@ -6,7 +6,7 @@ import com.bsep.SIEMCenter.controller.dto.ErrorDto;
 import com.bsep.SIEMCenter.model.Address;
 import com.bsep.SIEMCenter.model.Addresses;
 import com.bsep.SIEMCenter.service.interfaces.ICommunicationConfigurationService;
-import com.bsep.SIEMCenter.service.interfaces.IGlobalProperties;
+import com.bsep.SIEMCenter.service.interfaces.IConfigurationPropertiesService;
 import com.bsep.SIEMCenter.service.interfaces.IModelMapperWrapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -19,13 +19,13 @@ import java.io.IOException;
 @RequestMapping(value = "/configuration")
 public class ConfigurationController
 {
-    private IGlobalProperties _globalProperties;
+    private IConfigurationPropertiesService _globalProperties;
     private ICommunicationConfigurationService _communicationConfigurationService;
     private IModelMapperWrapper _modelMapperWrapper;
 
     @Autowired
     public ConfigurationController(
-            IGlobalProperties globalProperties,
+            IConfigurationPropertiesService globalProperties,
             ICommunicationConfigurationService communicationConfigurationService,
             IModelMapperWrapper modelMapperWrapper)
     {
