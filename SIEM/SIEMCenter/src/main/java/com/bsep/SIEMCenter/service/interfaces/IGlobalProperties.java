@@ -9,4 +9,6 @@ public interface IGlobalProperties
     boolean canSubscribeToApp();
 
     boolean canPublishToApp();
+
+    String getKeyStorePath();
 }

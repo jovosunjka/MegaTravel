@@ -27,6 +27,9 @@ public class GlobalProperties implements IGlobalProperties {
     @Value("${canPublishToApp}")
     private boolean canPublishToApp;
 
+    @Value("${keyStorePath}")
+    private String keyStorePath;
+
     @Override
     public String getAddress() {
         return baseUrl + port + contextPath;
@@ -46,5 +49,8 @@ public class GlobalProperties implements IGlobalProperties {
     public boolean canPublishToApp() {
         return canPublishToApp;
     }
+
+    @Override
+    public String getKeyStorePath() { return keyStorePath; }
 }
 
