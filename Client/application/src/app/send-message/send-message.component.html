@@ -1,0 +1,8 @@
+<form class="form" (ngSubmit)="save()">
+  <div class="form-group">
+      <label for="id_name">&nbsp;&nbsp;Message</label>
+      <input type="text" class="form-control" id="id_name" [(ngModel)]="message" name="message"/>
+  </div>
+  <br/>
+  <input type="submit" class="btn btn-primary btn-lg" value="Save"/>
+</form>
