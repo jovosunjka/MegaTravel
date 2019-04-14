@@ -40,6 +40,7 @@ public class LogsController
     @ResponseBody
     public ResponseEntity sendLogs(@RequestBody MessageDto message) throws IOException
     {
+        System.out.println("entered");
         Addresses subscribersAddresses =
                 _communicationConfigurationService.readFromFile(_globalProperties.getSubscribersPath());
         for(Address address : subscribersAddresses.getAddresses())

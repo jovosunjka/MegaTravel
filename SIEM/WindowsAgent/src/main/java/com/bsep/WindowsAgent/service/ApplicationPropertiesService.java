@@ -15,6 +15,12 @@ public class ApplicationPropertiesService implements IApplicationPropertiesServi
     @Value("${server.ssl.key-store-password}")
     private String keyStorePassword;
 
+    @Value("${server.ssl.trust-store}")
+    private  String trustStorePath;
+
+    @Value("${server.ssl.trust-store-password}")
+    private String trustStorePassword;
+
     @Override
     public String getKeyStorePath() {
         return keyStorePath;
@@ -23,5 +29,15 @@ public class ApplicationPropertiesService implements IApplicationPropertiesServi
     @Override
     public String getKeyStorePassword() {
         return keyStorePassword;
+    }
+
+    @Override
+    public String getTrustStorePath() {
+        return trustStorePath;
+    }
+
+    @Override
+    public String getTrustStorePassword() {
+        return trustStorePassword;
     }
 }

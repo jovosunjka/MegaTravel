@@ -46,6 +46,5 @@ public class ConfigurationPropertiesService implements IConfigurationPropertiesS
     public boolean canPublishToApp() {
         return canPublishToApp;
     }
-
 }
 

@@ -32,11 +32,13 @@ public class RestTemplateConfig {
     @Bean
     public RestTemplate restTemplate(RestTemplateBuilder builder) throws Exception {
         String keyStorePath = _applicationPropertiesService.getKeyStorePath();
-        char[] password = _applicationPropertiesService.getKeyStorePassword().toCharArray();
+        char[] keyStorePassword = _applicationPropertiesService.getKeyStorePassword().toCharArray();
+        String trustStorePath = _applicationPropertiesService.getTrustStorePath();
+        char[] trustStorePassword = _applicationPropertiesService.getTrustStorePassword().toCharArray();
 
         SSLContext sslContext = SSLContextBuilder.create()
-                .loadKeyMaterial(keyStore(keyStorePath, password), password)
-                .loadTrustMaterial(null, new TrustSelfSignedStrategy()).build();
+                .loadKeyMaterial(getStore(keyStorePath, keyStorePassword), keyStorePassword)
+                .loadTrustMaterial(ResourceUtils.getFile(trustStorePath), trustStorePassword).build();
 
         HttpClient client = HttpClients.custom().setSSLContext(sslContext).build();
 
@@ -45,12 +47,14 @@ public class RestTemplateConfig {
                 .build();
     }
 
-    private KeyStore keyStore(String file, char[] password) throws Exception {
-        KeyStore keyStore = KeyStore.getInstance("PKCS12");
+    private KeyStore getStore(String file, char[] password) throws Exception {
+        KeyStore keyStore = KeyStore.getInstance("JKS");
         File key = ResourceUtils.getFile(file);
         try (InputStream in = new FileInputStream(key)) {
             keyStore.load(in, password);
         }
         return keyStore;
     }
+
+
 }
