@@ -4,16 +4,13 @@ import com.bsep.WindowsAgent.controller.dto.MessageDto;
 import com.bsep.WindowsAgent.model.Address;
 import com.bsep.WindowsAgent.model.Addresses;
 import com.bsep.WindowsAgent.service.interfaces.ICommunicationConfigurationService;
-import com.bsep.WindowsAgent.service.interfaces.IGlobalProperties;
+import com.bsep.WindowsAgent.service.interfaces.IConfigurationPropertiesService;
 import com.bsep.WindowsAgent.service.interfaces.IModelMapperWrapper;
 import com.bsep.WindowsAgent.service.interfaces.IRestTemplateWrapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
 
@@ -21,14 +18,14 @@ import java.io.IOException;
 @RequestMapping(value = "/logs")
 public class LogsController
 {
-    private IGlobalProperties _globalProperties;
+    private IConfigurationPropertiesService _globalProperties;
     private ICommunicationConfigurationService _communicationConfigurationService;
     private IModelMapperWrapper _modelMapperWrapper;
     private IRestTemplateWrapper _restTemplateWrapper;
 
     @Autowired
     public LogsController(
-            IGlobalProperties globalProperties,
+            IConfigurationPropertiesService globalProperties,
             ICommunicationConfigurationService communicationConfigurationService,
             IModelMapperWrapper modelMapperWrapper,
             IRestTemplateWrapper restTemplateWrapper)
@@ -40,6 +37,7 @@ public class LogsController
     }
 
     @RequestMapping(value = "/send", method = RequestMethod.POST)
+    @ResponseBody
     public ResponseEntity sendLogs(@RequestBody MessageDto message) throws IOException
     {
         Addresses subscribersAddresses =
@@ -50,7 +48,9 @@ public class LogsController
                 _restTemplateWrapper.get()
                         .postForEntity(address.getAddress() + "/logs/process", message, String.class);
             }
-            catch (Exception exception){ }
+            catch (Exception exception) {
+                return new ResponseEntity<>(exception.getMessage(), HttpStatus.BAD_GATEWAY);
+            }
         }
         return new ResponseEntity<>(HttpStatus.OK);
     }

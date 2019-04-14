@@ -14,7 +14,9 @@ public interface ICertificateService {
 
     CertificateSigningRequest prepareCSR(PublicKey publicKey);
 
-    void saveCertificate(String commonName, PrivateKey privateKey, X509Certificate certificate);
+    void saveCertificate(PrivateKey privateKey, X509Certificate certificate);
 
-    void saveCertificateInTrustStore(String commonName, X509Certificate certificate);
+    void saveCertificateInTrustStore(X509Certificate certificate);
+
+    void loadCertificate(String certificatePath);
 }

@@ -4,6 +4,7 @@ package com.bsep.SIEMCenter.controller;
 import com.bsep.SIEMCenter.controller.dto.CertificateSigningRequest;
 import com.bsep.SIEMCenter.service.interfaces.ICertificateService;
 import com.bsep.SIEMCenter.service.interfaces.IRestTemplateWrapper;
+import org.apache.tomcat.util.codec.binary.Base64;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -56,7 +57,18 @@ public class CertificateController {
 
     @RequestMapping(value = "/receive", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity receiveCertificateForTrustStore(@RequestBody X509Certificate certificate) {
-        certificateService.saveCertificateInTrustStore(certificate);
+        //certificateService.saveCertificateInTrustStore(certificate);
+
+        return  new ResponseEntity(HttpStatus.OK);
+    }
+
+    @RequestMapping(value = "/cao", method = RequestMethod.GET)
+    public ResponseEntity cao() {
+        KeyPair keyPair = certificateService.generateKeyPair();
+        String publicKey = Base64.encodeBase64String(keyPair.getPublic().getEncoded());
+        String privateKey = Base64.encodeBase64String(keyPair.getPrivate().getEncoded());
+        certificateService.loadCertificate("./src/main/resources/stores/MegaTravelSiemCenter2.cer");
+
         return  new ResponseEntity(HttpStatus.OK);
     }
 }

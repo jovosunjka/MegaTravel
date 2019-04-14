@@ -7,7 +7,7 @@ import java.security.cert.Certificate;
 
 public interface KeyStoreReaderService {
 
-    IssuerData readIssuerFromStore(String keyStoreFile, String alias, char[] password, char[] keyPass);
+    IssuerData readIssuerFromStore(Object fileOrFileName, String alias, char[] password, char[] keyPass);
 
     Certificate readCertificate(Object fileOrFileName, String keyStorePass, String alias);
 

@@ -33,17 +33,21 @@ public class KeyStoreReaderServiceImpl implements KeyStoreReaderService {
 	 * Zadatak ove funkcije jeste da ucita podatke o izdavaocu i odgovarajuci privatni kljuc.
 	 * Ovi podaci se mogu iskoristiti da se novi sertifikati izdaju.
 	 * 
-	 * @param keyStoreFile - datoteka odakle se citaju podaci
+	 * @param fileOrFileName - datoteka odakle se citaju podaci
 	 * @param alias - alias putem kog se identifikuje sertifikat izdavaoca
 	 * @param password - lozinka koja je neophodna da se otvori key store
 	 * @param keyPass - lozinka koja je neophodna da se izvuce privatni kljuc
 	 * @return - podatke o izdavaocu i odgovarajuci privatni kljuc
 	 */
 	@Override
-	public IssuerData readIssuerFromStore(String keyStoreFile, String alias, char[] password, char[] keyPass) {
+	public IssuerData readIssuerFromStore(Object fileOrFileName, String alias, char[] password, char[] keyPass) {
 		try {
 			//Datoteka se ucitava
-			BufferedInputStream in = new BufferedInputStream(new FileInputStream(keyStoreFile));
+			FileInputStream fis;
+			if(fileOrFileName instanceof String) fis = new FileInputStream((String) fileOrFileName);
+			else if(fileOrFileName instanceof File) fis = new FileInputStream((File) fileOrFileName);
+			else throw new Exception("Argument fileOrFileName must be String or File!");
+			BufferedInputStream in = new BufferedInputStream(fis);
 			keyStore.load(in, password);
 			//Iscitava se sertifikat koji ima dati alias
 			Certificate cert = keyStore.getCertificate(alias);
@@ -63,6 +67,8 @@ public class KeyStoreReaderServiceImpl implements KeyStoreReaderService {
 		} catch (UnrecoverableKeyException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		return null;

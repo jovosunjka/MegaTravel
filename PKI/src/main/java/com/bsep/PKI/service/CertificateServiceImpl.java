@@ -70,6 +70,7 @@ public class CertificateServiceImpl implements CertificateService {
     private String directoryStoresPath = directoryClassesPath + "stores"; // target/classes/stores folder
 
     private final String keyStorePath = directoryStoresPath + "/keystore.jks";
+    private final String keyStorePath2 = directoryStoresPath + "/siem_center/keystore.jks";
     private final String trustStorePath = directoryStoresPath + "/truststore.jks";
 
     //private final String keyStorePassword = "key_store_pass";
@@ -115,32 +116,35 @@ public class CertificateServiceImpl implements CertificateService {
     }
 
     @Override
-    public void createCertificate(CertificateSigningRequest csr) throws Exception {
-        String str = Base64.encodeBase64String(generateKeyPair().getPublic().getEncoded());
+    public X509Certificate createCertificate(CertificateSigningRequest csr) throws Exception {
+        //String str = Base64.encodeBase64String(generateKeyPair().getPublic().getEncoded());
         User admin = userService.getLoggedUser();
         CA ca = admin.getCa();
         String alias = ca.getOrganizationalUnitName();
 
         PublicKey publicKeyOfSubject;
-        PrivateKey privateKeyOfIssuer;
+        //PrivateKey privateKeyOfSubject = null;
+        IssuerData issuerData;
         if(csr.getCertificateType() == CertificateType.OTHER) {
-            //privateKeyOfIssuer = keyStoreReaderService.readPrivateKey(keyStorePath, keyStorePassword.toCharArray(), alias, keyStorePassword.toCharArray());
-            privateKeyOfIssuer = keyStoreReaderService.readPrivateKey(keyStore.getFile(), keyStorePassword, alias, keyStorePassword);
-            if(privateKeyOfIssuer == null) {
+            //issuerData = keyStoreReaderService.readIssuerFromStore(keyStorePath, alias, keyStorePassword.toCharArray(), keyStorePassword.toCharArray());
+            issuerData = keyStoreReaderService.readIssuerFromStore(keyStore.getFile(), alias, keyStorePassword, keyStorePassword);
+            if(issuerData == null) {
                 throw new Exception("Prvo mora biti napravljen CA-ov sertifikat!");
             }
 
             publicKeyOfSubject =  getPublicKey(csr.getPublicKey());
+            //KeyPair keyPair = generateKeyPair();
+            //publicKeyOfSubject = keyPair.getPublic();
+            //privateKeyOfSubject = keyPair.getPrivate();
         }
         else {
             KeyPair keyPair = generateKeyPair();
-            publicKeyOfSubject = keyPair.getPublic();
-            privateKeyOfIssuer = keyPair.getPrivate();
+            publicKeyOfSubject = keyPair.getPublic(); // u ovom slucaju RootCA je i Subject i Issuer
+            PrivateKey privateKeyOfIssuer = keyPair.getPrivate(); // u ovom slucaju RootCA je i Subject i Issuer
+            issuerData = generateIssuerData(privateKeyOfIssuer, csr.getCommonName(),
+                    csr.getOrganizationName(), csr.getOrganizationalUnitName(),csr.getCountryCode(), ""+csr.getUserId());
         }
         SubjectData subjectData = generateSubjectData(csr, publicKeyOfSubject);
-
-        IssuerData issuerData = generateIssuerData(privateKeyOfIssuer, csr.getCommonName(),
-                csr.getOrganizationName(), csr.getOrganizationalUnitName(),csr.getCountryCode(), ""+csr.getUserId());
 
         Certificate certificate = new Certificate(csr.getCommonName());
         certificateRepository.save(certificate);
@@ -156,6 +160,13 @@ public class CertificateServiceImpl implements CertificateService {
             keyStoreWriterService.writeCertificate(csr.getOrganizationalUnitName(), certificateX509);
             //keyStoreWriterService.saveKeyStore(trustStorePath, trustStorePassword.toCharArray());
             keyStoreWriterService.saveKeyStore(trustStore, trustStorePassword);
+
+            /*keyStoreWriterService.loadKeyStore(null, keyStorePassword.toCharArray());
+            //keyStoreWriterService.loadKeyStore(keyStore, keyStorePassword);
+            keyStoreWriterService.write(csr.getOrganizationalUnitName(), privateKeyOfSubject, keyStorePassword.toCharArray(), certificateX509);
+            //keyStoreWriterService.write(alias, issuerData.getPrivateKey(), keyStorePassword, certificateX509);
+            keyStoreWriterService.saveKeyStore(keyStorePath2, keyStorePassword.toCharArray());
+            //keyStoreWriterService.saveKeyStore(keyStore, keyStorePassword);*/
         }
         else {
             //keyStoreWriterService.loadKeyStore(keyStorePath, keyStorePassword.toCharArray());
@@ -172,19 +183,11 @@ public class CertificateServiceImpl implements CertificateService {
             keyStoreWriterService.saveKeyStore(trustStore, trustStorePassword);
         }
 
-        if (csr.getDestinationUrl() != null && !csr.getDestinationUrl().equals("")) {
+        /*if (csr.getDestinationUrl() != null && !csr.getDestinationUrl().equals("")) {
             sendCertificateDestination(csr.getDestinationUrl(), certificateX509);
-        }
-    }
+        }*/
 
-    private void sendCertificateDestination(String destinationUrl, X509Certificate certificate) throws Exception {
-        ResponseEntity responseEntity = restTemplate.postForEntity(destinationUrl, certificate, Void.class);
-        if (responseEntity.getStatusCode() != HttpStatus.OK) {
-            throw new Exception("Sertifikat nije uspesno poslat!");
-        }
-        else {
-            System.out.println("Sertifikat je uspesno poslat!");
-        }
+        return certificateX509;
     }
 
     private void writeCertificateInFile(String commonName, X509Certificate certificate) {

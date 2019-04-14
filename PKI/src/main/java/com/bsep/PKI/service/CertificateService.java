@@ -7,10 +7,11 @@ import com.bsep.PKI.model.SubjectData;
 import java.security.KeyPair;
 import java.security.PrivateKey;
 import java.security.PublicKey;
+import java.security.cert.X509Certificate;
 
 public interface CertificateService {
 
-    void createCertificate(CertificateSigningRequest csr) throws Exception;
+    X509Certificate createCertificate(CertificateSigningRequest csr) throws Exception;
 
     boolean isRevoked(Long certificateId) throws Exception;
 

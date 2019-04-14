@@ -6,7 +6,7 @@ import com.bsep.WindowsAgent.controller.dto.ErrorDto;
 import com.bsep.WindowsAgent.model.Address;
 import com.bsep.WindowsAgent.model.Addresses;
 import com.bsep.WindowsAgent.service.interfaces.ICommunicationConfigurationService;
-import com.bsep.WindowsAgent.service.interfaces.IGlobalProperties;
+import com.bsep.WindowsAgent.service.interfaces.IConfigurationPropertiesService;
 import com.bsep.WindowsAgent.service.interfaces.IModelMapperWrapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -22,13 +22,13 @@ import java.io.IOException;
 @RequestMapping(value = "/configuration")
 public class ConfigurationController
 {
-    private IGlobalProperties _globalProperties;
+    private IConfigurationPropertiesService _globalProperties;
     private ICommunicationConfigurationService _communicationConfigurationService;
     private IModelMapperWrapper _modelMapperWrapper;
 
     @Autowired
     public ConfigurationController(
-            IGlobalProperties globalProperties,
+            IConfigurationPropertiesService globalProperties,
             ICommunicationConfigurationService communicationConfigurationService,
             IModelMapperWrapper modelMapperWrapper)
     {
