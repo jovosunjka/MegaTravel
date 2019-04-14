@@ -38,7 +38,7 @@ public class RestTemplateConfig {
 
         SSLContext sslContext = SSLContextBuilder.create()
                 .loadKeyMaterial(getStore(keyStorePath, keyStorePassword), keyStorePassword)
-                .loadTrustMaterial(ResourceUtils.getFile(trustStorePath), trustStorePassword).build();
+                .loadTrustMaterial(getStore(trustStorePath, trustStorePassword), new TrustSelfSignedStrategy()).build();
 
         HttpClient client = HttpClients.custom().setSSLContext(sslContext).build();
 
