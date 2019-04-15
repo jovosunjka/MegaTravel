@@ -7,9 +7,9 @@ import com.bsep.SIEMCenter.service.interfaces.IRestTemplateWrapper;
 import org.apache.tomcat.util.codec.binary.Base64;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
+import org.springframework.boot.context.event.ApplicationReadyEvent;
+import org.springframework.context.event.EventListener;
+import org.springframework.http.*;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -27,7 +27,7 @@ public class CertificateController {
     private ICertificateService certificateService;
 
     @Autowired
-    private IRestTemplateWrapper restTemplateWrapper;
+    private RestTemplate restTemplate;
 
 
     @Value("${ca-url}")
@@ -45,7 +45,6 @@ public class CertificateController {
         KeyPair keyPair = certificateService.generateKeyPair();
         CertificateSigningRequest csr = certificateService.prepareCSR(keyPair.getPublic());
 
-        RestTemplate restTemplate = restTemplateWrapper.get();
         ResponseEntity<X509Certificate> responseEntity = restTemplate.postForEntity(caUrl, csr, X509Certificate.class);
         if(responseEntity.getStatusCode() == HttpStatus.CREATED) {
             X509Certificate certificate = responseEntity.getBody();
@@ -70,5 +69,21 @@ public class CertificateController {
         certificateService.loadCertificate("./src/main/resources/stores/MegaTravelSiemCenter2.cer");
 
         return  new ResponseEntity(HttpStatus.OK);
+    }
+
+    //@RequestMapping(value = "/windows-agent", method = RequestMethod.GET)
+    @EventListener(ApplicationReadyEvent.class)
+    public ResponseEntity<String> communicateWithWindowsAgent() {
+        //ResponseEntity<String> responseEntity = restTemplate.postForEntity("https://localhost:8082/api/bez-veze/poruka", new String("Cao Windows Agente"), String.class);
+        HttpEntity<String> httpEntity = new HttpEntity<String>(new String("Cao Windows Agente"));
+        ResponseEntity<String> responseEntity = restTemplate.exchange("https://localhost:8082/api/bez-veze/poruka",
+                HttpMethod.POST,httpEntity, String.class);
+
+        if(responseEntity.getStatusCode() == HttpStatus.OK) {
+            String poruka = responseEntity.getBody();
+            System.out.println(poruka);
+        }
+
+        return new ResponseEntity<String>("Komunikacija uspesno izvrsena", HttpStatus.OK);
     }
 }

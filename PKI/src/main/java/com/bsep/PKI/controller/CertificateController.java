@@ -8,6 +8,8 @@ import com.bsep.PKI.service.certificate.CertificateGeneratorService;
 import com.bsep.PKI.service.keystore.KeyStoreReaderService;
 import com.bsep.PKI.service.keystore.KeyStoreWriterService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.context.event.ApplicationReadyEvent;
+import org.springframework.context.event.EventListener;
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
@@ -88,7 +90,8 @@ public class CertificateController {
         return new ResponseEntity(HttpStatus.CREATED);
     }
 
-    @RequestMapping(value = "/windows-agent", method = RequestMethod.GET)
+    //@RequestMapping(value = "/windows-agent", method = RequestMethod.GET)
+    @EventListener(ApplicationReadyEvent.class)
     public ResponseEntity<String> communicateWithWindowsAgent() {
         //ResponseEntity<String> responseEntity = restTemplate.postForEntity("https://localhost:8082/api/bez-veze/poruka", new String("Cao Windows Agente"), String.class);
         HttpEntity<String> httpEntity = new HttpEntity<String>(new String("Cao Windows Agente"));

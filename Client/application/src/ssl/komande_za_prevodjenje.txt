@@ -1,0 +1,3 @@
+openssl x509 -in hostname.crt -inform DER -out hostname.crt.pem -outform PEM
+openssl rsa -in hostname.key -out hostname.key.pem -outform PEM
+openssl pkcs12 -export -in MegaTravelClient.pem -inkey localhost.key.pem -out client_keystore.p12

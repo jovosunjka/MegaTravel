@@ -53,6 +53,7 @@ public class CertificateServiceImpl implements CertificateService {
     @Autowired
     private RestTemplate restTemplate;
 
+
     @Value("${server.ssl.key-store}")
     private Resource keyStore;
 
@@ -84,7 +85,7 @@ public class CertificateServiceImpl implements CertificateService {
     // Kreira folder stores u /target/classes (ako vec nije kreirana).
     // U folderu stores ako kreira dva keyostore-a (ako vec nisu kreirani): certificates_store.jks i private_keys_store.jks
 
-    @EventListener(ApplicationReadyEvent.class)
+    //@EventListener(ApplicationReadyEvent.class)
     private void prepareStores() throws Exception {
         //System.out.println(directoryStoresResource.getURL().getPath());
         File directoryStores = new File(directoryStoresPath);
@@ -136,6 +137,8 @@ public class CertificateServiceImpl implements CertificateService {
             //KeyPair keyPair = generateKeyPair();
             //publicKeyOfSubject = keyPair.getPublic();
             //privateKeyOfSubject = keyPair.getPrivate();
+            //String privateKeyOfSubjectstr = Base64.encodeBase64String(privateKeyOfSubject.getEncoded());
+            //System.out.println();
         }
         else {
             KeyPair keyPair = generateKeyPair();
@@ -161,7 +164,20 @@ public class CertificateServiceImpl implements CertificateService {
             //keyStoreWriterService.saveKeyStore(trustStorePath, trustStorePassword.toCharArray());
             keyStoreWriterService.saveKeyStore(trustStore, trustStorePassword);
 
-            /*keyStoreWriterService.loadKeyStore(null, keyStorePassword.toCharArray());
+
+            /*FileOutputStream out = null;
+            try {
+                out = new FileOutputStream(directoryStoresPath + "/localhost.key");
+                out.write(privateKeyOfSubject.getEncoded());
+                out.close();
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            }catch (IOException e) {
+                e.printStackTrace();
+            }*/
+
+            /*
+            keyStoreWriterService.loadKeyStore(null, keyStorePassword.toCharArray());
             //keyStoreWriterService.loadKeyStore(keyStore, keyStorePassword);
             keyStoreWriterService.write(csr.getOrganizationalUnitName(), privateKeyOfSubject, keyStorePassword.toCharArray(), certificateX509);
             //keyStoreWriterService.write(alias, issuerData.getPrivateKey(), keyStorePassword, certificateX509);

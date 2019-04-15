@@ -1,0 +1,7 @@
+{
+    "/pki": {
+      "target": "https://localhost:8443",
+      "secure": true,
+      "changeOrigin": true
+    }
+  }

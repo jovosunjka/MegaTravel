@@ -17,6 +17,6 @@ public class BezVezeController {
             produces = MediaType.TEXT_PLAIN_VALUE)
     public ResponseEntity<String> poruka(@RequestBody String poruka) {
         System.out.println(poruka);
-        return new ResponseEntity<String>("Cao PKI", HttpStatus.OK);
+        return new ResponseEntity<String>("Cao, cao", HttpStatus.OK);
     }
 }
