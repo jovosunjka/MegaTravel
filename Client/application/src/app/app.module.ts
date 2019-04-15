@@ -5,11 +5,13 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { SendMessageComponent } from './send-message/send-message.component';
 import { HttpClientModule } from '@angular/common/http';
+import { LoginPageComponent } from './login-page/login-page.component';
 
 @NgModule({
   declarations: [
     AppComponent,
-    SendMessageComponent
+    SendMessageComponent,
+    LoginPageComponent
   ],
   imports: [
     BrowserModule,

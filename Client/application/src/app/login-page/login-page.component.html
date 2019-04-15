@@ -1,0 +1,19 @@
+
+<div class="wrapper">
+  <div class="container">
+    <form class="form-signin" (ngSubmit)="login()">
+      <label for="username" class="sr-only">Username</label>
+      <input type="text" id="username" class="form-control" name="username" [(ngModel)] = "user.username"
+      placeholder="Username" required autofocus>
+      <label for="inputPassword" class="sr-only">Password</label>
+      <input type="password" id="inputPassword" class="form-control" name="password" [(ngModel)]="user.password"
+       placeholder="Password" required>
+      <button class="btn btn-primary btn-block" type="submit">Sign in</button>
+    </form>
+  </div>
+</div>
+
+
+<div *ngIf="wrongUsernameOrPass" class="alert alert-warning box-msg" role="alert">
+  Wrong username or password.
+</div>
