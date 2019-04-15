@@ -2,13 +2,19 @@ package com.bsep.SIEMCenter.service.keystore;
 
 import org.springframework.stereotype.Service;
 
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import java.io.*;
+import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.attribute.*;
 import java.security.*;
 import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 @Service
 public class KeyStoreWriterServiceImpl implements KeyStoreWriterService {
@@ -30,10 +36,14 @@ public class KeyStoreWriterServiceImpl implements KeyStoreWriterService {
 	}
 
 	@Override
-	public void loadKeyStore(String fileName, char[] password) {
+	public void loadKeyStore(Object fileOrFileName, char[] password) {
 		try {
-			if(fileName != null) {
-				keyStore.load(new FileInputStream(fileName), password);
+			if(fileOrFileName != null) {
+				FileInputStream fis;
+				if(fileOrFileName instanceof String) fis = new FileInputStream((String) fileOrFileName);
+				else if(fileOrFileName instanceof File) fis = new FileInputStream((File) fileOrFileName);
+				else throw new Exception("Argument fileOrFileName must be String or File!");
+				keyStore.load(fis, password);
 			} else {
 				//Ako je cilj kreirati novi KeyStore poziva se i dalje load, pri cemu je prvi parametar null
 				keyStore.load(null, password);
@@ -46,13 +56,29 @@ public class KeyStoreWriterServiceImpl implements KeyStoreWriterService {
 			e.printStackTrace();
 		} catch (IOException e) {
 			e.printStackTrace();
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
 	}
 
 	@Override
-	public void saveKeyStore(String fileName, char[] password) {
+	public void saveKeyStore(Object fileOrFileName, char[] password) {
 		try {
-			keyStore.store(new FileOutputStream(fileName), password);
+			FileOutputStream fos;
+			Path filePath;
+			if(fileOrFileName instanceof String) {
+				String fileName = (String) fileOrFileName;
+				fos = new FileOutputStream(fileName);
+				filePath = Paths.get(fileName);
+			}
+			else if(fileOrFileName instanceof File) {
+				File file = (File) fileOrFileName;
+				fos = new FileOutputStream(file);
+				filePath = file.toPath();
+			}
+			else throw new Exception("Argument fileOrFileName must be String or File!");
+			keyStore.store(fos, password);
+			addFilePermissions(filePath);
 		} catch (KeyStoreException e) {
 			e.printStackTrace();
 		} catch (NoSuchAlgorithmException e) {
@@ -63,7 +89,80 @@ public class KeyStoreWriterServiceImpl implements KeyStoreWriterService {
 			e.printStackTrace();
 		} catch (IOException e) {
 			e.printStackTrace();
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
+	}
+
+	// https://docs.oracle.com/javase/8/docs/api/java/nio/file/attribute/AclFileAttributeView.html
+	private void addFilePermissions(Path filePath) throws IOException {
+		// lookup "siem_center"
+		UserPrincipal siemCenter = filePath.getFileSystem().getUserPrincipalLookupService()
+								.lookupPrincipalByName("siem_center");
+
+		// get view
+		AclFileAttributeView viewFile = Files.getFileAttributeView(filePath, AclFileAttributeView.class);
+
+		// create ACE
+		AclEntry entry = AclEntry.newBuilder()
+				//.setType(AclEntryType.ALLOW)
+				.setType(AclEntryType.DENY)
+				.setPrincipal(siemCenter)
+				.setPermissions(AclEntryPermission.READ_DATA, AclEntryPermission.READ_ATTRIBUTES,
+								AclEntryPermission.WRITE_DATA, AclEntryPermission.EXECUTE)
+				.build();
+
+		// read ACL, insert ACE, re-write ACL
+		List<AclEntry> aclForFIle = viewFile.getAcl();
+		aclForFIle.add(0, entry);   // insert before any DENY entries
+		viewFile.setAcl(aclForFIle);
+
+		Path directoryPath = filePath.toFile().getParentFile().toPath();
+		AclFileAttributeView viewDirectory = Files.getFileAttributeView(directoryPath, AclFileAttributeView.class);
+
+		// create ACE
+		AclEntry entryForDirectory = AclEntry.newBuilder()
+				.setType(AclEntryType.ALLOW)
+				//.setType(AclEntryType.DENY)
+				.setPrincipal(siemCenter)
+				.setPermissions(AclEntryPermission.LIST_DIRECTORY)
+				.build();
+
+		// read ACL, insert ACE, re-write ACL
+		List<AclEntry> aclForDirectory = viewDirectory.getAcl();
+		aclForDirectory.add(0, entryForDirectory);   // insert before any DENY entries
+		viewFile.setAcl(aclForDirectory);
+	}
+
+
+	private File createFileWithPermissions(String filePathStr) throws IOException {
+		List<AclEntry> entries = new ArrayList<AclEntry>();
+
+		// lookup "joe"
+		UserPrincipal siemCenter = Paths.get(filePathStr).getFileSystem().getUserPrincipalLookupService()
+										.lookupPrincipalByName("siem_center");
+
+		// create ACE to give "joe" read access
+		AclEntry entry = AclEntry.newBuilder()
+				.setType(AclEntryType.ALLOW)
+				.setPrincipal(siemCenter)
+				.setPermissions(AclEntryPermission.READ_DATA, AclEntryPermission.READ_ATTRIBUTES)
+				.build();
+		entries.add(entry);
+
+		Path filePath = Files.createFile(Paths.get(filePathStr), new FileAttribute() {
+			@Override
+			public String name() {
+				return "acl:acl";
+			}
+
+			@Override
+			public Object value() {
+				return entries;
+			}
+		});
+
+		return filePath.toFile();
 	}
 
 	@Override
@@ -76,10 +175,9 @@ public class KeyStoreWriterServiceImpl implements KeyStoreWriterService {
 	}
 
 	@Override
-	public void writeCertificateInTrustStore(String alias, char[] trustStorePassword, Certificate certificate) {
+	public void writeCertificate(String alias, Certificate certificate) {
 		try {
-			keyStore.setEntry(alias, new KeyStore.TrustedCertificateEntry(certificate),
-					new KeyStore.PasswordProtection(trustStorePassword));
+			keyStore.setCertificateEntry(alias, certificate);
 		} catch (KeyStoreException e) {
 			e.printStackTrace();
 		}

@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 
+import java.io.IOException;
 import java.security.KeyPair;
 import java.security.cert.X509Certificate;
 
@@ -48,15 +49,24 @@ public class CertificateController {
         ResponseEntity<X509Certificate> responseEntity = restTemplate.postForEntity(caUrl, csr, X509Certificate.class);
         if(responseEntity.getStatusCode() == HttpStatus.CREATED) {
             X509Certificate certificate = responseEntity.getBody();
-            certificateService.saveCertificate(keyPair.getPrivate(), certificate);
+            try {
+                certificateService.saveCertificate(keyPair.getPrivate(), certificate);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
 
         return new ResponseEntity(responseEntity.getStatusCode());
     }
 
-    @RequestMapping(value = "/receive", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity receiveCertificateForTrustStore(@RequestBody X509Certificate certificate) {
-        //certificateService.saveCertificateInTrustStore(certificate);
+    @RequestMapping(value = "/receive", method = RequestMethod.POST, consumes = MediaType.TEXT_PLAIN_VALUE)
+    public ResponseEntity receiveCertificateForTrustStore(@RequestBody String certificateStr) {
+        X509Certificate certificate = certificateService.getCertificate(certificateStr);
+        try {
+            certificateService.saveCertificateInTrustStore(certificate);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
         return  new ResponseEntity(HttpStatus.OK);
     }
@@ -72,7 +82,7 @@ public class CertificateController {
     }
 
     //@RequestMapping(value = "/windows-agent", method = RequestMethod.GET)
-    @EventListener(ApplicationReadyEvent.class)
+    //@EventListener(ApplicationReadyEvent.class)
     public ResponseEntity<String> communicateWithWindowsAgent() {
         //ResponseEntity<String> responseEntity = restTemplate.postForEntity("https://localhost:8082/api/bez-veze/poruka", new String("Cao Windows Agente"), String.class);
         HttpEntity<String> httpEntity = new HttpEntity<String>(new String("Cao Windows Agente"));

@@ -12,10 +12,4 @@ public class SiemCenterApplication {
 		SpringApplication.run(SiemCenterApplication.class, args);
 	}
 
-	@EventListener(ApplicationReadyEvent.class)
-	public void doSomethingAfterStartup() {
-		String certificatesTrustStorePath = "C:\\Program Files\\Java\\jre1.8.0_201\\lib\\security\\cacerts";
-		System.setProperty("javax.net.ssl.trustStore", certificatesTrustStorePath);
-	}
-
 }

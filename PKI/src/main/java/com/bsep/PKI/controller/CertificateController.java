@@ -14,9 +14,12 @@ import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 
+import org.apache.tomcat.util.codec.binary.Base64;
+
 import java.io.File;
 import java.security.KeyPair;
 import java.security.PublicKey;
+import java.security.cert.CertificateEncodingException;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 
@@ -38,7 +41,7 @@ public class CertificateController {
         X509Certificate certificate = null;
 
         try {
-            certificateService.createCertificate(csr);
+            certificate = certificateService.createCertificate(csr);
         } catch (Exception e) {
             return new ResponseEntity(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
@@ -48,10 +51,24 @@ public class CertificateController {
         return new ResponseEntity(certificate, HttpStatus.CREATED);
     }
 
-    @RequestMapping(value = "/send", method = RequestMethod.GET)
+    //@RequestMapping(value = "/send", method = RequestMethod.GET)
+    @EventListener(ApplicationReadyEvent.class)
     public ResponseEntity<String> sendCertificate() {
+        String publicKeyStr = "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAjR5ZccKEIbuUA/MUVoYkcaqFimsLKvR2KmaxVbMojPb9rSXQnnFBTDscvsXMfaY4Ezv3k33K4NzVNCfOE6wqJRFN70dO5VVVyhupsuyxcsfrDPZ8vhmuNjl/FGUNGEIv5LV+6BzkXUDeAP4w1zOLMXUcUQv2cT0GKtMu53tT02qvLhWTJs8F7YL172gPDz3Hggp/l8oriBazhMO43diyYUVfK8dRgKHHCyuIg0JPTuz7w2WuRooiSnROiO19C1FUUjJGQvmZjYLhLcgY89XNQOvQiKKh3ipxX4VhtOy5uDARmrUoB7SBlIIvDqOK1c3G7kUuuofK6X2IMtKqA21y9QIDAQAB";
+        CertificateSigningRequest csr = new CertificateSigningRequest("test", "test", "test", "RS", "12345", publicKeyStr, CertificateType.OTHER, null);
         X509Certificate certificate = null;
-        HttpEntity<X509Certificate> httpEntity = new HttpEntity<X509Certificate>(certificate);
+        try {
+            certificate = certificateService.createCertificate(csr);
+        } catch (Exception e) {
+            return new ResponseEntity(e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
+        String certificateStr = null;
+        try {
+            certificateStr = Base64.encodeBase64String(certificate.getEncoded());
+        } catch (CertificateEncodingException e) {
+            e.printStackTrace();
+        }
+        HttpEntity<String> httpEntity = new HttpEntity<String>(certificateStr);
         String destinationUrl = "https://localhost:8081/api/certificate/receive";
         ResponseEntity<Void> responseEntity = restTemplate.exchange(destinationUrl, HttpMethod.POST, httpEntity, Void.class);
 
@@ -91,7 +108,7 @@ public class CertificateController {
     }
 
     //@RequestMapping(value = "/windows-agent", method = RequestMethod.GET)
-    @EventListener(ApplicationReadyEvent.class)
+    //@EventListener(ApplicationReadyEvent.class)
     public ResponseEntity<String> communicateWithWindowsAgent() {
         //ResponseEntity<String> responseEntity = restTemplate.postForEntity("https://localhost:8082/api/bez-veze/poruka", new String("Cao Windows Agente"), String.class);
         HttpEntity<String> httpEntity = new HttpEntity<String>(new String("Cao Windows Agente"));

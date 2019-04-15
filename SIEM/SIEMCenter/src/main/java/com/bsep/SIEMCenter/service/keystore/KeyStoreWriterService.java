@@ -5,11 +5,11 @@ import java.security.cert.Certificate;
 
 public interface KeyStoreWriterService {
 
-    void loadKeyStore(String fileName, char[] password);
+    void loadKeyStore(Object fileOrFileName, char[] password);
 
-    void saveKeyStore(String fileName, char[] password);
+    void saveKeyStore(Object fileOrFileName, char[] password);
 
     void write(String alias, PrivateKey privateKey, char[] password, Certificate certificate);
 
-    void writeCertificateInTrustStore(String alias, char[] trustStorePassword, Certificate certificate);
+    void writeCertificate(String alias, Certificate certificate);
 }

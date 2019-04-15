@@ -162,7 +162,7 @@ public class CertificateServiceImpl implements CertificateService {
             keyStoreWriterService.loadKeyStore(trustStore.getFile(), trustStorePassword);
             keyStoreWriterService.writeCertificate(csr.getOrganizationalUnitName(), certificateX509);
             //keyStoreWriterService.saveKeyStore(trustStorePath, trustStorePassword.toCharArray());
-            keyStoreWriterService.saveKeyStore(trustStore, trustStorePassword);
+            keyStoreWriterService.saveKeyStore(trustStore.getFile(), trustStorePassword);
 
 
             /*FileOutputStream out = null;
@@ -178,25 +178,25 @@ public class CertificateServiceImpl implements CertificateService {
 
             /*
             keyStoreWriterService.loadKeyStore(null, keyStorePassword.toCharArray());
-            //keyStoreWriterService.loadKeyStore(keyStore, keyStorePassword);
+            //keyStoreWriterService.loadKeyStore(keyStore.getFile(), keyStorePassword);
             keyStoreWriterService.write(csr.getOrganizationalUnitName(), privateKeyOfSubject, keyStorePassword.toCharArray(), certificateX509);
             //keyStoreWriterService.write(alias, issuerData.getPrivateKey(), keyStorePassword, certificateX509);
             keyStoreWriterService.saveKeyStore(keyStorePath2, keyStorePassword.toCharArray());
-            //keyStoreWriterService.saveKeyStore(keyStore, keyStorePassword);*/
+            //keyStoreWriterService.saveKeyStore(keyStore.getFile(), keyStorePassword);*/
         }
         else {
             //keyStoreWriterService.loadKeyStore(keyStorePath, keyStorePassword.toCharArray());
-            keyStoreWriterService.loadKeyStore(keyStore, keyStorePassword);
+            keyStoreWriterService.loadKeyStore(keyStore.getFile(), keyStorePassword);
             //keyStoreWriterService.write(csr.getOrganizationalUnitName(), issuerData.getPrivateKey(), keyStorePassword.toCharArray(), certificateX509);
             keyStoreWriterService.write(alias, issuerData.getPrivateKey(), keyStorePassword, certificateX509);
             //keyStoreWriterService.saveKeyStore(keyStorePath, keyStorePassword.toCharArray());
-            keyStoreWriterService.saveKeyStore(keyStore, keyStorePassword);
+            keyStoreWriterService.saveKeyStore(keyStore.getFile(), keyStorePassword);
 
             //keyStoreWriterService.loadKeyStore(trustStorePath, trustStorePassword.toCharArray());
             keyStoreWriterService.loadKeyStore(trustStore.getFile(), trustStorePassword);
             keyStoreWriterService.writeCertificate(csr.getOrganizationalUnitName(), certificateX509);
             //keyStoreWriterService.saveKeyStore(trustStorePath, trustStorePassword.toCharArray());
-            keyStoreWriterService.saveKeyStore(trustStore, trustStorePassword);
+            keyStoreWriterService.saveKeyStore(trustStore.getFile(), trustStorePassword);
         }
 
         /*if (csr.getDestinationUrl() != null && !csr.getDestinationUrl().equals("")) {

@@ -5,19 +5,16 @@ import com.bsep.SIEMCenter.service.interfaces.ICertificateService;
 import com.bsep.SIEMCenter.service.keystore.KeyStoreReaderService;
 import com.bsep.SIEMCenter.service.keystore.KeyStoreWriterService;
 import org.apache.tomcat.util.codec.binary.Base64;
+import org.bouncycastle.jce.provider.JDKX509CertificateFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.core.io.Resource;
 
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import java.io.*;
 import java.security.*;
+import java.security.cert.*;
 import java.security.cert.Certificate;
-import java.security.cert.CertificateEncodingException;
-import java.security.cert.CertificateFactory;
-import java.security.cert.X509Certificate;
 import java.security.spec.RSAPrivateCrtKeySpec;
 import java.security.spec.X509EncodedKeySpec;
 
@@ -31,20 +28,27 @@ public class CertificateService implements ICertificateService
     @Autowired
     private KeyStoreWriterService keyStoreWriterService;
 
-    //@Value("${server.ssl.key-store}")
-    private String keyStorePath;
+    @Value("${server.ssl.key-store}")
+    private Resource keyStore;
 
-    //@Value("${server.ssl.key-store-password}")
-    private String keyStorePassword;
+    @Value("${server.ssl.key-store-password}")
+    private char[] keyStorePassword;
 
-    //@Value("${server.ssl.key-alias}")
-    private String aliasKeyStore = "megatravelsiemcenter";
+    @Value("${server.ssl.key-alias}")
+    private String aliasKeyStore;
 
-    //@Value("${trust-store-password}")
-    private String trustStorePassword;
+    @Value("${server.ssl.trust-store}")
+    private Resource trustStore;
+
+    @Value("${server.ssl.trust-store-password}")
+    private char[] trustStorePassword;
 
     @Value("${my-url}")
     private String myUrl;
+
+    private final String directoryClassesPath = this.getClass().getResource("../../../../").getPath(); // target/classes folder
+    private String directoryStoresPath = directoryClassesPath + "stores"; // target/classes/stores folder
+
 
     @Override
     public CertificateSigningRequest prepareCSR(PublicKey publicKey) {
@@ -55,20 +59,36 @@ public class CertificateService implements ICertificateService
     }
 
     @Override
-    public void saveCertificate(PrivateKey privateKey, X509Certificate certificate) {
-        writeCertificateInFile(certificate);
-        keyStoreWriterService.loadKeyStore(keyStorePath, keyStorePassword.toCharArray());
-        keyStoreWriterService.write(aliasKeyStore, privateKey, keyStorePassword.toCharArray(), certificate);
-        keyStoreWriterService.saveKeyStore(keyStorePath, keyStorePassword.toCharArray());
+    public void saveCertificate(PrivateKey privateKey, X509Certificate certificate) throws IOException {
+        writeCertificateInFile(aliasKeyStore, certificate);
+        keyStoreWriterService.loadKeyStore(keyStore.getFile(), keyStorePassword);
+        keyStoreWriterService.write(aliasKeyStore, privateKey, keyStorePassword, certificate);
+        keyStoreWriterService.saveKeyStore(keyStore.getFile(), keyStorePassword);
     }
 
     @Override
-    public void saveCertificateInTrustStore(X509Certificate certificate) {
-        writeCertificateInFile(certificate);
-        keyStoreWriterService.loadKeyStore(keyStorePath, keyStorePassword.toCharArray());
-        keyStoreWriterService.writeCertificateInTrustStore(certificate.getSubjectX500Principal().getName(),
-                trustStorePassword.toCharArray(), certificate);
-        keyStoreWriterService.saveKeyStore(keyStorePath, keyStorePassword.toCharArray());
+    public void saveCertificateInTrustStore(X509Certificate certificate) throws IOException {
+        writeCertificateInFile("test", certificate);
+        keyStoreWriterService.loadKeyStore(trustStore.getFile(), trustStorePassword);
+        keyStoreWriterService.writeCertificate("test", certificate);
+        keyStoreWriterService.saveKeyStore(trustStore.getFile(), trustStorePassword);
+    }
+
+    @Override
+    public  X509Certificate getCertificate(String certificateStr) {
+        byte[] bytes = Base64.decodeBase64(certificateStr);
+
+        try {
+            //return new JDKX509CertificateFactory().engineGenerateCertificate(inputStream);
+            CertificateFactory certFactory = CertificateFactory.getInstance("X.509");
+            InputStream in = new ByteArrayInputStream(bytes);
+            X509Certificate certificate = (X509Certificate)certFactory.generateCertificate(in);
+            return certificate;
+        } catch (CertificateException e) {
+            e.printStackTrace();
+        }
+
+        return null;
     }
 
     public void loadCertificate(String certificatePath) {
@@ -103,10 +123,10 @@ public class CertificateService implements ICertificateService
         return null;
     }
 
-    private void writeCertificateInFile(X509Certificate certificate) {
+    private void writeCertificateInFile(String filname, X509Certificate certificate) {
         FileOutputStream out = null;
         try {
-            out = new FileOutputStream("./src/main/resources/stores/" +aliasKeyStore+".cer");
+            out = new FileOutputStream(directoryStoresPath+"/" +filname+".cer");
             out.write(certificate.getEncoded());
             out.close();
         } catch (FileNotFoundException e) {
