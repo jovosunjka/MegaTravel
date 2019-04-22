@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Inject } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 
 
@@ -10,7 +10,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 export class SendMessageComponent implements OnInit {
   message: string;
 
-  constructor(private http: HttpClient) {
+  constructor(private http: HttpClient, @Inject('PKI_URL') private baseUrl: string) {
     this.message = '';
   }
 
@@ -31,7 +31,7 @@ export class SendMessageComponent implements OnInit {
   save() {
     if (this.message !== '') {
       const headers: HttpHeaders = new HttpHeaders({'Content-Type': 'application/json'});
-      return this.http.get('https://localhost:8443/pki/certificate/windows-agent').subscribe (
+      return this.http.get(this.baseUrl + '/certificate/windows-agent').subscribe (
         result => alert('Message ' + this.message + ' was sent.')
       );
     } else {

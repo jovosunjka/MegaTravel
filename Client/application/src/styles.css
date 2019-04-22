@@ -1,1 +1,23 @@
+
 /* You can add global styles to this file, and also import other style files */
+
+/* bootsrtap-ove klase su "negativno" utiacle na toastr, zato smo ih ovde pregazili */
+
+
+.toast {
+    background-color: #030303;
+    pointer-events: auto;
+    opacity: 1 !important;
+  }
+  .toast-success {
+    background-color: #51A351 !important;
+  }
+  .toast-error {
+    background-color: #BD362F !important;
+  }
+  .toast-info {
+    background-color: #2F96B4 !important;
+  }
+  .toast-warning {
+    background-color: #F89406 !important;
+  }

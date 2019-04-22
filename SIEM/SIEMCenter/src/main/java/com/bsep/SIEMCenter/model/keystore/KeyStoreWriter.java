@@ -1,4 +1,4 @@
-package com.bsep.SIEMCenter.security.keystore;
+package com.bsep.SIEMCenter.model.keystore;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;

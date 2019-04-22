@@ -1,4 +1,4 @@
-package com.bsep.SIEMCenter.security.data;
+package com.bsep.SIEMCenter.model.data;
 
 import org.bouncycastle.asn1.x500.X500Name;
 

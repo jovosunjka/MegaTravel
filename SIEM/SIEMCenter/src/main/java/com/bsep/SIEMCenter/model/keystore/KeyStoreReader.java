@@ -1,4 +1,4 @@
-package com.bsep.SIEMCenter.security.keystore;
+package com.bsep.SIEMCenter.model.keystore;
 
 import java.io.BufferedInputStream;
 import java.io.FileInputStream;
@@ -17,7 +17,7 @@ import java.security.cert.X509Certificate;
 import org.bouncycastle.asn1.x500.X500Name;
 import org.bouncycastle.cert.jcajce.JcaX509CertificateHolder;
 
-import com.bsep.SIEMCenter.security.data.IssuerData;
+import com.bsep.SIEMCenter.model.data.IssuerData;
 
 public class KeyStoreReader {
 	//KeyStore je Java klasa za citanje specijalizovanih datoteka koje se koriste za cuvanje kljuceva

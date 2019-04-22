@@ -1,0 +1,20 @@
+<p>ROLES:</p>
+
+<ol>
+  <li *ngFor="let role of roles">
+      role:&nbsp;{{role.name}}
+      <p>Permissions:</p>
+      <ol>
+          <li *ngFor="let permission of role.permissions">
+            {{permission.permissionName}} <button (click)="removePermissionFromRole(role.id, permission.id)">Izbaci iz role</button>
+          </li>
+          <li>
+                <select [(ngModel)]="newPermission" name="newPermission">
+                  <option *ngFor="let per of permissions" [ngValue]="per.id">{{per.permissionName}}</option>
+                </select>
+                <button (click)="addPermissionToRole(role.id)">Dodaj permisiju u rolu</button>
+          </li>
+        </ol>  
+  </li>
+</ol>
+
