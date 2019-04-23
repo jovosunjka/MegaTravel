@@ -4,13 +4,25 @@ package com.bsep.SiemCenterRules.model;
 import com.bsep.SiemCenterRules.model.enums.AccountType;
 import com.bsep.SiemCenterRules.model.enums.RiskLevel;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 
 public class UserAccount {
     private String username;
-    private Date lastLoginTimestamp;
+    private LocalDateTime lastLoginTimestamp;
     private RiskLevel riskLevel;
     private AccountType accountType;
+
+    public UserAccount() {
+
+    }
+
+    public UserAccount(String username, LocalDateTime lastLoginTimestamp, RiskLevel riskLevel, AccountType accountType) {
+        this.username = username;
+        this.lastLoginTimestamp = lastLoginTimestamp;
+        this.riskLevel = riskLevel;
+        this.accountType = accountType;
+    }
 
     public String getUsername() {
         return username;
@@ -20,11 +32,11 @@ public class UserAccount {
         this.username = username;
     }
 
-    public Date getLastLoginTimestamp() {
+    public LocalDateTime getLastLoginTimestamp() {
         return lastLoginTimestamp;
     }
 
-    public void setLastLoginTimestamp(Date lastLoginTimestamp) {
+    public void setLastLoginTimestamp(LocalDateTime lastLoginTimestamp) {
         this.lastLoginTimestamp = lastLoginTimestamp;
     }
 

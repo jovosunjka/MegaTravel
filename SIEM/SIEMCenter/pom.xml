@@ -111,27 +111,24 @@
             <artifactId>jjwt</artifactId>
             <version>0.6.0</version>
         </dependency>
-		<!--Dependencies for ACL-->
-		<!--
+
 		<dependency>
-			<groupId>org.springframework.security</groupId>
-			<artifactId>spring-security-acl</artifactId>
+			<groupId>org.kie</groupId>
+			<artifactId>kie-ci</artifactId>
+			<version>7.20.0.Final</version>
 		</dependency>
 		<dependency>
-			<groupId>org.springframework.security</groupId>
-			<artifactId>spring-security-config</artifactId>
+			<groupId>org.kie</groupId>
+			<artifactId>kie-spring</artifactId>
+			<version>7.20.0.Final</version>
 		</dependency>
+
 		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-context-support</artifactId>
+			<groupId>com.sbz</groupId>
+			<artifactId>SiemCenterRules</artifactId>
+			<type>jar</type>
+			<version>1.0-SNAPSHOT</version>
 		</dependency>
-		<dependency>
-			<groupId>net.sf.ehcache</groupId>
-			<artifactId>ehcache-core</artifactId>
-			<version>2.6.11</version>
-		</dependency>
-		-->
-		<!--Dependencies for ACL-->
 	</dependencies>
 
 	<build>

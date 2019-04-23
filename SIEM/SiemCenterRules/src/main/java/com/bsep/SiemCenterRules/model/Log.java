@@ -3,6 +3,7 @@ package com.bsep.SiemCenterRules.model;
 import com.bsep.SiemCenterRules.model.enums.LogLevel;
 
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 public abstract class Log {
     protected Long id;
@@ -51,5 +52,21 @@ public abstract class Log {
 
     public void setHostAddress(String hostAddress) {
         this.hostAddress = hostAddress;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Log log = (Log) o;
+        return Objects.equals(id, log.id) &&
+                logLevel == log.logLevel &&
+                Objects.equals(timestamp, log.timestamp) &&
+                Objects.equals(hostAddress, log.hostAddress);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, logLevel, timestamp, hostAddress);
     }
 }

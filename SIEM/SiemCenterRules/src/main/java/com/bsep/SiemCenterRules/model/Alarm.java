@@ -6,6 +6,7 @@ import java.util.List;
 public class Alarm {
     private Long id;
     private String message;
+    private int priority;
     private LocalDateTime dateTime;
     private List<Log> logs;
 

@@ -1,5 +1,8 @@
-package com.bsep.SiemCenterRules.app;
+package com.bsep.SIEMCenter.service;
 
+import com.bsep.SIEMCenter.service.interfaces.IRuleService;
+import com.bsep.SiemCenterRules.app.DebugAgendaEventListener;
+import com.bsep.SiemCenterRules.app.KnowledgeSessionHelper;
 import com.bsep.SiemCenterRules.model.AntivirusLog;
 import com.bsep.SiemCenterRules.model.LoginLog;
 import com.bsep.SiemCenterRules.model.UserAccount;
@@ -9,14 +12,24 @@ import com.bsep.SiemCenterRules.model.enums.LogLevel;
 import com.bsep.SiemCenterRules.model.enums.RiskLevel;
 import org.kie.api.runtime.KieContainer;
 import org.kie.api.runtime.KieSession;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.context.event.ApplicationReadyEvent;
+import org.springframework.context.event.EventListener;
+import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 
-public class App {
+@Service
+public class RuleService implements IRuleService {
 
-    public static void main(String[] args) {
-        KieContainer kc = KnowledgeSessionHelper.createRuleBase();
-        KieSession kSession = KnowledgeSessionHelper.getStatefulKnowledgeSession(kc, "SbzRulesSession");
+    @Autowired
+    private KieContainer kieContainer;
+
+    @EventListener(ApplicationReadyEvent.class)
+    @Override
+    public void initialize() {
+        System.out.println("************* INITIALIZE ****************");
+        KieSession kSession = KnowledgeSessionHelper.getStatefulKnowledgeSession(kieContainer, "SbzRulesSession");
 
         kSession.addEventListener(new DebugAgendaEventListener());
 
@@ -44,5 +57,7 @@ public class App {
 
         int fired = kSession.fireAllRules();
         System.out.println("fired: " + fired);
+
+        kSession.dispose();
     }
 }
