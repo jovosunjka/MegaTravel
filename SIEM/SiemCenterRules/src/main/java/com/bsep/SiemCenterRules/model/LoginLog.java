@@ -1,22 +1,22 @@
 package com.bsep.SiemCenterRules.model;
 
-
 import com.bsep.SiemCenterRules.model.enums.HostType;
+import org.kie.api.definition.type.Role;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 
-
-public class LoginLog extends Log {
+//@org.kie.api.definition.type.Role(Role.Type.EVENT)
+//@org.kie.api.definition.type.Timestamp("timestamp")
+public class LoginLog extends Log implements Serializable {
     private HostType hostType;
     private UserAccount userAccount;
     private String ipAddress;
     private boolean isSuccessful;
 
     public long getDaysOfInactivity() {
-        long difference = ChronoUnit.DAYS.between(timestamp, LocalDateTime.now());
-        System.out.println(difference);
-        return difference;
+        return ChronoUnit.DAYS.between(timestamp, LocalDateTime.now());
     }
 
     public HostType getHostType() {

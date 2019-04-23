@@ -6,5 +6,5 @@ rule "Log with ERROR"
     when
         Log(logLevel == LogLevel.ERROR)
     then
-        System.out.println("Alarm raised from rule: 'Log with ERROR'");
+        System.out.println("Alarm raised from rule: 'Log with ERROR', package: 'logsrules'");
 end
