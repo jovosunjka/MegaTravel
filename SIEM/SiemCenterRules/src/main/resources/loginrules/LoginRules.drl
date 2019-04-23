@@ -1,0 +1,39 @@
+package loginrules;
+
+import com.bsep.SiemCenterRules.model.LoginLog;
+import com.bsep.SiemCenterRules.model.AntivirusLog;
+import java.util.HashMap;
+
+rule "Account inactivity"
+    when
+        $llog: LoginLog()
+        eval($llog.getDaysOfInactivity() > 90)
+    then
+        System.out.println("Alarm raised from rule: 'Account inactivity'");
+end
+/*
+rule "Grouping example"
+    when
+        $tests: HashMap()
+            from accumulate( $test : LoginLog( ipAddress == "asd" ),
+                init( HashMap tests = new HashMap(); ),
+                action(
+                    if (tests.get($name) == null) tests.put($name, new ArrayList();
+                    tests.get($name).add($test);
+                ),
+                reverse(
+                    tests.get($name).remove($test);
+                ),
+                result( tests )
+            )
+    then
+        System.out.println("Alarm raised from rule: ''");
+end
+
+rule ""
+    when
+
+    then
+        System.out.println("Alarm raised from rule: ''");
+end
+*/

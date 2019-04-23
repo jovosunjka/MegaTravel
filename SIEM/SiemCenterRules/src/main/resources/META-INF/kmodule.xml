@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<kmodule xmlns="http://jboss.org/kie/6.0.0/kmodule">
+    <kbase name="logsrules" packages="logsrules">
+        <ksession name="logs-session"/>
+    </kbase>
+    <kbase name="loginrules" packages="loginrules">
+        <ksession name="login-session"/>
+    </kbase>
+</kmodule>
