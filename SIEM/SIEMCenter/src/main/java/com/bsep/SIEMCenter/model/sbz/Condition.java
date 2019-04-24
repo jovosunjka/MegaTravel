@@ -1,7 +1,7 @@
-package com.bsep.SiemCenterRules.model;
+package com.bsep.SIEMCenter.model.sbz;
 
 
-import com.bsep.SiemCenterRules.model.enums.RelationalOperator;
+import com.bsep.SIEMCenter.model.sbz.enums.RelationalOperator;
 
 public class Condition {
     private String field;

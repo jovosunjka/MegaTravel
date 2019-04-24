@@ -1,4 +1,4 @@
-package com.bsep.SiemCenterRules.model;
+package com.bsep.SIEMCenter.model.sbz;
 
 
 public class AppLog extends Log {

@@ -1,9 +1,9 @@
-package com.bsep.SiemCenterRules.model;
+package com.bsep.SIEMCenter.model.sbz;
 
 
+import com.bsep.SIEMCenter.model.sbz.enums.HostType;
+import com.bsep.SIEMCenter.model.sbz.enums.LogLevel;
 
-
-import com.bsep.SiemCenterRules.model.enums.HostType;
 
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;

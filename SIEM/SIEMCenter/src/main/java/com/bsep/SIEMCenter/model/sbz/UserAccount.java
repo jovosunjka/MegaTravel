@@ -1,11 +1,10 @@
-package com.bsep.SiemCenterRules.model;
+package com.bsep.SIEMCenter.model.sbz;
 
 
 
 
-
-import com.bsep.SiemCenterRules.model.enums.AccountType;
-import com.bsep.SiemCenterRules.model.enums.RiskLevel;
+import com.bsep.SIEMCenter.model.sbz.enums.AccountType;
+import com.bsep.SIEMCenter.model.sbz.enums.RiskLevel;
 
 import java.time.LocalDateTime;
 

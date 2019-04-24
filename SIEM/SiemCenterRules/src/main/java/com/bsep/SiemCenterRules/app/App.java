@@ -1,16 +1,18 @@
 package com.bsep.SiemCenterRules.app;
 
-import com.bsep.SiemCenterRules.model.AntivirusLog;
-import com.bsep.SiemCenterRules.model.LoginLog;
-import com.bsep.SiemCenterRules.model.UserAccount;
-import com.bsep.SiemCenterRules.model.enums.AccountType;
-import com.bsep.SiemCenterRules.model.enums.HostType;
+import com.bsep.SiemCenterRules.model.Log;
+import com.bsep.SiemCenterRules.model.enums.LogCategory;
 import com.bsep.SiemCenterRules.model.enums.LogLevel;
-import com.bsep.SiemCenterRules.model.enums.RiskLevel;
+import org.kie.api.KieBase;
+import org.kie.api.KieBaseConfiguration;
+import org.kie.api.KieServices;
+import org.kie.api.conf.EventProcessingOption;
 import org.kie.api.runtime.KieContainer;
 import org.kie.api.runtime.KieSession;
 
+
 import java.time.LocalDateTime;
+
 
 public class App {
 
@@ -20,20 +22,19 @@ public class App {
 
         kSession.addEventListener(new DebugAgendaEventListener());
 
-        UserAccount userAccount = new UserAccount("test", LocalDateTime.now().minusDays(10),
-                RiskLevel.LOW, AccountType.SIEMOPERATER);
-        LoginLog loginLog1 = new LoginLog(new Long(1L), LogLevel.ERROR, LocalDateTime.now(), "hostAddress1",
-                HostType.App, userAccount, "ipAddress1", false);
-        LoginLog loginLog2 = new LoginLog(new Long(2L), LogLevel.ERROR, LocalDateTime.now().plusMinutes(5), "hostAddress1",
-                HostType.App, userAccount, "ipAddress1", false);
-        LoginLog loginLog3 = new LoginLog(new Long(3L), LogLevel.ERROR, LocalDateTime.now().plusMinutes(10), "hostAddress1",
-                HostType.App, userAccount, "ipAddress1", false);
+        Log loginLog1 = new Log(new Long(1L), LogLevel.ERROR, LogCategory.LOGIN, LocalDateTime.now(),
+                "username1", "hostAddress1", "login_successfull:false");
+        Log loginLog2 = new Log(new Long(2L), LogLevel.ERROR, LogCategory.LOGIN, LocalDateTime.now().plusMinutes(5),
+                "username1", "hostAddress2", "login_successfull:false");
+        Log loginLog3 = new Log(new Long(3L), LogLevel.ERROR, LogCategory.LOGIN, LocalDateTime.now().plusMinutes(10),
+                "username1", "hostAddress3", "login_successfull:false");
+        Log loginLog4 = new Log(new Long(4L), LogLevel.ERROR, LogCategory.LOGIN, LocalDateTime.now().minusDays(90),
+                "username1", "hostAddress4", "login_successfull:false");
 
-        LoginLog loginLog4 = new LoginLog(new Long(4L), LogLevel.ERROR, LocalDateTime.now().minusDays(90), "hostAddress4",
-                HostType.App, userAccount, "ipAddress4", false);
-
-        AntivirusLog antivirusLog1 = new AntivirusLog(5L, LogLevel.ERROR, LocalDateTime.now(), "hostAddress100", null);
-        AntivirusLog antivirusLog2 = new AntivirusLog(6L, LogLevel.INFO, LocalDateTime.now().plusHours(2), "hostAddress100", antivirusLog1);
+        Log antivirusLog1 = new Log(new Long(5L), LogLevel.ERROR, LogCategory.ANTIVIRUS, LocalDateTime.now(),
+                "hostAddress100", "hostAddress100", "message1");
+        Log antivirusLog2 = new Log(new Long(6L), LogLevel.INFO, LogCategory.LOGIN, LocalDateTime.now().plusHours(2),
+                "hostAddress100", "hostAddress100", "solved_log:5");
 
         kSession.insert(loginLog1);
         kSession.insert(loginLog2);
@@ -44,5 +45,69 @@ public class App {
 
         int fired = kSession.fireAllRules();
         System.out.println("fired: " + fired);
+
+
+        // Markanovo
+
+        //testLogs();
+        //testLogin();
+    }
+
+    private static KieSession getKieSession(String sessionName) {
+        KieServices ks = KieServices.Factory.get();
+        KieContainer kContainer = ks.getKieClasspathContainer();
+        return kContainer.newKieSession(sessionName);
+    }
+
+    private static KieSession getKieSessionForStream(String sessionName) {
+        KieServices ks = KieServices.Factory.get();
+        KieContainer kc = ks.getKieClasspathContainer();
+        KieBaseConfiguration kbconf = ks.newKieBaseConfiguration();
+        kbconf.setOption(EventProcessingOption.STREAM);
+        KieBase kbase = kc.newKieBase("sbz/rules/loginrules", kbconf);
+        return kc.newKieSession(sessionName);
+    }
+
+    private static void testLogs() {
+        /*
+        KieSession kSession = getKieSession("logs-session");
+        LoginLog log = new LoginLog();
+        log.setLogLevel(LogLevel.ERROR);
+        kSession.insert(log);
+        kSession.fireAllRules();*/
+    }
+
+    private static void testLogin() {
+        /*
+        KieSession kSession = getKieSession("login-session");
+        ArrayList<String> maliciousIps = new ArrayList<>();
+        String maliciousIp = "125.6.7.8";
+        maliciousIps.add("127.0.1.0");
+        maliciousIps.add(maliciousIp);
+        kSession.setGlobal("maliciousIpAddresses", maliciousIps);
+        System.out.println("Malicious ip addresses before rules: ");
+        for (String i :
+                maliciousIps) {
+            System.out.println(i);
+        }
+        try {
+            LoginLog loginLog = new LoginLog();
+            loginLog.setIpAddress(maliciousIp);
+            loginLog.setTimestamp(LocalDateTime.of(LocalDate.of(2016, 12, 12),
+                    LocalTime.of(0, 0, 0)));
+            kSession.insert(loginLog);
+            kSession.fireAllRules();
+
+            System.out.println("Malicious ip addresses after rules: ");
+            for (String i :
+                    maliciousIps) {
+                System.out.println(i);
+            }
+        }
+        catch (Exception e)
+        {
+            System.out.println(e.getMessage());
+        }
+        */
     }
 }

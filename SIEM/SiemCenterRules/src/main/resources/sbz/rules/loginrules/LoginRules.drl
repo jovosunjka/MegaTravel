@@ -1,0 +1,61 @@
+package loginrules;
+
+import com.bsep.SiemCenterRules.model.LoginLog;
+import com.bsep.SiemCenterRules.model.AntivirusLog;
+import java.util.HashMap;
+import java.util.List;
+
+global java.util.ArrayList<String> maliciousIpAddresses;
+
+rule "Account inactivity"
+    when
+        $llog: LoginLog()
+        eval($llog.getDaysOfInactivity() > Long.valueOf(90))
+    then
+        System.out.println("Alarm raised from rule: 'Account inactivity', package: 'loginrules'");
+end
+
+rule "Try to login from malicious ip address"
+    when
+        LoginLog(maliciousIpAddresses contains ipAddress)
+    then
+        System.out.println("Alarm raised from rule: 'Try to login from malicious ip address', package: 'loginrules'");
+end
+/*
+rule "30 or more login attempts within 24h"
+    when
+        Number(intValue >= 30) from accumulate(
+            $e: LoginLog()
+            over window:time(24h), sum($e)
+        )
+    then
+
+        System.out.println("Alarm raised from rule: '', package: ''");
+end
+*/
+/*
+rule "Grouping example"
+    when
+        $tests: HashMap()
+            from accumulate( $test : LoginLog( ipAddress == "asd" ),
+                init( HashMap tests = new HashMap(); ),
+                action(
+                    if (tests.get($name) == null) tests.put($name, new ArrayList();
+                    tests.get($name).add($test);
+                ),
+                reverse(
+                    tests.get($name).remove($test);
+                ),
+                result( tests )
+            )
+    then
+        System.out.println("Alarm raised from rule: ''");
+end
+
+rule ""
+    when
+
+    then
+        System.out.println("Alarm raised from rule: '', package: ''");
+end
+*/

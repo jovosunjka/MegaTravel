@@ -1,12 +1,12 @@
-package com.bsep.SiemCenterRules.model;
+package com.bsep.SIEMCenter.model.sbz;
 
 
 
 
-
-import com.bsep.SiemCenterRules.model.enums.LogicalOperator;
+import com.bsep.SIEMCenter.model.sbz.enums.LogicalOperator;
 
 import java.util.List;
+
 
 public class Rule {
     private String name;

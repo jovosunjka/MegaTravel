@@ -1,9 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<kmodule xmlns="http://jboss.org/kie/6.0.0/kmodule"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-
+<kmodule xmlns="http://jboss.org/kie/6.0.0/kmodule">
     <kbase name="SbzRulesKBase" packages="sbz.rules">
-    	<ksession name="SbzRulesSession" />
+        <ksession name="SbzRulesSession" />
+    </kbase>
+
+    <kbase name="logsrules" packages="logsrules">
+        <ksession name="logs-session"/>
+    </kbase>
+
+    <kbase name="loginrules" eventProcessingMode="stream" packages="loginrules">
+        <ksession name="login-session"/>
     </kbase>
 
 </kmodule>

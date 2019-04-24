@@ -1,78 +1,73 @@
 
-import com.bsep.SiemCenterRules.model.LoginLog;
+/*import com.bsep.SIEMCenter.model.sbz.Log;
+import com.bsep.SIEMCenter.model.sbz.enums.LogLevel;
+import com.bsep.SIEMCenter.model.sbz.enums.LogCategory;
+import com.bsep.SIEMCenter.model.sbz.AntivirusLog*/
+
 import com.bsep.SiemCenterRules.model.Log;
 import com.bsep.SiemCenterRules.model.enums.LogLevel;
+import com.bsep.SiemCenterRules.model.enums.LogCategory;
 import com.bsep.SiemCenterRules.model.AntivirusLog
 
 
-/*rule "Neuspesna prijava na sistem na istoj masini 2+"
+rule "Neuspesni pokusaji prijave na sistem na istoj masini 2+"
     when
-        exists
-            LoginLog(successful == false, $ha: hostAddress)
-            $c: Number(intValue >= 2) from accumulate(
-                            $l: LoginLog(
+        exists (
+            Log(type == LogLevel.ERROR, category == LogCategory.LOGIN, $ha: hostAddress) and
+            Number(intValue >= 2) from accumulate(
+                            $l: Log(
+                                type == LogLevel.ERROR,
+                                category == LogCategory.LOGIN,
                                 hostAddress == $ha,
-                                successful == false
+                                message.contains("login_successfull:false")
                             ),
                             count($l)
                         )
-
+        )
     then
-        System.out.println("Neuspesno logovanje " + $c);
-end*/
+        System.out.println("Neuspesno logovanje na istu masinu");
+end
 
-/*rule "Neuspesna prijava na sistem na istoj masini 2+"
+
+rule "Neuspesni pokusaji prijave sa istim usernmom 2+"
     when
-            LoginLog(successful == false, $ha: hostAddress)
-            Number(intValue >=4 ) from accumulate(
-                            $l: LoginLog(
-                                hostAddress == $ha,
-                                successful == false
+        exists (
+            Log(type == LogLevel.ERROR, category == LogCategory.LOGIN, $s: source) and // source je u ovom slucaju username
+            Number(intValue >= 2) from accumulate(
+                            $l: Log(
+                                type == LogLevel.ERROR,
+                                category == LogCategory.LOGIN,
+                                source == $s,
+                                message.contains("login_successfull:false")
                             ),
                             count($l)
                         )
-
+        )
     then
-        System.out.println("Neuspesno logovanje ");
-end*/
+        System.out.println("Neuspesno logovanje sa istim usernamom");
+end
 
-
-/*rule "Neuspesna prijava na sistem sa istim usernmaom 2+"
-    when
-        //exists
-            LoginLog(successful == false, $ha: hostAddress)
-            $c: Number(intValue >= 2) from accumulate(
-                            $l: LoginLog(
-                                hostAddress == $ha,
-                                successful == false
-                            ),
-                            count($l)
-                        )
-
-    then
-
-        System.out.println("Neuspesno logovanje " + $c);
-end*/
 
 rule "Pojava loga ciji tip je ERROR"
     when
-        Log(logLevel == LogLevel.ERROR)
+        Log(type == LogLevel.ERROR)
     then
-        System.out.println("Error");
+        System.out.println("Pronadjen je Error Log");
 end
 
-rule "Pokusaj prijave na nalog koji nije bio aktivan 90+ dana"
+
+/*rule "Pokusaj prijave na nalog koji nije bio aktivan 90+ dana"
     when
-            LoginLog(getDaysOfInactivity() >= 90)
+            Log(type == LogLevel.WARN, category == LogCategory.LOGIN, getDaysOfInactivity() >= 90)
 
     then
         System.out.println("Nije bio aktivan 90+ dana");
-end
+end*/
 
 /*rule "Pojava loga u kome antivirus registruje pretnju, a da u roku od 1h se ne generise log o uspesnom eliminisanju pretnje"
     when
             $al: AntivirusLog(logLevel == LogLevel.ERROR, $ts: timestamp)
-            AntivirusLog(logLevel == LogLevel.INFO, relatedLog != null, relatedLog == $al , AntivirusLog.diffrenceInHours() <= 1 )
+            AntivirusLog(logLevel == LogLevel.INFO, relatedLog != null, relatedLog == $al , AntivirusLog.diffrenceInHours($al.timestamp, timestamp) <= 1 )
 
     then
         System.out.println("Nije se generisao log o uspesnom eliminisanju pretnje");

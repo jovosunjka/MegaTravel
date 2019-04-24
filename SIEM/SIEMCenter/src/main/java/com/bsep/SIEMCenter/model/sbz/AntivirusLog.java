@@ -1,6 +1,8 @@
-package com.bsep.SiemCenterRules.model;
+package com.bsep.SIEMCenter.model.sbz;
 
 
+import com.bsep.SIEMCenter.model.sbz.enums.LogCategory;
+import com.bsep.SIEMCenter.model.sbz.enums.LogLevel;
 
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
@@ -18,7 +20,14 @@ public class AntivirusLog extends Log {
 
     }
 
+    public AntivirusLog(AntivirusLog relatedLog) {
+        this.relatedLog = relatedLog;
+    }
 
+    public AntivirusLog(Long id, LogLevel type, LogCategory category, LocalDateTime timestamp, String source, String hostAddress, String message, AntivirusLog relatedLog) {
+        super(id, type, category, timestamp, source, hostAddress, message);
+        this.relatedLog = relatedLog;
+    }
 
     public AntivirusLog getRelatedLog() {
         return relatedLog;

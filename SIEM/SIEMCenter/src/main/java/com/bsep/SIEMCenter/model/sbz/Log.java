@@ -1,13 +1,10 @@
-package com.bsep.SiemCenterRules.model;
+package com.bsep.SIEMCenter.model.sbz;
 
 
-
-
-import com.bsep.SiemCenterRules.model.enums.LogCategory;
-import com.bsep.SiemCenterRules.model.enums.LogLevel;
+import com.bsep.SIEMCenter.model.sbz.enums.LogCategory;
+import com.bsep.SIEMCenter.model.sbz.enums.LogLevel;
 
 import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
 import java.util.Objects;
 
 public class Log {
@@ -31,12 +28,6 @@ public class Log {
         this.source = source;
         this.hostAddress = hostAddress;
         this.message = message;
-    }
-
-    public long getDaysOfInactivity() {
-        long difference = ChronoUnit.DAYS.between(getTimestamp(), LocalDateTime.now());
-        System.out.println("getDaysOfInactivity() : retValue = " + difference);
-        return difference;
     }
 
     public Long getId() {
@@ -79,9 +70,13 @@ public class Log {
         this.source = source;
     }
 
-    public String getHostAddress() { return hostAddress; }
+    public String getHostAddress() {
+        return hostAddress;
+    }
 
-    public void setHostAddress(String hostAddress) { this.hostAddress = hostAddress; }
+    public void setHostAddress(String hostAddress) {
+        this.hostAddress = hostAddress;
+    }
 
     public String getMessage() {
         return message;

@@ -1,4 +1,4 @@
-package com.bsep.SiemCenterRules.model;
+package com.bsep.SIEMCenter.model.sbz;
 
 
 import java.time.LocalDateTime;

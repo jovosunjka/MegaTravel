@@ -1,15 +1,12 @@
 package com.bsep.SIEMCenter.service;
 
+
+import com.bsep.SIEMCenter.model.sbz.Log;
+import com.bsep.SIEMCenter.model.sbz.enums.LogCategory;
+import com.bsep.SIEMCenter.model.sbz.enums.LogLevel;
 import com.bsep.SIEMCenter.service.interfaces.IRuleService;
-import com.bsep.SiemCenterRules.app.DebugAgendaEventListener;
-import com.bsep.SiemCenterRules.app.KnowledgeSessionHelper;
-import com.bsep.SiemCenterRules.model.AntivirusLog;
-import com.bsep.SiemCenterRules.model.LoginLog;
-import com.bsep.SiemCenterRules.model.UserAccount;
-import com.bsep.SiemCenterRules.model.enums.AccountType;
-import com.bsep.SiemCenterRules.model.enums.HostType;
-import com.bsep.SiemCenterRules.model.enums.LogLevel;
-import com.bsep.SiemCenterRules.model.enums.RiskLevel;
+import com.bsep.SIEMCenter.util.DebugAgendaEventListener;
+import com.bsep.SIEMCenter.util.KnowledgeSessionHelper;
 import org.kie.api.runtime.KieContainer;
 import org.kie.api.runtime.KieSession;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,7 +14,10 @@ import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.util.ArrayList;
 
 @Service
 public class RuleService implements IRuleService {
@@ -29,24 +29,27 @@ public class RuleService implements IRuleService {
     @Override
     public void initialize() {
         System.out.println("************* INITIALIZE ****************");
-        KieSession kSession = KnowledgeSessionHelper.getStatefulKnowledgeSession(kieContainer, "SbzRulesSession");
+        String sessinName;
+        sessinName = "SbzRulesSession";
+        //sessinName = "logs-session";
+        //sessinName = "login-session";
+        KieSession kSession = KnowledgeSessionHelper.getStatefulKnowledgeSession(kieContainer, sessinName);
 
         kSession.addEventListener(new DebugAgendaEventListener());
 
-        UserAccount userAccount = new UserAccount("test", LocalDateTime.now().minusDays(10),
-                RiskLevel.LOW, AccountType.SIEMOPERATER);
-        LoginLog loginLog1 = new LoginLog(new Long(1L), LogLevel.ERROR, LocalDateTime.now(), "hostAddress1",
-                HostType.App, userAccount, "ipAddress1", false);
-        LoginLog loginLog2 = new LoginLog(new Long(2L), LogLevel.ERROR, LocalDateTime.now().plusMinutes(5), "hostAddress1",
-                HostType.App, userAccount, "ipAddress1", false);
-        LoginLog loginLog3 = new LoginLog(new Long(3L), LogLevel.ERROR, LocalDateTime.now().plusMinutes(10), "hostAddress1",
-                HostType.App, userAccount, "ipAddress1", false);
+        Log loginLog1 = new Log(new Long(1L), LogLevel.ERROR, LogCategory.LOGIN, LocalDateTime.now(),
+                "username1", "hostAddress1", "login_successfull:false");
+        Log loginLog2 = new Log(new Long(2L), LogLevel.ERROR, LogCategory.LOGIN, LocalDateTime.now().plusMinutes(5),
+                "username1", "hostAddress2", "login_successfull:false");
+        Log loginLog3 = new Log(new Long(3L), LogLevel.ERROR, LogCategory.LOGIN, LocalDateTime.now().plusMinutes(10),
+                "username1", "hostAddress3", "login_successfull:false");
+        Log loginLog4 = new Log(new Long(4L), LogLevel.ERROR, LogCategory.LOGIN, LocalDateTime.now().minusDays(90),
+                "username1", "hostAddress4", "login_successfull:false");
 
-        LoginLog loginLog4 = new LoginLog(new Long(4L), LogLevel.ERROR, LocalDateTime.now().minusDays(90), "hostAddress4",
-                HostType.App, userAccount, "ipAddress4", false);
-
-        AntivirusLog antivirusLog1 = new AntivirusLog(5L, LogLevel.ERROR, LocalDateTime.now(), "hostAddress100", null);
-        AntivirusLog antivirusLog2 = new AntivirusLog(6L, LogLevel.INFO, LocalDateTime.now().plusHours(2), "hostAddress100", antivirusLog1);
+        Log antivirusLog1 = new Log(new Long(5L), LogLevel.ERROR, LogCategory.ANTIVIRUS, LocalDateTime.now(),
+                "hostAddress100", "hostAddress100", "message1");
+        Log antivirusLog2 = new Log(new Long(6L), LogLevel.INFO, LogCategory.LOGIN, LocalDateTime.now().plusHours(2),
+                "hostAddress100", "hostAddress100", "solved_log:5");
 
         kSession.insert(loginLog1);
         kSession.insert(loginLog2);
@@ -54,6 +57,37 @@ public class RuleService implements IRuleService {
         kSession.insert(loginLog4);
         kSession.insert(antivirusLog1);
         kSession.insert(antivirusLog2);
+
+        /*
+        ArrayList<String> maliciousIps = new ArrayList<>();
+        String maliciousIp = "125.6.7.8";
+        maliciousIps.add("127.0.1.0");
+        maliciousIps.add(maliciousIp);
+        kSession.setGlobal("maliciousIpAddresses", maliciousIps);
+        System.out.println("Malicious ip addresses before rules: ");
+        for (String i :
+                maliciousIps) {
+            System.out.println(i);
+        }
+        try {
+            LoginLog loginLog = new LoginLog();
+            loginLog.setIpAddress(maliciousIp);
+            loginLog.setTimestamp(LocalDateTime.of(LocalDate.of(2016, 12, 12),
+                    LocalTime.of(0, 0, 0)));
+            kSession.insert(loginLog);
+            //kSession.fireAllRules();
+
+            System.out.println("Malicious ip addresses after rules: ");
+            for (String i :
+                    maliciousIps) {
+                System.out.println(i);
+            }
+        }
+        catch (Exception e)
+        {
+            System.out.println(e.getMessage());
+        }
+        */
 
         int fired = kSession.fireAllRules();
         System.out.println("fired: " + fired);
