@@ -4,9 +4,16 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>com.sbz</groupId>
+    <parent>
+        <groupId>com.bsep_sbz</groupId>
+        <artifactId>SIEM</artifactId>
+        <version>0.0.1-SNAPSHOT</version>
+        <relativePath>../../SIEM/pom.xml</relativePath>
+    </parent>
+
+    <groupId>com.bsep_sbz</groupId>
     <artifactId>SiemCenterRules</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>0.0.1-SNAPSHOT</version>
     <name>Siem Center Rules</name>
     <packaging>jar</packaging>
 
@@ -22,6 +29,20 @@
             </plugin>
         </plugins>
     </build>
+    <!--
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+            </plugin>
+        </plugins>
+    </build>
+    -->
+
+    <!--<properties>
+        <spring-boot.repackage.skip>true</spring-boot.repackage.skip>
+    </properties>-->
 
     <dependencies>
         <dependency>
@@ -34,5 +55,13 @@
             <artifactId>drools-compiler</artifactId>
             <version>7.20.0.Final</version>
         </dependency>
+        <!--
+        <dependency>
+            <groupId>com.bsep_sbz</groupId>
+            <artifactId>SIEMCenter</artifactId>
+            <type>jar</type>
+            <version>0.0.1-SNAPSHOT</version>
+        </dependency>
+        -->
     </dependencies>
 </project>

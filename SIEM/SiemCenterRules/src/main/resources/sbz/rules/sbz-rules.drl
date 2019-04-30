@@ -1,13 +1,9 @@
+import com.bsep_sbz.SIEMCenter.model.sbz.Log;
+import com.bsep_sbz.SIEMCenter.model.sbz.enums.LogLevel;
+import com.bsep_sbz.SIEMCenter.model.sbz.enums.LogCategory;
+import com.bsep_sbz.SIEMCenter.model.sbz.AntivirusLog;
 
-/*import com.bsep.SIEMCenter.model.sbz.Log;
-import com.bsep.SIEMCenter.model.sbz.enums.LogLevel;
-import com.bsep.SIEMCenter.model.sbz.enums.LogCategory;
-import com.bsep.SIEMCenter.model.sbz.AntivirusLog*/
-
-import com.bsep.SiemCenterRules.model.Log;
-import com.bsep.SiemCenterRules.model.enums.LogLevel;
-import com.bsep.SiemCenterRules.model.enums.LogCategory;
-import com.bsep.SiemCenterRules.model.AntivirusLog
+import java.lang.Number;
 
 
 rule "Neuspesni pokusaji prijave na sistem na istoj masini 2+"
@@ -56,13 +52,22 @@ rule "Pojava loga ciji tip je ERROR"
 end
 
 
-/*rule "Pokusaj prijave na nalog koji nije bio aktivan 90+ dana"
+rule "Pokusaj prijave na nalog koji nije bio aktivan 90+ dana"
     when
-            Log(type == LogLevel.WARN, category == LogCategory.LOGIN, getDaysOfInactivity() >= 90)
-
+        Log(category == LogCategory.LOGIN, $s: source, $ts: timestamp) // source je u ovom slucaju username
+        Number(Log.getDaysOfInactivity(longValue, $ts.getTime()) >= 90) from accumulate(
+                                    $l: Log(
+                                        category == LogCategory.LOGIN,
+                                        source == $s,
+                                        timestamp != $ts,
+                                        $ts2: timestamp //,
+                                        //message.contains("login_successfull:false")
+                                    ),
+                                    max($ts2.getTime())
+                                )
     then
         System.out.println("Nije bio aktivan 90+ dana");
-end*/
+end
 
 /*rule "Pojava loga u kome antivirus registruje pretnju, a da u roku od 1h se ne generise log o uspesnom eliminisanju pretnje"
     when
