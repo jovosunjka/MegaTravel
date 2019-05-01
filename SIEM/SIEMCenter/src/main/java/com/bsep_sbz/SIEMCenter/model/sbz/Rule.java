@@ -1,8 +1,5 @@
 package com.bsep_sbz.SIEMCenter.model.sbz;
 
-
-
-
 import com.bsep_sbz.SIEMCenter.model.sbz.enums.LogicalOperator;
 
 import java.util.List;

@@ -1,18 +1,17 @@
 package com.bsep_sbz.SIEMCenter.model.sbz;
 
-
-
-
 import com.bsep_sbz.SIEMCenter.model.sbz.enums.AccountType;
 import com.bsep_sbz.SIEMCenter.model.sbz.enums.RiskLevel;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 public class UserAccount {
     private String username;
     private LocalDateTime lastLoginTimestamp;
     private RiskLevel riskLevel;
     private AccountType accountType;
+    private List<Alarm> alarms;
 
     public UserAccount() {
 
@@ -55,5 +54,13 @@ public class UserAccount {
 
     public void setAccountType(AccountType accountType) {
         this.accountType = accountType;
+    }
+
+    public List<Alarm> getAlarms() {
+        return alarms;
+    }
+
+    public void setAlarms(List<Alarm> alarms) {
+        this.alarms = alarms;
     }
 }

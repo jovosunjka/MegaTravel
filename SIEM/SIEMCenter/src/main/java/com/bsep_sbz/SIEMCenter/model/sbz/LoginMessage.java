@@ -1,20 +1,13 @@
 package com.bsep_sbz.SIEMCenter.model.sbz;
 
-
 import com.bsep_sbz.SIEMCenter.model.sbz.enums.HostType;
 
-
-import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
-
-
-public class LoginLog extends Log {
+public class LoginMessage extends Message {
     private HostType hostType;
-    private UserAccount userAccount;
     private String ipAddress;
-    private boolean successful;
+    private boolean isSuccessful;
 
-    public LoginLog() {
+    public LoginMessage() {
 
     }
 
@@ -26,14 +19,6 @@ public class LoginLog extends Log {
         this.hostType = hostType;
     }
 
-    public UserAccount getUserAccount() {
-        return userAccount;
-    }
-
-    public void setUserAccount(UserAccount userAccount) {
-        this.userAccount = userAccount;
-    }
-
     public String getIpAddress() {
         return ipAddress;
     }
@@ -43,10 +28,10 @@ public class LoginLog extends Log {
     }
 
     public boolean isSuccessful() {
-        return successful;
+        return isSuccessful;
     }
 
     public void setSuccessful(boolean successful) {
-        successful = successful;
+        isSuccessful = successful;
     }
 }

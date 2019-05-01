@@ -1,28 +1,24 @@
 package com.bsep_sbz.SIEMCenter.model.sbz;
 
 
-import com.bsep_sbz.SIEMCenter.model.sbz.enums.LogCategory;
 import com.bsep_sbz.SIEMCenter.model.sbz.enums.LogLevel;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.time.Instant;
-import java.time.LocalDateTime;
-import java.time.ZoneOffset;
-import java.time.temporal.ChronoUnit;
 import java.util.Date;
 import java.util.Objects;
-import java.time.ZoneId;
 import java.util.concurrent.TimeUnit;
 
 public class Log {
     private Long id;
     private LogLevel type;
-    private LogCategory category;
     private Date timestamp;
-    private String source;
+    // username is read from log, other data is loaded from db
+    private UserAccount userAccount;
     private String hostAddress;
-    private String message;
+    private Message message;
+    // used for antivirus logs
+    private Log relatedLog;
 
     private final SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yyyy. HH:mm:ss");
 
@@ -30,16 +26,14 @@ public class Log {
 
     }
 
-    public Log(Long id, LogLevel type, LogCategory category, String timestampStr, String source, String hostAddress, String message) {
+    public Log(Long id, LogLevel type, String timestampStr, String hostAddress, Message message) {
         this.id = id;
         this.type = type;
-        this.category = category;
         try {
             this.timestamp = sdf.parse(timestampStr);
         } catch (ParseException e) {
             e.printStackTrace();
         }
-        this.source = source;
         this.hostAddress = hostAddress;
         this.message = message;
     }
@@ -52,6 +46,13 @@ public class Log {
         return diff;
     }
 
+    public UserAccount getUserAccount() {
+        return userAccount;
+    }
+
+    public void setUserAccount(UserAccount userAccount) {
+        this.userAccount = userAccount;
+    }
 
     public Long getId() {
         return id;
@@ -67,14 +68,6 @@ public class Log {
 
     public void setType(LogLevel type) {
         this.type = type;
-    }
-
-    public LogCategory getCategory() {
-        return category;
-    }
-
-    public void setCategory(LogCategory category) {
-        this.category = category;
     }
 
     /*public LocalDateTime getTimestamp() {
@@ -94,14 +87,6 @@ public class Log {
         this.timestamp = timestamp;
     }
 
-    public String getSource() {
-        return source;
-    }
-
-    public void setSource(String source) {
-        this.source = source;
-    }
-
     public String getHostAddress() {
         return hostAddress;
     }
@@ -110,11 +95,11 @@ public class Log {
         this.hostAddress = hostAddress;
     }
 
-    public String getMessage() {
+    public Message getMessage() {
         return message;
     }
 
-    public void setMessage(String message) {
+    public void setMessage(Message message) {
         this.message = message;
     }
 
@@ -125,15 +110,13 @@ public class Log {
         Log log = (Log) o;
         return id.equals(log.id) &&
                 type == log.type &&
-                category == log.category &&
                 timestamp.equals(log.timestamp) &&
-                source.equals(log.source) &&
                 hostAddress.equals(log.hostAddress) &&
                 message.equals(log.message);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, type, category, timestamp, source, hostAddress, message);
+        return Objects.hash(id, type, timestamp, hostAddress, message);
     }
 }

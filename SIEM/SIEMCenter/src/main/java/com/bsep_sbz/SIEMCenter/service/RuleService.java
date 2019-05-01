@@ -2,8 +2,8 @@ package com.bsep_sbz.SIEMCenter.service;
 
 
 import com.bsep_sbz.SIEMCenter.model.sbz.Log;
-import com.bsep_sbz.SIEMCenter.model.sbz.enums.LogCategory;
 import com.bsep_sbz.SIEMCenter.model.sbz.enums.LogLevel;
+import com.bsep_sbz.SIEMCenter.model.sbz.enums.MessageType;
 import com.bsep_sbz.SIEMCenter.service.interfaces.IRuleService;
 import com.bsep_sbz.SIEMCenter.util.DebugAgendaEventListener;
 import com.bsep_sbz.SIEMCenter.util.KnowledgeSessionHelper;
@@ -37,18 +37,18 @@ public class RuleService implements IRuleService {
 
         kSession.addEventListener(new DebugAgendaEventListener());
 
-        Log loginLog1 = new Log(new Long(1L), LogLevel.ERROR, LogCategory.LOGIN, dtf.format(LocalDateTime.now()),
+        Log loginLog1 = new Log(new Long(1L), LogLevel.ERROR, MessageType.LOGIN, dtf.format(LocalDateTime.now()),
                 "username1", "hostAddress1", "login_successfull:false");
-        Log loginLog2 = new Log(new Long(2L), LogLevel.ERROR, LogCategory.LOGIN, dtf.format(LocalDateTime.now().plusMinutes(5)),
+        Log loginLog2 = new Log(new Long(2L), LogLevel.ERROR, MessageType.LOGIN, dtf.format(LocalDateTime.now().plusMinutes(5)),
                 "username1", "hostAddress2", "login_successfull:false");
-        Log loginLog3 = new Log(new Long(3L), LogLevel.ERROR, LogCategory.LOGIN, dtf.format(LocalDateTime.now().plusMinutes(10)),
+        Log loginLog3 = new Log(new Long(3L), LogLevel.ERROR, MessageType.LOGIN, dtf.format(LocalDateTime.now().plusMinutes(10)),
                 "username1", "hostAddress3", "login_successfull:false");
-        Log loginLog4 = new Log(new Long(4L), LogLevel.ERROR, LogCategory.LOGIN, dtf.format(LocalDateTime.now().minusDays(91)),
+        Log loginLog4 = new Log(new Long(4L), LogLevel.ERROR, MessageType.LOGIN, dtf.format(LocalDateTime.now().minusDays(91)),
                 "username1", "hostAddress4", "login_successfull:false");
 
-        Log antivirusLog1 = new Log(new Long(5L), LogLevel.ERROR, LogCategory.ANTIVIRUS, dtf.format(LocalDateTime.now()),
+        Log antivirusLog1 = new Log(new Long(5L), LogLevel.ERROR, MessageType.ANTIVIRUS, dtf.format(LocalDateTime.now()),
                 "hostAddress100", "hostAddress100", "message1");
-        Log antivirusLog2 = new Log(new Long(6L), LogLevel.INFO, LogCategory.LOGIN, dtf.format(LocalDateTime.now().plusHours(2)),
+        Log antivirusLog2 = new Log(new Long(6L), LogLevel.INFO, MessageType.LOGIN, dtf.format(LocalDateTime.now().plusHours(2)),
                 "hostAddress100", "hostAddress100", "solved_log:5");
 
         kSession.insert(loginLog1);
@@ -70,7 +70,7 @@ public class RuleService implements IRuleService {
             System.out.println(i);
         }
         try {
-            LoginLog loginLog = new LoginLog();
+            LoginMessage loginLog = new LoginMessage();
             loginLog.setIpAddress(maliciousIp);
             loginLog.setTimestamp(LocalDateTime.of(LocalDate.of(2016, 12, 12),
                     LocalTime.of(0, 0, 0)));
