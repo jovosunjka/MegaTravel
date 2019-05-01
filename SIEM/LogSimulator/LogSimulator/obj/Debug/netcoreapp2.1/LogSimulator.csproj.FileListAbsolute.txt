@@ -1,0 +1,12 @@
+C:\Projects\Intellij\new_bsep_sbz\bsep_sbz\SIEM\LogSimulator\LogSimulator\bin\Debug\netcoreapp2.1\appsettings.json
+C:\Projects\Intellij\new_bsep_sbz\bsep_sbz\SIEM\LogSimulator\LogSimulator\bin\Debug\netcoreapp2.1\LogSimulator.deps.json
+C:\Projects\Intellij\new_bsep_sbz\bsep_sbz\SIEM\LogSimulator\LogSimulator\bin\Debug\netcoreapp2.1\LogSimulator.runtimeconfig.json
+C:\Projects\Intellij\new_bsep_sbz\bsep_sbz\SIEM\LogSimulator\LogSimulator\bin\Debug\netcoreapp2.1\LogSimulator.runtimeconfig.dev.json
+C:\Projects\Intellij\new_bsep_sbz\bsep_sbz\SIEM\LogSimulator\LogSimulator\bin\Debug\netcoreapp2.1\LogSimulator.dll
+C:\Projects\Intellij\new_bsep_sbz\bsep_sbz\SIEM\LogSimulator\LogSimulator\bin\Debug\netcoreapp2.1\LogSimulator.pdb
+C:\Projects\Intellij\new_bsep_sbz\bsep_sbz\SIEM\LogSimulator\LogSimulator\obj\Debug\netcoreapp2.1\LogSimulator.csprojAssemblyReference.cache
+C:\Projects\Intellij\new_bsep_sbz\bsep_sbz\SIEM\LogSimulator\LogSimulator\obj\Debug\netcoreapp2.1\LogSimulator.csproj.CoreCompileInputs.cache
+C:\Projects\Intellij\new_bsep_sbz\bsep_sbz\SIEM\LogSimulator\LogSimulator\obj\Debug\netcoreapp2.1\LogSimulator.AssemblyInfoInputs.cache
+C:\Projects\Intellij\new_bsep_sbz\bsep_sbz\SIEM\LogSimulator\LogSimulator\obj\Debug\netcoreapp2.1\LogSimulator.AssemblyInfo.cs
+C:\Projects\Intellij\new_bsep_sbz\bsep_sbz\SIEM\LogSimulator\LogSimulator\obj\Debug\netcoreapp2.1\LogSimulator.dll
+C:\Projects\Intellij\new_bsep_sbz\bsep_sbz\SIEM\LogSimulator\LogSimulator\obj\Debug\netcoreapp2.1\LogSimulator.pdb
