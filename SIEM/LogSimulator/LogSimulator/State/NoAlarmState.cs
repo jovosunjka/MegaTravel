@@ -1,15 +1,14 @@
-﻿using LogSimulator.Helper;
-using System.IO;
+﻿using LogSimulator.Service.Interface;
 
 namespace LogSimulator.State
 {
     public class NoAlarmState : IState
     {
-        public string Description => Constants.StateDescription.NoAlarm;
+        public string Description => Helper.Constants.StateDescription.NoAlarm;
 
-        public void Simulate(string logFilePath)
+        public void Simulate(IAppSettings appSettings)
         {
-            File.AppendAllText(logFilePath, $"{Constants.StateDescription.NoAlarm} started\n");
+            System.IO.File.AppendAllText(appSettings.LogsFilePath, $"Some ordinary log\n");
         }
     }
 }

@@ -2,9 +2,7 @@
 using LogSimulator.Model.Enum;
 using LogSimulator.Service.Interface;
 using LogSimulator.State;
-using Microsoft.Extensions.Configuration;
 using System;
-using System.IO;
 using System.Threading;
 
 namespace LogSimulator.Service
@@ -15,10 +13,10 @@ namespace LogSimulator.Service
         private IState _currentState;
 
         public ManualStateService(
-            IConfigurationRoot configurationRoot,
+            IAppSettings appSettings,
             IViewService viewService,
             IStateFactory stateFactory)
-            : base(configurationRoot, viewService, stateFactory)
+            : base(appSettings, viewService, stateFactory)
         {
         }
 
@@ -82,9 +80,7 @@ namespace LogSimulator.Service
             {
                 return;
             }
-            var logFolder = _configurationRoot.GetSection("Path")["LogFolderPath"];
-            var logFilePath = Path.Combine(logFolder, $"Logs_{DateTime.UtcNow.ToShortDateString()}.txt");
-            _currentState.Simulate(logFilePath);
+            _currentState.Simulate(_appSettings);
         }
     }
 }

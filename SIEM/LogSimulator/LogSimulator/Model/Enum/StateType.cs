@@ -3,6 +3,10 @@
     public enum StateType
     {
         NoAlarm = 0,
-        LogError
+        LogError,
+        UnsuccessfulLoginsOnDiffHostsWithSameIp,
+        SameUsernameLoginOnDiffHostsWithDiffIp,
+        AntivirusThreatsOnSameHost,
+        LoginWithMaliciousIp
     }
 }

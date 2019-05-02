@@ -9,13 +9,15 @@ namespace LogSimulator.Service
         private readonly IRandomStateService _randomStateService;
         private readonly IViewService _viewService;
 
-        public MasterService(IConfigurationRoot configurationRoot)
+        public MasterService()
         {
             // DI simulation
-            _viewService = new ViewService();
-            var stateFactory = new StateFactory(configurationRoot);
-            _manualStateService = new ManualStateService(configurationRoot, _viewService, stateFactory);
-            _randomStateService = new RandomStateService(configurationRoot, _viewService, stateFactory);
+            var appSettings = new AppSettings();
+            var stateService = new StateService();
+            _viewService = new ViewService(stateService);
+            var stateFactory = new StateFactory(appSettings, stateService);
+            _manualStateService = new ManualStateService(appSettings, _viewService, stateFactory);
+            _randomStateService = new RandomStateService(appSettings, _viewService, stateFactory);
         }
 
         public void Start()

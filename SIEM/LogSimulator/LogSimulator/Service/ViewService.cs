@@ -6,6 +6,13 @@ namespace LogSimulator.Service
 {
     public class ViewService : IViewService
     {
+        private readonly IStateService _stateService;
+
+        public ViewService(IStateService stateService)
+        {
+            _stateService = stateService;
+        }
+
         public void ShowHeader()
         {
             Console.WriteLine("*****************************");
@@ -50,9 +57,11 @@ namespace LogSimulator.Service
             Console.WriteLine();
             Console.WriteLine();
             Console.WriteLine("Choose an option:");
-            Console.WriteLine($"1) {Constants.StateDescription.NoAlarm}");
-            Console.WriteLine($"2) {Constants.StateDescription.LogError}");
-            Console.WriteLine("3) << Back");
+            for(int i=0; i < _stateService.StateDescriptions.Count; i++)
+            {
+                Console.WriteLine($"{i+1}) {_stateService.StateDescriptions[i]} state");
+            }
+            Console.WriteLine($"{_stateService.StateDescriptions.Count + 1}) << Back");
             Console.Write("Option number >> ");
         }
 

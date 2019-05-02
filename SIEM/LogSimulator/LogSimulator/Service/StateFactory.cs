@@ -2,18 +2,20 @@
 using LogSimulator.Model.Enum;
 using LogSimulator.Service.Interface;
 using LogSimulator.State;
-using Microsoft.Extensions.Configuration;
 using System;
+using System.Linq;
 
 namespace LogSimulator.Service
 {
     public class StateFactory : IStateFactory
     {
-        private readonly IConfigurationRoot _configurationRoot;
+        private readonly IAppSettings _appSettings;
+        private readonly IStateService _stateService;
 
-        public StateFactory(IConfigurationRoot configurationRoot)
+        public StateFactory(IAppSettings appSettings, IStateService stateService)
         {
-            _configurationRoot = configurationRoot;
+            _appSettings = appSettings;
+            _stateService = stateService;
         }
 
         private static int _counter = 1;
@@ -23,7 +25,7 @@ namespace LogSimulator.Service
             try
             {
                 var stateType = StateType.NoAlarm;
-                var alarmPossibility = int.Parse(_configurationRoot.GetSection("AppConfiguration")["AlarmPossibility"]);
+                var alarmPossibility = int.Parse(_appSettings.AlarmPossibility);
                 // make lower chance for some alarm state
                 if (_counter % alarmPossibility == 0)
                 {
@@ -41,15 +43,9 @@ namespace LogSimulator.Service
 
         public IState GetState(StateType stateType)
         {
-            switch(stateType)
-            {
-                case StateType.NoAlarm:
-                    return new NoAlarmState();
-                case StateType.LogError:
-                    return new LogErrorState();
-                default:
-                    throw new NoValidStateException();
-            }
+            var stateName = stateType.ToString() + Constants.State;
+            var type = _stateService.StateTypes.First(x => x.Name.Equals(stateName));
+            return (IState)Activator.CreateInstance(type);
         }
     }
 }

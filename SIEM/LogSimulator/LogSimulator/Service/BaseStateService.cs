@@ -1,5 +1,4 @@
 ﻿using LogSimulator.Service.Interface;
-using Microsoft.Extensions.Configuration;
 
 namespace LogSimulator.Service
 {
@@ -7,14 +6,14 @@ namespace LogSimulator.Service
     {
         protected readonly IViewService _viewService;
         protected readonly IStateFactory _stateFactory;
-        protected readonly IConfigurationRoot _configurationRoot;
+        protected readonly IAppSettings _appSettings;
 
         protected BaseStateService(
-            IConfigurationRoot configurationRoot,
+            IAppSettings appSettings,
             IViewService viewService,
             IStateFactory stateFactory)
         {
-            _configurationRoot = configurationRoot;
+            _appSettings = appSettings;
             _viewService = viewService;
             _stateFactory = stateFactory;
         }

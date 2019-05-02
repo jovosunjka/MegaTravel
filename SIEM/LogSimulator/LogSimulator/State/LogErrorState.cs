@@ -1,15 +1,14 @@
-﻿using LogSimulator.Helper;
-using System.IO;
+﻿using LogSimulator.Service.Interface;
 
 namespace LogSimulator.State
 {
     public class LogErrorState : IState
     {
-        public string Description => Constants.StateDescription.LogError;
+        public string Description => Helper.Constants.StateDescription.LogError;
 
-        public void Simulate(string logFilePath)
+        public void Simulate(IAppSettings appSettings)
         {
-            File.AppendAllText(logFilePath, $"{Helper.Constants.StateDescription.LogError} started\n");
+            System.IO.File.AppendAllText(appSettings.LogsFilePath, $"ERROR\n");
         }
     }
 }

@@ -1,7 +1,5 @@
 ﻿using LogSimulator.Service.Interface;
-using Microsoft.Extensions.Configuration;
 using System;
-using System.IO;
 using System.Threading;
 
 namespace LogSimulator.Service
@@ -9,10 +7,10 @@ namespace LogSimulator.Service
     public class RandomStateService : BaseStateService, IRandomStateService
     {
         public RandomStateService(
-            IConfigurationRoot configurationRoot, 
+            IAppSettings appSettings, 
             IViewService viewService, 
             IStateFactory stateFactory) 
-            : base(configurationRoot, viewService, stateFactory)
+            : base(appSettings, viewService, stateFactory)
         {
         }
 
@@ -30,9 +28,7 @@ namespace LogSimulator.Service
 
         private void StartRandomService(object cancellationToken)
         {
-            var logFolder = _configurationRoot.GetSection("Path")["LogFolderPath"];
-            var logFilePath = Path.Combine(logFolder, $"Logs_{DateTime.UtcNow.ToShortDateString()}.txt");
-            var sleepMilliseconds = int.Parse(_configurationRoot.GetSection("AppConfiguration")["SleepMilliseconds"]);
+            var sleepMilliseconds = int.Parse(_appSettings.SleepMilliseconds);
             while (true)
             {
                 if(((CancellationToken)cancellationToken).IsCancellationRequested)
@@ -40,7 +36,7 @@ namespace LogSimulator.Service
                     return;
                 }
                 var currentState = _stateFactory.GetRandomState();
-                currentState.Simulate(logFilePath);
+                currentState.Simulate(_appSettings);
                 Thread.Sleep(sleepMilliseconds);
             }
         }
