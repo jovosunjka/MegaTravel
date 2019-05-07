@@ -9,8 +9,9 @@ namespace LogSimulator.Service
         public RandomStateService(
             IAppSettings appSettings, 
             IViewService viewService, 
-            IStateFactory stateFactory) 
-            : base(appSettings, viewService, stateFactory)
+            IStateFactory stateFactory,
+            ILogService logService) 
+            : base(appSettings, viewService, stateFactory, logService)
         {
         }
 
@@ -36,7 +37,7 @@ namespace LogSimulator.Service
                     return;
                 }
                 var currentState = _stateFactory.GetRandomState();
-                currentState.Simulate(_appSettings);
+                currentState.Simulate(_appSettings, _logService);
                 Thread.Sleep(sleepMilliseconds);
             }
         }

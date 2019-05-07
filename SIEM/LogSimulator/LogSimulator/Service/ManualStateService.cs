@@ -15,8 +15,9 @@ namespace LogSimulator.Service
         public ManualStateService(
             IAppSettings appSettings,
             IViewService viewService,
-            IStateFactory stateFactory)
-            : base(appSettings, viewService, stateFactory)
+            IStateFactory stateFactory,
+            ILogService logService)
+            : base(appSettings, viewService, stateFactory, logService)
         {
         }
 
@@ -80,7 +81,7 @@ namespace LogSimulator.Service
             {
                 return;
             }
-            _currentState.Simulate(_appSettings);
+            _currentState.Simulate(_appSettings, _logService);
         }
     }
 }

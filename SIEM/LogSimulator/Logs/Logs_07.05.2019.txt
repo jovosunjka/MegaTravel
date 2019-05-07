@@ -1,0 +1,316 @@
+5|5|5/7/2019 12:59:09 PM|INFO|Tickets for flight '9334' successfully retrieved
+6|6|5/7/2019 12:59:09 PM|INFO|User with username 'luser123' buys bussines ticket for flight '9334'
+7|7|5/7/2019 12:59:09 PM|INFO|Transaction successfully passed for user with username 'LogSimulator.Service.AppSettings' for flight '9334'
+1|1|5/7/2019 1:03:18 PM|INFO|User with username 'luser123' choses fly from 'london' to 'moscow'
+2|2|5/7/2019 1:03:18 PM|INFO|User with username 'luser123' filters results with params '< 300$' and 'discount'
+3|3|5/7/2019 1:03:24 PM|INFO|Tickets for flight '7359' successfully retrieved
+4|4|5/7/2019 1:03:24 PM|INFO|User with username 'luser123' buys bussines ticket for flight '7359'
+5|5|5/7/2019 1:03:24 PM|INFO|Transaction successfully passed for user with username 'luser123' for flight '7359'
+6|6|5/7/2019 1:06:16 PM|INFO|Tickets for flight '4133' successfully retrieved
+7|7|5/7/2019 1:06:16 PM|INFO|User with username 'luser123' buys bussines ticket for flight '4133'
+8|8|5/7/2019 1:06:16 PM|INFO|Transaction successfully passed for user with username 'luser123' for flight '4133'
+9|9|5/7/2019 1:06:23 PM|INFO|Tickets for flight '8803' successfully retrieved
+10|10|5/7/2019 1:06:23 PM|INFO|User with username 'luser123' buys bussines ticket for flight '8803'
+11|11|5/7/2019 1:06:23 PM|INFO|Transaction successfully passed for user with username 'luser123' for flight '8803'
+12|12|5/7/2019 1:06:30 PM|INFO|Login attempt with username 'luser123' from ip address '195.57.27.32'
+13|13|5/7/2019 1:06:30 PM|INFO|Login attempt with username 'luser123' from ip address '195.57.27.32'
+14|14|5/7/2019 1:06:30 PM|INFO|Login attempt with username 'luser123' from ip address '195.57.27.32'
+15|15|5/7/2019 1:06:30 PM|INFO|Login attempt with username 'luser123' from ip address '195.57.27.32'
+16|16|5/7/2019 1:06:31 PM|INFO|Login attempt with username 'luser123' from ip address '195.57.27.32'
+17|17|5/7/2019 1:06:31 PM|INFO|Login attempt with username 'luser123' from ip address '195.57.27.32'
+18|18|5/7/2019 1:06:31 PM|INFO|Login attempt with username 'luser123' from ip address '195.57.27.32'
+19|19|5/7/2019 1:06:31 PM|INFO|Login attempt with username 'luser123' from ip address '195.57.27.32'
+20|20|5/7/2019 1:06:31 PM|INFO|Login attempt with username 'luser123' from ip address '195.57.27.32'
+21|21|5/7/2019 1:06:31 PM|INFO|Login attempt with username 'luser123' from ip address '195.57.27.32'
+22|22|5/7/2019 1:06:31 PM|INFO|Login attempt with username 'luser123' from ip address '195.57.27.32'
+23|23|5/7/2019 1:06:31 PM|INFO|Login attempt with username 'luser123' from ip address '195.57.27.32'
+24|24|5/7/2019 1:06:31 PM|INFO|Login attempt with username 'luser123' from ip address '195.57.27.32'
+25|25|5/7/2019 1:06:31 PM|INFO|Login attempt with username 'luser123' from ip address '195.57.27.32'
+26|26|5/7/2019 1:06:31 PM|INFO|Login attempt with username 'luser123' from ip address '195.57.27.32'
+27|27|5/7/2019 1:06:34 PM|INFO|User with username 'luser123' choses fly from 'london' to 'moscow'
+28|28|5/7/2019 1:06:34 PM|INFO|User with username 'luser123' filters results with params '< 300$' and 'discount'
+29|29|5/7/2019 1:06:39 PM|INFO|Tickets for flight '3197' successfully retrieved
+30|30|5/7/2019 1:06:39 PM|INFO|User with username 'luser123' buys bussines ticket for flight '3197'
+31|31|5/7/2019 1:06:39 PM|INFO|Transaction successfully passed for user with username 'luser123' for flight '3197'
+32|32|5/7/2019 1:06:46 PM|INFO|Login attempt with username 'h@cker' from ip address '127.0.1.3'
+33|33|5/7/2019 1:06:49 PM|INFO|User with username 'luser123' sends question
+34|34|5/7/2019 1:06:49 PM|INFO|Message successfully sent on email ask@megatravel.com
+35|35|5/7/2019 1:06:53 PM|INFO|Tickets for flight '4201' successfully retrieved
+36|36|5/7/2019 1:06:53 PM|INFO|User with username 'luser123' buys bussines ticket for flight '4201'
+37|37|5/7/2019 1:06:53 PM|INFO|Transaction successfully passed for user with username 'luser123' for flight '4201'
+38|38|5/7/2019 1:07:00 PM|WARN|Anstivirus found threat with id '1'
+39|39|5/7/2019 1:07:00 PM|WARN|Anstivirus found threat with id '2'
+40|40|5/7/2019 1:07:00 PM|WARN|Anstivirus found threat with id '3'
+41|41|5/7/2019 1:07:04 PM|INFO|User with username 'luser123' choses fly from 'london' to 'moscow'
+42|42|5/7/2019 1:07:04 PM|INFO|User with username 'luser123' filters results with params '< 300$' and 'discount'
+43|43|5/7/2019 1:07:09 PM|INFO|User with username 'luser123' choses fly from 'london' to 'moscow'
+44|44|5/7/2019 1:07:09 PM|INFO|User with username 'luser123' filters results with params '< 300$' and 'discount'
+45|45|5/7/2019 1:07:15 PM|INFO|Login attempt with username 'h@cker' from ip address '127.0.1.3'
+46|46|5/7/2019 1:07:18 PM|INFO|Tickets for flight '7531' successfully retrieved
+47|47|5/7/2019 1:07:18 PM|INFO|User with username 'luser123' buys bussines ticket for flight '7531'
+48|48|5/7/2019 1:07:18 PM|INFO|Transaction successfully passed for user with username 'luser123' for flight '7531'
+49|49|5/7/2019 1:07:25 PM|INFO|User with username 'luser123' sends question
+50|50|5/7/2019 1:07:25 PM|INFO|Message successfully sent on email ask@megatravel.com
+51|51|5/7/2019 1:07:29 PM|INFO|Login attempt with username 'h@cker' from ip address '127.0.1.3'
+52|52|5/7/2019 1:07:32 PM|INFO|User with username 'luser123' choses fly from 'london' to 'moscow'
+53|53|5/7/2019 1:07:32 PM|INFO|User with username 'luser123' filters results with params '< 300$' and 'discount'
+54|54|5/7/2019 1:07:37 PM|INFO|Tickets for flight '8632' successfully retrieved
+55|55|5/7/2019 1:07:37 PM|INFO|User with username 'luser123' buys bussines ticket for flight '8632'
+56|56|5/7/2019 1:07:37 PM|INFO|Transaction successfully passed for user with username 'luser123' for flight '8632'
+57|57|5/7/2019 1:07:44 PM|INFO|Login attempt with username 'h@cker' from ip address '127.0.1.3'
+58|58|5/7/2019 1:07:47 PM|INFO|Tickets for flight '9083' successfully retrieved
+59|59|5/7/2019 1:07:47 PM|INFO|User with username 'luser123' buys bussines ticket for flight '9083'
+60|60|5/7/2019 1:07:47 PM|INFO|Transaction successfully passed for user with username 'luser123' for flight '9083'
+61|61|5/7/2019 1:07:55 PM|INFO|Tickets for flight '9553' successfully retrieved
+62|62|5/7/2019 1:07:55 PM|INFO|User with username 'luser123' buys bussines ticket for flight '9553'
+63|63|5/7/2019 1:07:55 PM|INFO|Transaction successfully passed for user with username 'luser123' for flight '9553'
+64|64|5/7/2019 1:08:02 PM|ERROR|Exception in thread main java.lang.NullPointerException
+65|64|5/7/2019 1:08:02 PM|TRACE|at com.example.myproject.Flight.getTitle(Flight.java:16)
+66|64|5/7/2019 1:08:02 PM|TRACE|at com.example.myproject.Ticket.getBookTitles(Ticket.java:25)
+67|67|5/7/2019 1:08:05 PM|INFO|User with username 'luser123' sends question
+68|68|5/7/2019 1:08:05 PM|INFO|Message successfully sent on email ask@megatravel.com
+69|69|5/7/2019 1:08:09 PM|INFO|User with username 'luser123' choses fly from 'london' to 'moscow'
+70|70|5/7/2019 1:08:09 PM|INFO|User with username 'luser123' filters results with params '< 300$' and 'discount'
+71|71|5/7/2019 1:08:14 PM|ERROR|Exception in thread main java.lang.NullPointerException
+72|71|5/7/2019 1:08:14 PM|TRACE|at com.example.myproject.Flight.getTitle(Flight.java:16)
+73|71|5/7/2019 1:08:14 PM|TRACE|at com.example.myproject.Ticket.getBookTitles(Ticket.java:25)
+74|74|5/7/2019 1:08:17 PM|INFO|User with username 'luser123' choses fly from 'london' to 'moscow'
+75|75|5/7/2019 1:08:17 PM|INFO|User with username 'luser123' filters results with params '< 300$' and 'discount'
+76|76|5/7/2019 1:08:23 PM|INFO|User with username 'luser123' sends question
+77|77|5/7/2019 1:08:23 PM|INFO|Message successfully sent on email ask@megatravel.com
+78|78|5/7/2019 1:08:27 PM|INFO|Login success with username 'luser123' from ip address '195.57.27.32'
+79|79|5/7/2019 1:08:30 PM|INFO|User with username 'luser123' sends question
+80|80|5/7/2019 1:08:30 PM|INFO|Message successfully sent on email ask@megatravel.com
+81|81|5/7/2019 1:08:34 PM|INFO|User with username 'luser123' sends question
+82|82|5/7/2019 1:08:34 PM|INFO|Message successfully sent on email ask@megatravel.com
+83|83|5/7/2019 1:08:38 PM|ERROR|Exception in thread main java.lang.NullPointerException
+84|83|5/7/2019 1:08:38 PM|TRACE|at com.example.myproject.Flight.getTitle(Flight.java:16)
+85|83|5/7/2019 1:08:38 PM|TRACE|at com.example.myproject.Ticket.getBookTitles(Ticket.java:25)
+86|86|5/7/2019 1:08:41 PM|INFO|User with username 'luser123' sends question
+87|87|5/7/2019 1:08:41 PM|INFO|Message successfully sent on email ask@megatravel.com
+88|88|5/7/2019 1:08:45 PM|INFO|Tickets for flight '9707' successfully retrieved
+89|89|5/7/2019 1:08:45 PM|INFO|User with username 'luser123' buys bussines ticket for flight '9707'
+90|90|5/7/2019 1:08:45 PM|INFO|Transaction successfully passed for user with username 'luser123' for flight '9707'
+91|91|5/7/2019 1:08:52 PM|WARN|Anstivirus found threat with id '4'
+92|92|5/7/2019 1:08:52 PM|WARN|Anstivirus found threat with id '5'
+93|93|5/7/2019 1:08:52 PM|WARN|Anstivirus found threat with id '6'
+94|94|5/7/2019 1:08:55 PM|INFO|Tickets for flight '9507' successfully retrieved
+95|95|5/7/2019 1:08:55 PM|INFO|User with username 'luser123' buys bussines ticket for flight '9507'
+96|96|5/7/2019 1:08:55 PM|INFO|Transaction successfully passed for user with username 'luser123' for flight '9507'
+97|97|5/7/2019 1:09:02 PM|INFO|User with username 'luser123' sends question
+98|98|5/7/2019 1:09:02 PM|INFO|Message successfully sent on email ask@megatravel.com
+99|99|5/7/2019 1:09:06 PM|INFO|Login success with username 'luser123' from ip address '195.57.27.32'
+100|100|5/7/2019 1:09:09 PM|INFO|Tickets for flight '3291' successfully retrieved
+101|101|5/7/2019 1:09:09 PM|INFO|User with username 'luser123' buys bussines ticket for flight '3291'
+102|102|5/7/2019 1:09:09 PM|INFO|Transaction successfully passed for user with username 'luser123' for flight '3291'
+103|103|5/7/2019 1:09:16 PM|INFO|Tickets for flight '8007' successfully retrieved
+104|104|5/7/2019 1:09:16 PM|INFO|User with username 'luser123' buys bussines ticket for flight '8007'
+105|105|5/7/2019 1:09:16 PM|INFO|Transaction successfully passed for user with username 'luser123' for flight '8007'
+106|106|5/7/2019 1:09:23 PM|ERROR|Exception in thread main java.lang.NullPointerException
+107|106|5/7/2019 1:09:23 PM|TRACE|at com.example.myproject.Flight.getTitle(Flight.java:16)
+108|106|5/7/2019 1:09:23 PM|TRACE|at com.example.myproject.Ticket.getBookTitles(Ticket.java:25)
+109|109|5/7/2019 1:09:26 PM|INFO|User with username 'luser123' choses fly from 'london' to 'moscow'
+110|110|5/7/2019 1:09:26 PM|INFO|User with username 'luser123' filters results with params '< 300$' and 'discount'
+111|111|5/7/2019 1:09:32 PM|INFO|User with username 'luser123' sends question
+112|112|5/7/2019 1:09:32 PM|INFO|Message successfully sent on email ask@megatravel.com
+113|113|5/7/2019 1:09:36 PM|ERROR|Exception in thread main java.lang.NullPointerException
+114|113|5/7/2019 1:09:36 PM|TRACE|at com.example.myproject.Flight.getTitle(Flight.java:16)
+115|113|5/7/2019 1:09:36 PM|TRACE|at com.example.myproject.Ticket.getBookTitles(Ticket.java:25)
+116|116|5/7/2019 1:09:39 PM|INFO|User with username 'luser123' sends question
+117|117|5/7/2019 1:09:39 PM|INFO|Message successfully sent on email ask@megatravel.com
+118|118|5/7/2019 1:09:43 PM|INFO|User with username 'luser123' choses fly from 'london' to 'moscow'
+119|119|5/7/2019 1:09:43 PM|INFO|User with username 'luser123' filters results with params '< 300$' and 'discount'
+120|120|5/7/2019 1:09:48 PM|WARN|Anstivirus found threat with id '7'
+121|121|5/7/2019 1:09:48 PM|WARN|Anstivirus found threat with id '8'
+122|122|5/7/2019 1:09:48 PM|WARN|Anstivirus found threat with id '9'
+123|123|5/7/2019 1:09:51 PM|INFO|Tickets for flight '4488' successfully retrieved
+124|124|5/7/2019 1:09:51 PM|INFO|User with username 'luser123' buys bussines ticket for flight '4488'
+125|125|5/7/2019 1:09:51 PM|INFO|Transaction successfully passed for user with username 'luser123' for flight '4488'
+126|126|5/7/2019 1:09:58 PM|INFO|User with username 'luser123' sends question
+127|127|5/7/2019 1:09:58 PM|INFO|Message successfully sent on email ask@megatravel.com
+128|128|5/7/2019 1:10:02 PM|INFO|Login attempt with username 'h@cker' from ip address '127.0.1.3'
+129|129|5/7/2019 1:10:05 PM|INFO|User with username 'luser123' choses fly from 'london' to 'moscow'
+130|130|5/7/2019 1:10:05 PM|INFO|User with username 'luser123' filters results with params '< 300$' and 'discount'
+131|131|5/7/2019 1:10:11 PM|INFO|User with username 'luser123' choses fly from 'london' to 'moscow'
+132|132|5/7/2019 1:10:11 PM|INFO|User with username 'luser123' filters results with params '< 300$' and 'discount'
+133|133|5/7/2019 1:10:17 PM|INFO|Login success with username 'luser123' from ip address '195.57.27.32'
+134|134|5/7/2019 1:10:20 PM|INFO|User with username 'luser123' sends question
+135|135|5/7/2019 1:10:20 PM|INFO|Message successfully sent on email ask@megatravel.com
+136|136|5/7/2019 1:10:24 PM|INFO|Tickets for flight '629' successfully retrieved
+137|137|5/7/2019 1:10:24 PM|INFO|User with username 'luser123' buys bussines ticket for flight '629'
+138|138|5/7/2019 1:10:24 PM|INFO|Transaction successfully passed for user with username 'luser123' for flight '629'
+139|139|5/7/2019 1:10:31 PM|INFO|Login success with username 'luser123' from ip address '195.57.27.32'
+140|140|5/7/2019 1:10:34 PM|INFO|User with username 'luser123' choses fly from 'london' to 'moscow'
+141|141|5/7/2019 1:10:34 PM|INFO|User with username 'luser123' filters results with params '< 300$' and 'discount'
+142|142|5/7/2019 1:10:39 PM|INFO|Tickets for flight '9661' successfully retrieved
+143|143|5/7/2019 1:10:39 PM|INFO|User with username 'luser123' buys bussines ticket for flight '9661'
+144|144|5/7/2019 1:10:39 PM|INFO|Transaction successfully passed for user with username 'luser123' for flight '9661'
+145|145|5/7/2019 1:10:46 PM|INFO|User with username 'luser123' choses fly from 'london' to 'moscow'
+146|146|5/7/2019 1:10:46 PM|INFO|User with username 'luser123' filters results with params '< 300$' and 'discount'
+147|147|5/7/2019 1:10:52 PM|INFO|Tickets for flight '6969' successfully retrieved
+148|148|5/7/2019 1:10:52 PM|INFO|User with username 'luser123' buys bussines ticket for flight '6969'
+149|149|5/7/2019 1:10:52 PM|INFO|Transaction successfully passed for user with username 'luser123' for flight '6969'
+150|150|5/7/2019 1:10:59 PM|INFO|User with username 'luser123' sends question
+151|151|5/7/2019 1:10:59 PM|INFO|Message successfully sent on email ask@megatravel.com
+152|152|5/7/2019 1:11:03 PM|ERROR|Exception in thread main java.lang.NullPointerException
+153|152|5/7/2019 1:11:03 PM|TRACE|at com.example.myproject.Flight.getTitle(Flight.java:16)
+154|152|5/7/2019 1:11:03 PM|TRACE|at com.example.myproject.Ticket.getBookTitles(Ticket.java:25)
+155|155|5/7/2019 1:11:06 PM|INFO|User with username 'luser123' choses fly from 'london' to 'moscow'
+156|156|5/7/2019 1:11:06 PM|INFO|User with username 'luser123' filters results with params '< 300$' and 'discount'
+157|157|5/7/2019 1:11:11 PM|INFO|User with username 'luser123' sends question
+158|158|5/7/2019 1:11:11 PM|INFO|Message successfully sent on email ask@megatravel.com
+159|159|5/7/2019 1:11:15 PM|ERROR|Exception in thread main java.lang.NullPointerException
+160|159|5/7/2019 1:11:15 PM|TRACE|at com.example.myproject.Flight.getTitle(Flight.java:16)
+161|159|5/7/2019 1:11:15 PM|TRACE|at com.example.myproject.Ticket.getBookTitles(Ticket.java:25)
+162|162|5/7/2019 1:11:18 PM|INFO|Tickets for flight '1555' successfully retrieved
+163|163|5/7/2019 1:11:18 PM|INFO|User with username 'luser123' buys bussines ticket for flight '1555'
+164|164|5/7/2019 1:11:18 PM|INFO|Transaction successfully passed for user with username 'luser123' for flight '1555'
+165|165|5/7/2019 1:11:25 PM|INFO|User with username 'luser123' sends question
+166|166|5/7/2019 1:11:25 PM|INFO|Message successfully sent on email ask@megatravel.com
+167|167|5/7/2019 1:11:30 PM|INFO|Login attempt with username 'h@cker' from ip address '127.0.1.3'
+168|168|5/7/2019 1:11:33 PM|INFO|User with username 'luser123' sends question
+169|169|5/7/2019 1:11:33 PM|INFO|Message successfully sent on email ask@megatravel.com
+170|170|5/7/2019 1:11:37 PM|INFO|User with username 'luser123' choses fly from 'london' to 'moscow'
+171|171|5/7/2019 1:11:37 PM|INFO|User with username 'luser123' filters results with params '< 300$' and 'discount'
+172|172|5/7/2019 1:11:42 PM|INFO|Tickets for flight '2060' successfully retrieved
+173|173|5/7/2019 1:11:42 PM|INFO|User with username 'luser123' buys bussines ticket for flight '2060'
+174|174|5/7/2019 1:11:42 PM|INFO|Transaction successfully passed for user with username 'luser123' for flight '2060'
+175|175|5/7/2019 1:11:49 PM|INFO|User with username 'luser123' sends question
+176|176|5/7/2019 1:11:49 PM|INFO|Message successfully sent on email ask@megatravel.com
+177|177|5/7/2019 1:11:53 PM|INFO|Tickets for flight '7037' successfully retrieved
+178|178|5/7/2019 1:11:53 PM|INFO|User with username 'luser123' buys bussines ticket for flight '7037'
+179|179|5/7/2019 1:11:53 PM|INFO|Transaction successfully passed for user with username 'luser123' for flight '7037'
+180|180|5/7/2019 1:12:00 PM|INFO|Tickets for flight '1933' successfully retrieved
+181|181|5/7/2019 1:12:00 PM|INFO|User with username 'luser123' buys bussines ticket for flight '1933'
+182|182|5/7/2019 1:12:00 PM|INFO|Transaction successfully passed for user with username 'luser123' for flight '1933'
+183|183|5/7/2019 1:12:07 PM|INFO|User with username 'luser123' sends question
+184|184|5/7/2019 1:12:07 PM|INFO|Message successfully sent on email ask@megatravel.com
+185|185|5/7/2019 1:12:11 PM|INFO|User with username 'luser123' choses fly from 'london' to 'moscow'
+186|186|5/7/2019 1:12:11 PM|INFO|User with username 'luser123' filters results with params '< 300$' and 'discount'
+187|187|5/7/2019 1:12:17 PM|WARN|Anstivirus found threat with id '10'
+188|188|5/7/2019 1:12:17 PM|WARN|Anstivirus found threat with id '11'
+189|189|5/7/2019 1:12:17 PM|WARN|Anstivirus found threat with id '12'
+190|190|5/7/2019 1:12:20 PM|INFO|Tickets for flight '4630' successfully retrieved
+191|191|5/7/2019 1:12:20 PM|INFO|User with username 'luser123' buys bussines ticket for flight '4630'
+192|192|5/7/2019 1:12:20 PM|INFO|Transaction successfully passed for user with username 'luser123' for flight '4630'
+193|193|5/7/2019 1:12:27 PM|INFO|Tickets for flight '6413' successfully retrieved
+194|194|5/7/2019 1:12:27 PM|INFO|User with username 'luser123' buys bussines ticket for flight '6413'
+195|195|5/7/2019 1:12:27 PM|INFO|Transaction successfully passed for user with username 'luser123' for flight '6413'
+196|196|5/7/2019 1:12:34 PM|WARN|Anstivirus found threat with id '13'
+197|197|5/7/2019 1:12:34 PM|WARN|Anstivirus found threat with id '14'
+198|198|5/7/2019 1:12:34 PM|WARN|Anstivirus found threat with id '15'
+199|199|5/7/2019 1:12:37 PM|INFO|User with username 'luser123' sends question
+200|200|5/7/2019 1:12:37 PM|INFO|Message successfully sent on email ask@megatravel.com
+201|201|5/7/2019 1:12:41 PM|INFO|User with username 'luser123' sends question
+202|202|5/7/2019 1:12:41 PM|INFO|Message successfully sent on email ask@megatravel.com
+203|203|5/7/2019 1:12:45 PM|INFO|Login attempt with username 'luser123' from ip address '195.57.27.32'
+204|204|5/7/2019 1:12:45 PM|INFO|Login attempt with username 'luser123' from ip address '195.57.27.32'
+205|205|5/7/2019 1:12:45 PM|INFO|Login attempt with username 'luser123' from ip address '195.57.27.32'
+206|206|5/7/2019 1:12:45 PM|INFO|Login attempt with username 'luser123' from ip address '195.57.27.32'
+207|207|5/7/2019 1:12:45 PM|INFO|Login attempt with username 'luser123' from ip address '195.57.27.32'
+208|208|5/7/2019 1:12:45 PM|INFO|Login attempt with username 'luser123' from ip address '195.57.27.32'
+209|209|5/7/2019 1:12:45 PM|INFO|Login attempt with username 'luser123' from ip address '195.57.27.32'
+210|210|5/7/2019 1:12:45 PM|INFO|Login attempt with username 'luser123' from ip address '195.57.27.32'
+211|211|5/7/2019 1:12:45 PM|INFO|Login attempt with username 'luser123' from ip address '195.57.27.32'
+212|212|5/7/2019 1:12:45 PM|INFO|Login attempt with username 'luser123' from ip address '195.57.27.32'
+213|213|5/7/2019 1:12:45 PM|INFO|Login attempt with username 'luser123' from ip address '195.57.27.32'
+214|214|5/7/2019 1:12:45 PM|INFO|Login attempt with username 'luser123' from ip address '195.57.27.32'
+215|215|5/7/2019 1:12:45 PM|INFO|Login attempt with username 'luser123' from ip address '195.57.27.32'
+216|216|5/7/2019 1:12:45 PM|INFO|Login attempt with username 'luser123' from ip address '195.57.27.32'
+217|217|5/7/2019 1:12:45 PM|INFO|Login attempt with username 'luser123' from ip address '195.57.27.32'
+218|218|5/7/2019 1:12:48 PM|INFO|User with username 'luser123' sends question
+219|219|5/7/2019 1:12:48 PM|INFO|Message successfully sent on email ask@megatravel.com
+220|220|5/7/2019 1:12:52 PM|INFO|User with username 'luser123' sends question
+221|221|5/7/2019 1:12:52 PM|INFO|Message successfully sent on email ask@megatravel.com
+222|222|5/7/2019 1:12:56 PM|INFO|Login attempt with username 'h@cker' from ip address '127.0.1.3'
+223|223|5/7/2019 1:12:59 PM|INFO|User with username 'luser123' choses fly from 'london' to 'moscow'
+224|224|5/7/2019 1:12:59 PM|INFO|User with username 'luser123' filters results with params '< 300$' and 'discount'
+225|225|5/7/2019 1:13:05 PM|INFO|Tickets for flight '7082' successfully retrieved
+226|226|5/7/2019 1:13:05 PM|INFO|User with username 'luser123' buys bussines ticket for flight '7082'
+227|227|5/7/2019 1:13:05 PM|INFO|Transaction successfully passed for user with username 'luser123' for flight '7082'
+228|228|5/7/2019 1:13:12 PM|INFO|Login attempt with username 'h@cker' from ip address '127.0.1.3'
+229|229|5/7/2019 1:13:15 PM|INFO|Tickets for flight '5858' successfully retrieved
+230|230|5/7/2019 1:13:15 PM|INFO|User with username 'luser123' buys bussines ticket for flight '5858'
+231|231|5/7/2019 1:13:15 PM|INFO|Transaction successfully passed for user with username 'luser123' for flight '5858'
+232|232|5/7/2019 1:13:22 PM|INFO|User with username 'luser123' choses fly from 'london' to 'moscow'
+233|233|5/7/2019 1:13:22 PM|INFO|User with username 'luser123' filters results with params '< 300$' and 'discount'
+234|234|5/7/2019 1:13:28 PM|INFO|Login attempt with username 'h@cker' from ip address '127.0.1.3'
+235|235|5/7/2019 1:13:31 PM|INFO|User with username 'luser123' sends question
+236|236|5/7/2019 1:13:31 PM|INFO|Message successfully sent on email ask@megatravel.com
+237|237|5/7/2019 1:13:35 PM|INFO|User with username 'luser123' sends question
+238|238|5/7/2019 1:13:35 PM|INFO|Message successfully sent on email ask@megatravel.com
+239|239|5/7/2019 1:13:39 PM|INFO|Login success with username 'luser123' from ip address '195.57.27.32'
+240|240|5/7/2019 1:13:42 PM|INFO|User with username 'luser123' sends question
+241|241|5/7/2019 1:13:42 PM|INFO|Message successfully sent on email ask@megatravel.com
+242|242|5/7/2019 1:13:46 PM|INFO|User with username 'luser123' choses fly from 'london' to 'moscow'
+243|243|5/7/2019 1:13:46 PM|INFO|User with username 'luser123' filters results with params '< 300$' and 'discount'
+244|244|5/7/2019 1:13:51 PM|INFO|Login attempt with username 'luser123' from ip address '195.57.27.32'
+245|245|5/7/2019 1:13:51 PM|INFO|Login attempt with username 'luser123' from ip address '195.57.27.32'
+246|246|5/7/2019 1:13:51 PM|INFO|Login attempt with username 'luser123' from ip address '195.57.27.32'
+247|247|5/7/2019 1:13:51 PM|INFO|Login attempt with username 'luser123' from ip address '195.57.27.32'
+248|248|5/7/2019 1:13:51 PM|INFO|Login attempt with username 'luser123' from ip address '195.57.27.32'
+249|249|5/7/2019 1:13:51 PM|INFO|Login attempt with username 'luser123' from ip address '195.57.27.32'
+250|250|5/7/2019 1:13:52 PM|INFO|Login attempt with username 'luser123' from ip address '195.57.27.32'
+251|251|5/7/2019 1:13:52 PM|INFO|Login attempt with username 'luser123' from ip address '195.57.27.32'
+252|252|5/7/2019 1:13:52 PM|INFO|Login attempt with username 'luser123' from ip address '195.57.27.32'
+253|253|5/7/2019 1:13:52 PM|INFO|Login attempt with username 'luser123' from ip address '195.57.27.32'
+254|254|5/7/2019 1:13:52 PM|INFO|Login attempt with username 'luser123' from ip address '195.57.27.32'
+255|255|5/7/2019 1:13:52 PM|INFO|Login attempt with username 'luser123' from ip address '195.57.27.32'
+256|256|5/7/2019 1:13:52 PM|INFO|Login attempt with username 'luser123' from ip address '195.57.27.32'
+257|257|5/7/2019 1:13:52 PM|INFO|Login attempt with username 'luser123' from ip address '195.57.27.32'
+258|258|5/7/2019 1:13:52 PM|INFO|Login attempt with username 'luser123' from ip address '195.57.27.32'
+259|259|5/7/2019 1:13:55 PM|INFO|Tickets for flight '3075' successfully retrieved
+260|260|5/7/2019 1:13:55 PM|INFO|User with username 'luser123' buys bussines ticket for flight '3075'
+261|261|5/7/2019 1:13:55 PM|INFO|Transaction successfully passed for user with username 'luser123' for flight '3075'
+262|262|5/7/2019 1:14:02 PM|INFO|Tickets for flight '447' successfully retrieved
+263|263|5/7/2019 1:14:02 PM|INFO|User with username 'luser123' buys bussines ticket for flight '447'
+264|264|5/7/2019 1:14:02 PM|INFO|Transaction successfully passed for user with username 'luser123' for flight '447'
+265|265|5/7/2019 1:14:09 PM|INFO|Login success with username 'luser123' from ip address '195.57.27.32'
+266|266|5/7/2019 1:14:12 PM|INFO|User with username 'luser123' choses fly from 'london' to 'moscow'
+267|267|5/7/2019 1:14:12 PM|INFO|User with username 'luser123' filters results with params '< 300$' and 'discount'
+268|268|5/7/2019 1:14:17 PM|INFO|User with username 'luser123' sends question
+269|269|5/7/2019 1:14:17 PM|INFO|Message successfully sent on email ask@megatravel.com
+270|270|5/7/2019 1:14:21 PM|INFO|User with username 'luser123' sends question
+271|271|5/7/2019 1:14:21 PM|INFO|Message successfully sent on email ask@megatravel.com
+272|272|5/7/2019 1:14:25 PM|INFO|User with username 'luser123' choses fly from 'london' to 'moscow'
+273|273|5/7/2019 1:14:25 PM|INFO|User with username 'luser123' filters results with params '< 300$' and 'discount'
+274|274|5/7/2019 1:14:31 PM|INFO|User with username 'luser123' choses fly from 'london' to 'moscow'
+275|275|5/7/2019 1:14:31 PM|INFO|User with username 'luser123' filters results with params '< 300$' and 'discount'
+276|276|5/7/2019 1:14:36 PM|INFO|User with username 'luser123' choses fly from 'london' to 'moscow'
+277|277|5/7/2019 1:14:36 PM|INFO|User with username 'luser123' filters results with params '< 300$' and 'discount'
+278|278|5/7/2019 1:14:42 PM|INFO|Tickets for flight '9342' successfully retrieved
+279|279|5/7/2019 1:14:42 PM|INFO|User with username 'luser123' buys bussines ticket for flight '9342'
+280|280|5/7/2019 1:14:42 PM|INFO|Transaction successfully passed for user with username 'luser123' for flight '9342'
+281|281|5/7/2019 1:14:49 PM|INFO|User with username 'luser123' choses fly from 'london' to 'moscow'
+282|282|5/7/2019 1:14:49 PM|INFO|User with username 'luser123' filters results with params '< 300$' and 'discount'
+283|283|5/7/2019 1:14:55 PM|INFO|Login success with username 'luser123' from ip address '195.57.27.32'
+284|284|5/7/2019 1:14:58 PM|INFO|User with username 'luser123' choses fly from 'london' to 'moscow'
+285|285|5/7/2019 1:14:58 PM|INFO|User with username 'luser123' filters results with params '< 300$' and 'discount'
+286|286|5/7/2019 1:15:03 PM|INFO|User with username 'luser123' sends question
+287|287|5/7/2019 1:15:03 PM|INFO|Message successfully sent on email ask@megatravel.com
+288|288|5/7/2019 1:15:07 PM|INFO|Login success with username 'luser123' from ip address '195.57.27.32'
+289|289|5/7/2019 1:15:10 PM|INFO|Tickets for flight '8540' successfully retrieved
+290|290|5/7/2019 1:15:10 PM|INFO|User with username 'luser123' buys bussines ticket for flight '8540'
+291|291|5/7/2019 1:15:10 PM|INFO|Transaction successfully passed for user with username 'luser123' for flight '8540'
+292|292|5/7/2019 1:15:17 PM|INFO|User with username 'luser123' choses fly from 'london' to 'moscow'
+293|293|5/7/2019 1:15:17 PM|INFO|User with username 'luser123' filters results with params '< 300$' and 'discount'
+294|294|5/7/2019 1:15:23 PM|INFO|Login attempt with username 'luser123' from ip address '195.57.27.32'
+295|295|5/7/2019 1:15:23 PM|INFO|Login attempt with username 'luser123' from ip address '195.57.27.32'
+296|296|5/7/2019 1:15:23 PM|INFO|Login attempt with username 'luser123' from ip address '195.57.27.32'
+297|297|5/7/2019 1:15:23 PM|INFO|Login attempt with username 'luser123' from ip address '195.57.27.32'
+298|298|5/7/2019 1:15:23 PM|INFO|Login attempt with username 'luser123' from ip address '195.57.27.32'
+299|299|5/7/2019 1:15:23 PM|INFO|Login attempt with username 'luser123' from ip address '195.57.27.32'
+300|300|5/7/2019 1:15:23 PM|INFO|Login attempt with username 'luser123' from ip address '195.57.27.32'
+301|301|5/7/2019 1:15:23 PM|INFO|Login attempt with username 'luser123' from ip address '195.57.27.32'
+302|302|5/7/2019 1:15:23 PM|INFO|Login attempt with username 'luser123' from ip address '195.57.27.32'
+303|303|5/7/2019 1:15:23 PM|INFO|Login attempt with username 'luser123' from ip address '195.57.27.32'
+304|304|5/7/2019 1:15:23 PM|INFO|Login attempt with username 'luser123' from ip address '195.57.27.32'
+305|305|5/7/2019 1:15:23 PM|INFO|Login attempt with username 'luser123' from ip address '195.57.27.32'
+306|306|5/7/2019 1:15:23 PM|INFO|Login attempt with username 'luser123' from ip address '195.57.27.32'
+307|307|5/7/2019 1:15:23 PM|INFO|Login attempt with username 'luser123' from ip address '195.57.27.32'
+308|308|5/7/2019 1:15:23 PM|INFO|Login attempt with username 'luser123' from ip address '195.57.27.32'
+309|309|5/7/2019 1:15:26 PM|INFO|User with username 'luser123' sends question
+310|310|5/7/2019 1:15:26 PM|INFO|Message successfully sent on email ask@megatravel.com
+311|311|5/7/2019 1:15:30 PM|INFO|Tickets for flight '12' successfully retrieved
+312|312|5/7/2019 1:15:30 PM|INFO|User with username 'luser123' buys bussines ticket for flight '12'
+313|313|5/7/2019 1:15:30 PM|INFO|Transaction successfully passed for user with username 'luser123' for flight '12'

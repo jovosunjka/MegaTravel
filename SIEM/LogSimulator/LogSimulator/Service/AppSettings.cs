@@ -2,131 +2,73 @@
 using System;
 using System.Configuration;
 using System.IO;
+using System.Threading;
 
 namespace LogSimulator.Service
 {
     public class AppSettings : IAppSettings
     {
-        public string LogsFilePath
+        private readonly Mutex _mutex;
+
+        public AppSettings()
         {
-            get
+            _mutex = new Mutex();
+        }
+
+        private string Execute(Func<string> func)
+        {
+            lock (_mutex)
             {
-                Refresh();
-                return Path.Combine(ConfigurationManager.AppSettings["LogFolderPath"], $"Logs_{DateTime.UtcNow.ToShortDateString()}.txt");
+                ConfigurationManager.RefreshSection("appSettings");
+                return func.Invoke();
             }
         }
 
-        public string AlarmPossibility
+        private void UpdateValue(string field, string value)
         {
-            get
+            lock (_mutex)
             {
-                Refresh();
-                return ConfigurationManager.AppSettings["AlarmPossibility"];
+                Configuration configuration = ConfigurationManager.OpenExeConfiguration(System.Reflection.Assembly.GetExecutingAssembly().Location);
+                configuration.AppSettings.Settings[field].Value = value;
+                configuration.Save();
             }
         }
 
-        public string SleepMilliseconds
+        public string LogsFilePath => Execute(() => Path.Combine(ConfigurationManager.AppSettings["LogFolderPath"], 
+            $"Logs_{DateTime.UtcNow.ToString(ConfigurationManager.AppSettings["DateFormat"])}.txt"));
+
+        public string LogSequencerCurrentValue
         {
-            get
-            {
-                Refresh();
-                return ConfigurationManager.AppSettings["SleepMilliseconds"];
-            }
+            get { return Execute(() => ConfigurationManager.AppSettings["LogSequencerCurrentValue"]); }
+            set { UpdateValue("LogSequencerCurrentValue", value); }
         }
 
-        public string AntivirusThreatsNum
+        public string AntivirusThreatSequencerCurrentValue
         {
-            get
-            {
-                Refresh();
-                return ConfigurationManager.AppSettings["AntivirusThreatsNum"];
-            }
+            get { return Execute(() => ConfigurationManager.AppSettings["AntivirusThreatSequencerCurrentValue"]); }
+            set { UpdateValue("AntivirusThreatSequencerCurrentValue", value); }
         }
 
-        public string HostAddress1
-        {
-            get
-            {
-                Refresh();
-                return ConfigurationManager.AppSettings["HostAddress1"];
-            }
-        }
+        public string AlarmPossibility => Execute(() => ConfigurationManager.AppSettings["AlarmPossibility"]);
 
-        public string HostAddress2
-        {
-            get
-            {
-                Refresh();
-                return ConfigurationManager.AppSettings["HostAddress2"];
-            }
-        }
+        public string SleepMilliseconds => Execute(() => ConfigurationManager.AppSettings["SleepMilliseconds"]);
 
-        public string HostAddress3
-        {
-            get
-            {
-                Refresh();
-                return ConfigurationManager.AppSettings["HostAddress3"];
-            }
-        }
+        public string AntivirusThreatsNum => Execute(() => ConfigurationManager.AppSettings["AntivirusThreatsNum"]);
 
-        public string IpAddress1
-        {
-            get
-            {
-                Refresh();
-                return ConfigurationManager.AppSettings["IpAddress1"];
-            }
-        }
+        public string IpAddress1 => Execute(() => ConfigurationManager.AppSettings["IpAddress1"]);
 
-        public string IpAddress2
-        {
-            get
-            {
-                Refresh();
-                return ConfigurationManager.AppSettings["IpAddress2"];
-            }
-        }
+        public string IpAddress2 => Execute(() => ConfigurationManager.AppSettings["IpAddress2"]);
 
-        public string IpAddress3
-        {
-            get
-            {
-                Refresh();
-                return ConfigurationManager.AppSettings["IpAddress3"];
-            }
-        }
+        public string IpAddress3 => Execute(() => ConfigurationManager.AppSettings["IpAddress3"]);
 
-        public string MaliciousIpAddress
-        {
-            get
-            {
-                Refresh();
-                return ConfigurationManager.AppSettings["MaliciousIpAddress"];
-            }
-        }
+        public string MaliciousIpAddress => Execute(() => ConfigurationManager.AppSettings["MaliciousIpAddress"]);
 
-        public string UnsuccessfulLoginAttemptNum
-        {
-            get
-            {
-                Refresh();
-                return ConfigurationManager.AppSettings["UnsuccessfulLoginAttemptNum"];
-            }
-        }
+        public string UnsuccessfulLoginAttemptNum => Execute(() => ConfigurationManager.AppSettings["UnsuccessfulLoginAttemptNum"]);
 
-        public string Username
-        {
-            get
-            {
-                Refresh();
-                return ConfigurationManager.AppSettings["Username"];
-            }
-        }
+        public string Username => Execute(() => ConfigurationManager.AppSettings["Username"]);
 
-        private void Refresh()
-        {
-            ConfigurationManager.RefreshSection("appSettings");
-        }
+        public string AntivirusThreatId => Execute(() => ConfigurationManager.AppSettings["AntivirusThreatId"]);
+
+        public string MaliciousUsername => Execute(() => ConfigurationManager.AppSettings["MaliciousUsername"]);
     }
 }

@@ -23,6 +23,6 @@ public class LogsController
     @RequestMapping(value = "/process", method = RequestMethod.POST)
     public ResponseEntity processLogs(@RequestBody MessageDto messageDto) {
         System.out.println(messageDto.getMessage());
-        return new ResponseEntity<>(HttpStatus.OK);
+        return new ResponseEntity<Object>(HttpStatus.OK);
     }
 }

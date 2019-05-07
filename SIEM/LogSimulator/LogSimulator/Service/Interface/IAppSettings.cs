@@ -10,12 +10,6 @@
 
         string AntivirusThreatsNum { get; }
 
-        string HostAddress1 { get; }
-
-        string HostAddress2 { get; }
-
-        string HostAddress3 { get; }
-
         string IpAddress1 { get; }
 
         string IpAddress2 { get; }
@@ -27,5 +21,13 @@
         string UnsuccessfulLoginAttemptNum { get; }
 
         string Username { get; }
+
+        string LogSequencerCurrentValue { get; set; }
+
+        string AntivirusThreatId { get; }
+
+        string AntivirusThreatSequencerCurrentValue { get; set; }
+
+        string MaliciousUsername { get; }
     }
 }

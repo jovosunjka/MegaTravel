@@ -1,4 +1,6 @@
 ﻿using LogSimulator.Service.Interface;
+using System;
+using System.Threading;
 
 namespace LogSimulator.State
 {
@@ -6,9 +8,56 @@ namespace LogSimulator.State
     {
         public string Description => Helper.Constants.StateDescription.NoAlarm;
 
-        public void Simulate(IAppSettings appSettings)
+        private ILogService _logService;
+        private IAppSettings _appSettings;
+        private Random _random;
+
+        public void Simulate(IAppSettings appSettings, ILogService logService)
         {
-            System.IO.File.AppendAllText(appSettings.LogsFilePath, $"Some ordinary log\n");
+            _appSettings = appSettings;
+            _logService = logService;
+            _random = new Random();
+
+            // instead of if else blocks
+            var noAlarmStates = new Action[] 
+            {
+                () => TicketReservationState(),
+                () => UserSendsQuestion(),
+                () => UserSearchesFlights()
+            };
+            var stateNumber = _random.Next(noAlarmStates.Length);
+            noAlarmStates[stateNumber].Invoke();
+        }
+
+        public void TicketReservationState()
+        {
+            var flightNo = _random.Next(1, 10000);
+            var log1 = _logService.GetLog($"Tickets for flight '{flightNo}' successfully retrieved");
+            var log2 = _logService.GetLog($"User with username '{_appSettings.Username}' buys bussines ticket for flight '{flightNo}'");
+            var log3 = _logService.GetLog($"Transaction successfully passed for user with username '{_appSettings.Username}' for flight '{flightNo}'");
+            _logService.WriteLogToFile(_appSettings.LogsFilePath, log1);
+            Thread.Sleep(3000);
+            _logService.WriteLogToFile(_appSettings.LogsFilePath, log2);
+            Thread.Sleep(1000);
+            _logService.WriteLogToFile(_appSettings.LogsFilePath, log3);
+        }
+
+        public void UserSendsQuestion()
+        {
+            var log1 = _logService.GetLog($"User with username '{_appSettings.Username}' sends question");
+            var log2 = _logService.GetLog($"Message successfully sent on email ask@megatravel.com");
+            _logService.WriteLogToFile(_appSettings.LogsFilePath, log1);
+            Thread.Sleep(1000);
+            _logService.WriteLogToFile(_appSettings.LogsFilePath, log2);
+        }
+
+        public void UserSearchesFlights()
+        {
+            var log1 = _logService.GetLog($"User with username '{_appSettings.Username}' choses fly from 'london' to 'moscow'");
+            var log2 = _logService.GetLog($"User with username '{_appSettings.Username}' filters results with params '< 300$' and 'discount'");
+            _logService.WriteLogToFile(_appSettings.LogsFilePath, log1);
+            Thread.Sleep(2500);
+            _logService.WriteLogToFile(_appSettings.LogsFilePath, log2);
         }
     }
 }

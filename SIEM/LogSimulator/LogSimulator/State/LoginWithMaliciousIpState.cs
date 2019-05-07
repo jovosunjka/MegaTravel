@@ -6,9 +6,10 @@ namespace LogSimulator.State
     {
         public string Description => Helper.Constants.StateDescription.LoginWithMaliciousIp;
 
-        public void Simulate(IAppSettings appSettings)
+        public void Simulate(IAppSettings appSettings, ILogService logService)
         {
-            System.IO.File.AppendAllText(appSettings.LogsFilePath, $"Login attempt from ip address '{appSettings.MaliciousIpAddress}'\n");
+            var log = logService.GetLog($"Login attempt with username '{appSettings.MaliciousUsername}' from ip address '{appSettings.MaliciousIpAddress}'");
+            logService.WriteLogToFile(appSettings.LogsFilePath, log);
         }
     }
 }

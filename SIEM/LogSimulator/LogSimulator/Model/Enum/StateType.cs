@@ -4,9 +4,9 @@
     {
         NoAlarm = 0,
         LogError,
-        UnsuccessfulLoginsOnDiffHostsWithSameIp,
-        SameUsernameLoginOnDiffHostsWithDiffIp,
-        AntivirusThreatsOnSameHost,
+        LoginAttemptWithCommonIp,
+        LoginWithCommonIp,
+        AntivirusThreats,
         LoginWithMaliciousIp
     }
 }

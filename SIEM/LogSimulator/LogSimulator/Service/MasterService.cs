@@ -1,5 +1,4 @@
 ﻿using LogSimulator.Service.Interface;
-using Microsoft.Extensions.Configuration;
 
 namespace LogSimulator.Service
 {
@@ -16,8 +15,9 @@ namespace LogSimulator.Service
             var stateService = new StateService();
             _viewService = new ViewService(stateService);
             var stateFactory = new StateFactory(appSettings, stateService);
-            _manualStateService = new ManualStateService(appSettings, _viewService, stateFactory);
-            _randomStateService = new RandomStateService(appSettings, _viewService, stateFactory);
+            var logService = new LogService(appSettings);
+            _manualStateService = new ManualStateService(appSettings, _viewService, stateFactory, logService);
+            _randomStateService = new RandomStateService(appSettings, _viewService, stateFactory, logService);
         }
 
         public void Start()

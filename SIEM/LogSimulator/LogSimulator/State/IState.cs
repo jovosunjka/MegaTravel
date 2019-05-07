@@ -8,6 +8,6 @@ namespace LogSimulator.State
     {
         string Description { get; }
 
-        void Simulate(IAppSettings appSettings);
+        void Simulate(IAppSettings appSettings, ILogService logService);
     }
 }
