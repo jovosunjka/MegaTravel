@@ -6,19 +6,18 @@ import com.bsep_sbz.SIEMCenter.model.sbz.enums.LogLevel;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
 public class Log {
     private Long id;
     private LogLevel type;
+    private List<String> sources;
     private Date timestamp;
-    // username is read from log, other data is loaded from db
-    private UserAccount userAccount;
     private String hostAddress;
-    private Message message;
-    // used for antivirus logs
-    private Log relatedLog;
+    private String message;
+    // attribute1:value1,attribute2:value2,attribute3:value3, ...  (message format)
 
     private final SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yyyy. HH:mm:ss");
 
@@ -26,7 +25,7 @@ public class Log {
 
     }
 
-    public Log(Long id, LogLevel type, String timestampStr, String hostAddress, Message message) {
+    public Log(Long id, LogLevel type, String timestampStr, String hostAddress, String message) {
         this.id = id;
         this.type = type;
         try {
@@ -46,14 +45,6 @@ public class Log {
         return diff;
     }
 
-    public UserAccount getUserAccount() {
-        return userAccount;
-    }
-
-    public void setUserAccount(UserAccount userAccount) {
-        this.userAccount = userAccount;
-    }
-
     public Long getId() {
         return id;
     }
@@ -69,6 +60,10 @@ public class Log {
     public void setType(LogLevel type) {
         this.type = type;
     }
+
+    public List<String> getSources() { return sources; }
+
+    public void setSources(List<String> sources) { this.sources = sources; }
 
     /*public LocalDateTime getTimestamp() {
         return timestamp;
@@ -95,11 +90,11 @@ public class Log {
         this.hostAddress = hostAddress;
     }
 
-    public Message getMessage() {
+    public String getMessage() {
         return message;
     }
 
-    public void setMessage(Message message) {
+    public void setMessage(String message) {
         this.message = message;
     }
 
