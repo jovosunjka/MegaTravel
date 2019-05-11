@@ -26,26 +26,27 @@ namespace LogSimulator.Service
             while(true)
             {
                 _viewService.ShowManualMenu();
-                var option = _viewService.ReadKey();
+                var input = _viewService.ReadLine();
 
-                if(!char.IsNumber(option))
+                int.TryParse(input, out int choiceNum);
+                if(choiceNum == 0)
                 {
                     _viewService.PrintInvalidInput();
                     continue;
                 }
 
-                if(IsBackOptionChosen(option))
+                if(IsBackOptionChosen(choiceNum))
                 {
                     return;
                 }
 
-                RunChosenOption(option);
+                RunChosenOption(choiceNum);
             }
         }
 
-        private bool IsBackOptionChosen(char option)
+        private bool IsBackOptionChosen(int option)
         {
-            if (char.GetNumericValue(option) == Enum.GetNames(typeof(StateType)).Length + 1)
+            if (option == Enum.GetNames(typeof(StateType)).Length + 1)
             {
                 if (_cancellationTokenSource != null)
                 {
@@ -56,9 +57,9 @@ namespace LogSimulator.Service
             return false;
         }
 
-        private void RunChosenOption(char option)
+        private void RunChosenOption(int option)
         {
-            var stateType = (StateType)(char.GetNumericValue(option) - 1);
+            var stateType = (StateType)(option - 1);
             try
             {
                 _currentState = _stateFactory.GetState(stateType);

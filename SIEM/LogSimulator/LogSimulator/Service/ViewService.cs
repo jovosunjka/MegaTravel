@@ -1,5 +1,4 @@
-﻿using LogSimulator.Helper;
-using LogSimulator.Service.Interface;
+﻿using LogSimulator.Service.Interface;
 using System;
 
 namespace LogSimulator.Service
@@ -35,6 +34,11 @@ namespace LogSimulator.Service
         {
             var key = Console.ReadKey();
             return key.KeyChar;
+        }
+
+        public string ReadLine()
+        {
+            return Console.ReadLine();
         }
 
         public void PrintRandomServiceStarted()

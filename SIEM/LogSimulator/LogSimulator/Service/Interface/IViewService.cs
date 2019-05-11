@@ -10,6 +10,8 @@
 
         char ReadKey();
 
+        string ReadLine();
+
         void PrintPressAnyKeyToStopService();
 
         void PrintRandomServiceStarted();
