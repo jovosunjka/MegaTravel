@@ -2,11 +2,15 @@
 {
     public enum StateType
     {
-        NoAlarm = 0,
+        AntivirusThreats = 0,
+        BruteForceAttack,
+        ChangeUserInfo,
+        DenialOfServiceAttack,
+        LoginWithMaliciousIp,
         LogError,
         LoginAttemptWithCommonIp,
         LoginWithCommonIp,
-        AntivirusThreats,
-        LoginWithMaliciousIp
+        NoAlarm,
+        PaymentSystemAttack
     }
 }

@@ -2,6 +2,11 @@
 
 namespace LogSimulator.State
 {
+    /// <summary>
+    /// 15 ili više neuspešnih pokušaja prijave na različite delove informacionog sistema sa iste IP adrese u roku od 5 dana;
+    /// Pokušaj prijave na nalog koji nije bio aktivan 90 ili više dana
+    /// Ukoliko sa iste IP adrese registruje 30 ili više neuspešnih pokušaja prijave na sistem u roku od 24h, dodati tu IP adresu u spisak malicioznih IP adresa
+    /// </summary>
     public class LoginAttemptWithCommonIpState : IState
     {
         public string Description => Helper.Constants.StateDescription.LoginAttemptWithCommonIp;

@@ -11,14 +11,13 @@ namespace LogSimulator.Service
     {
         private readonly IAppSettings _appSettings;
         private readonly IStateService _stateService;
+        private static int _counter = 1;
 
         public StateFactory(IAppSettings appSettings, IStateService stateService)
         {
             _appSettings = appSettings;
             _stateService = stateService;
         }
-
-        private static int _counter = 1;
 
         public IState GetRandomState()
         {

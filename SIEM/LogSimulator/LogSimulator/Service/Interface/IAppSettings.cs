@@ -24,10 +24,12 @@
 
         string LogSequencerCurrentValue { get; set; }
 
-        string AntivirusThreatId { get; }
-
         string AntivirusThreatSequencerCurrentValue { get; set; }
 
         string MaliciousUsername { get; }
+
+        string AttackRequestNum { get; }
+
+        string Username2 { get; }
     }
 }

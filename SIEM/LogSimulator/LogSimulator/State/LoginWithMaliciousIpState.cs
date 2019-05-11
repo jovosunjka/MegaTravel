@@ -2,6 +2,9 @@
 
 namespace LogSimulator.State
 {
+    /// <summary>
+    /// Prijava ili pokušaj prijave sa IP adrese koje se nalazi na spisku malicioznih IP adresa
+    /// </summary>
     public class LoginWithMaliciousIpState : IState
     {
         public string Description => Helper.Constants.StateDescription.LoginWithMaliciousIp;

@@ -3,6 +3,9 @@ using LogSimulator.Service.Interface;
 
 namespace LogSimulator.State
 {
+    /// <summary>
+    /// Pojava loga čiji tip je ERROR
+    /// </summary>
     public class LogErrorState : IState
     {
         public string Description => Helper.Constants.StateDescription.LogError;

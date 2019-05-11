@@ -1,5 +1,6 @@
 ﻿using LogSimulator.Service.Interface;
 using System;
+using System.Reflection;
 using System.Threading;
 
 namespace LogSimulator.State
@@ -18,18 +19,12 @@ namespace LogSimulator.State
             _logService = logService;
             _random = new Random();
 
-            // instead of if else blocks
-            var noAlarmStates = new Action[] 
-            {
-                () => TicketReservationState(),
-                () => UserSendsQuestion(),
-                () => UserSearchesFlights()
-            };
-            var stateNumber = _random.Next(noAlarmStates.Length);
-            noAlarmStates[stateNumber].Invoke();
+            var privateMethods = typeof(NoAlarmState).GetMethods(BindingFlags.NonPublic | BindingFlags.Instance);
+            var methodNumber = _random.Next(privateMethods.Length - 2);
+            privateMethods[methodNumber].Invoke(this, new object[] { });
         }
 
-        public void TicketReservationState()
+        private void TicketReservationState()
         {
             var flightNo = _random.Next(1, 10000);
             var log1 = _logService.GetLog($"Tickets for flight '{flightNo}' successfully retrieved");
@@ -42,7 +37,7 @@ namespace LogSimulator.State
             _logService.WriteLogToFile(_appSettings.LogsFilePath, log3);
         }
 
-        public void UserSendsQuestion()
+        private void UserSendsQuestion()
         {
             var log1 = _logService.GetLog($"User with username '{_appSettings.Username}' sends question");
             var log2 = _logService.GetLog($"Message successfully sent on email ask@megatravel.com");
@@ -51,9 +46,9 @@ namespace LogSimulator.State
             _logService.WriteLogToFile(_appSettings.LogsFilePath, log2);
         }
 
-        public void UserSearchesFlights()
+        private void UserSearchesFlights()
         {
-            var log1 = _logService.GetLog($"User with username '{_appSettings.Username}' choses fly from 'london' to 'moscow'");
+            var log1 = _logService.GetLog($"User with username '{_appSettings.Username}' chose fly from 'london' to 'moscow'");
             var log2 = _logService.GetLog($"User with username '{_appSettings.Username}' filters results with params '< 300$' and 'discount'");
             _logService.WriteLogToFile(_appSettings.LogsFilePath, log1);
             Thread.Sleep(2500);

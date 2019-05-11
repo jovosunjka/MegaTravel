@@ -15,40 +15,6 @@ namespace LogSimulator.Service
             _mutex = new Mutex();
         }
 
-        private string Execute(Func<string> func)
-        {
-            lock (_mutex)
-            {
-                ConfigurationManager.RefreshSection("appSettings");
-                return func.Invoke();
-            }
-        }
-
-        private void UpdateValue(string field, string value)
-        {
-            lock (_mutex)
-            {
-                Configuration configuration = ConfigurationManager.OpenExeConfiguration(System.Reflection.Assembly.GetExecutingAssembly().Location);
-                configuration.AppSettings.Settings[field].Value = value;
-                configuration.Save();
-            }
-        }
-
-        public string LogsFilePath => Execute(() => Path.Combine(ConfigurationManager.AppSettings["LogFolderPath"], 
-            $"Logs_{DateTime.UtcNow.ToString(ConfigurationManager.AppSettings["DateFormat"])}.txt"));
-
-        public string LogSequencerCurrentValue
-        {
-            get { return Execute(() => ConfigurationManager.AppSettings["LogSequencerCurrentValue"]); }
-            set { UpdateValue("LogSequencerCurrentValue", value); }
-        }
-
-        public string AntivirusThreatSequencerCurrentValue
-        {
-            get { return Execute(() => ConfigurationManager.AppSettings["AntivirusThreatSequencerCurrentValue"]); }
-            set { UpdateValue("AntivirusThreatSequencerCurrentValue", value); }
-        }
-
         public string AlarmPossibility => Execute(() => ConfigurationManager.AppSettings["AlarmPossibility"]);
 
         public string SleepMilliseconds => Execute(() => ConfigurationManager.AppSettings["SleepMilliseconds"]);
@@ -67,8 +33,44 @@ namespace LogSimulator.Service
 
         public string Username => Execute(() => ConfigurationManager.AppSettings["Username"]);
 
-        public string AntivirusThreatId => Execute(() => ConfigurationManager.AppSettings["AntivirusThreatId"]);
-
         public string MaliciousUsername => Execute(() => ConfigurationManager.AppSettings["MaliciousUsername"]);
+
+        public string AttackRequestNum => Execute(() => ConfigurationManager.AppSettings["AttackRequestNum"]);
+
+        public string LogsFilePath => Execute(() => Path.Combine(ConfigurationManager.AppSettings["LogFolderPath"],
+                                                        $"Logs_{DateTime.UtcNow.ToString(ConfigurationManager.AppSettings["DateFormat"])}.txt"));
+
+        public string Username2 => Execute(() => ConfigurationManager.AppSettings["Username2"]);
+
+        public string LogSequencerCurrentValue
+        {
+            get { return Execute(() => ConfigurationManager.AppSettings["LogSequencerCurrentValue"]); }
+            set { UpdateValue("LogSequencerCurrentValue", value); }
+        }
+
+        public string AntivirusThreatSequencerCurrentValue
+        {
+            get { return Execute(() => ConfigurationManager.AppSettings["AntivirusThreatSequencerCurrentValue"]); }
+            set { UpdateValue("AntivirusThreatSequencerCurrentValue", value); }
+        }
+
+        private string Execute(Func<string> func)
+        {
+            lock (_mutex)
+            {
+                ConfigurationManager.RefreshSection("appSettings");
+                return func.Invoke();
+            }
+        }
+
+        private void UpdateValue(string field, string value)
+        {
+            lock (_mutex)
+            {
+                var configuration = ConfigurationManager.OpenExeConfiguration(System.Reflection.Assembly.GetExecutingAssembly().Location);
+                configuration.AppSettings.Settings[field].Value = value;
+                configuration.Save();
+            }
+        }
     }
 }

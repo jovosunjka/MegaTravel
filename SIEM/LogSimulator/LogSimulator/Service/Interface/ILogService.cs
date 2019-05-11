@@ -10,5 +10,7 @@ namespace LogSimulator.Service.Interface
         Log GetLog(string message, LogLevelType logLevelType = LogLevelType.INFO);
 
         long GetNextLogId();
+
+        long GetNextAntivirusThreatId();
     }
 }

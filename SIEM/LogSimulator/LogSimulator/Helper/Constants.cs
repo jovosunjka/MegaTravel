@@ -6,32 +6,27 @@
 
         public const string StatesNamespace = "LogSimulator.State";
 
-        public static class LogLevel
-        {
-            public const string ERROR = "ERROR";
-
-            public const string WARN = "WARN";
-
-            public const string INFO = "INFO";
-
-            public const string TRACE = "TRACE";
-
-            public const string DEBUG = "DEBUG";
-        }
-
         public static class StateDescription
         {
             public const string NoAlarm = "No alarm";
 
-            public const string LogError = "Produce some errors!";
+            public const string LogError = "Log some errors!";
 
-            public const string LoginAttemptWithCommonIp = "N unsuccessful logins on different hosts with same ip";
+            public const string LoginAttemptWithCommonIp = "Login attempt from common ip";
 
-            public const string LoginWithCommonIp = "Login with same username on different hosts with different ips";
+            public const string LoginWithCommonIp = "Login from common ip";
 
-            public const string AntivirusThreats = "Antivirus threats on same host";
+            public const string AntivirusThreats = "Antivirus threats";
 
-            public const string LoginWithMaliciousIp = "Login attempt from ip which is on malicious list";
+            public const string LoginWithMaliciousIp = "Login attempt from malicious ip";
+
+            public const string DenialOfServiceAttack = "Denial of service attack";
+
+            public const string PaymentSystemAttack = "Payment system attack";
+
+            public const string BruteForceAttack = "Brute force attack";
+
+            public const string ChangeUserInfo = "Change user info";
         }
     }
 }
