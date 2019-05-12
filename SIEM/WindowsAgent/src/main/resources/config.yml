@@ -1,8 +1,0 @@
-paths: [] # lista putanja do foldera i log fajlova koji ce biti posmatrani
-
-includes: [] # lista regex-a koji ce se koristiti pri filtriranju
-
-excludes: [] # lista regex-a - ovde ce biti filtrirani logovi koji su prosli filtriranje po includes regex-ima
-
-interval: 0 # ako je vrednost intervala 0, onda se readi o real-time rezimu rada,
-            # a ako je vrednost intervala veca od 0, onda se radi o batch rezimu rada
