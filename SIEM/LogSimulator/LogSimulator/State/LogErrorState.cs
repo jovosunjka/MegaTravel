@@ -20,9 +20,9 @@ namespace LogSimulator.State
             traceLog1.EventId = eventId;
             traceLog2.EventId = eventId;
 
-            logService.WriteLogToFile(appSettings.LogsFilePath, errorLog);
-            logService.WriteLogToFile(appSettings.LogsFilePath, traceLog1);
-            logService.WriteLogToFile(appSettings.LogsFilePath, traceLog2);
+            logService.WriteLogToFile(appSettings.OtherLogsFolderPath, errorLog);
+            logService.WriteLogToFile(appSettings.OtherLogsFolderPath, traceLog1);
+            logService.WriteLogToFile(appSettings.OtherLogsFolderPath, traceLog2);
         }
     }
 }

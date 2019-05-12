@@ -17,7 +17,7 @@ namespace LogSimulator.State
             for (int i = 0; i < count; i++)
             {
                 var log = logService.GetLog($"Anstivirus found threat with id '{ logService.GetNextAntivirusThreatId() }'", LogLevelType.WARN);
-                logService.WriteLogToFile(appSettings.LogsFilePath, log);
+                logService.WriteLogToFile(appSettings.AntivirusLogsFolderPath, log);
             }
         }
     }

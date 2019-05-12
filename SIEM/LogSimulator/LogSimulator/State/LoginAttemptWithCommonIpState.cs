@@ -17,7 +17,7 @@ namespace LogSimulator.State
             for (int i = 0; i < count; i++)
             {
                 var log = logService.GetLog($"Login attempt with username '{appSettings.Username}' from ip address '{appSettings.IpAddress2}'");
-                logService.WriteLogToFile(appSettings.LogsFilePath, log);
+                logService.WriteLogToFile(appSettings.LoginLogsFolderPath, log);
             }
         }
     }

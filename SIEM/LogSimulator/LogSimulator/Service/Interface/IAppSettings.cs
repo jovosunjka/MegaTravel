@@ -2,7 +2,11 @@
 {
     public interface IAppSettings
     {
-        string LogsFilePath { get; }
+        string OtherLogsFolderPath { get; }
+
+        string AntivirusLogsFolderPath { get; }
+
+        string LoginLogsFolderPath { get; }
 
         string AlarmPossibility { get; }
 

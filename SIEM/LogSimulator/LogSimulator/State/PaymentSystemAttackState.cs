@@ -1,4 +1,5 @@
 ﻿using LogSimulator.Service.Interface;
+using System;
 
 namespace LogSimulator.State
 {
@@ -12,10 +13,11 @@ namespace LogSimulator.State
         public void Simulate(IAppSettings appSettings, ILogService logService)
         {
             var count = int.Parse(appSettings.AttackRequestNum);
+            var random = new Random();
             for (int i = 0; i < count; i++)
             {
-                var log = logService.GetLog($"User from ip address '{appSettings.MaliciousIpAddress}' accessed GET flights/today");
-                logService.WriteLogToFile(appSettings.LogsFilePath, log);
+                var log = logService.GetLog($"User from ip address '{appSettings.MaliciousIpAddress}' paid '100$' for flight '{random.Next(1, 10000)}'");
+                logService.WriteLogToFile(appSettings.OtherLogsFolderPath, log);
             }
         }
     }

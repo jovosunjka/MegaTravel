@@ -37,7 +37,13 @@ namespace LogSimulator.Service
 
         public string AttackRequestNum => Execute(() => ConfigurationManager.AppSettings["AttackRequestNum"]);
 
-        public string LogsFilePath => Execute(() => Path.Combine(ConfigurationManager.AppSettings["LogFolderPath"],
+        public string AntivirusLogsFolderPath => Execute(() => Path.Combine(ConfigurationManager.AppSettings["AntivirusLogsFolderPath"],
+                                                        $"Logs_{DateTime.UtcNow.ToString(ConfigurationManager.AppSettings["DateFormat"])}.txt"));
+
+        public string LoginLogsFolderPath => Execute(() => Path.Combine(ConfigurationManager.AppSettings["LoginLogsFolderPath"],
+                                                        $"Logs_{DateTime.UtcNow.ToString(ConfigurationManager.AppSettings["DateFormat"])}.txt"));
+
+        public string OtherLogsFolderPath => Execute(() => Path.Combine(ConfigurationManager.AppSettings["OtherLogsFolderPath"],
                                                         $"Logs_{DateTime.UtcNow.ToString(ConfigurationManager.AppSettings["DateFormat"])}.txt"));
 
         public string Username2 => Execute(() => ConfigurationManager.AppSettings["Username2"]);
