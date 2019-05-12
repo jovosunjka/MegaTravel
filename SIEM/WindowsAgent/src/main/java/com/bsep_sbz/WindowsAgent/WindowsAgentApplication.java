@@ -8,6 +8,7 @@ import com.sun.jna.platform.win32.Advapi32Util.EventLogIterator;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
 
+
 @SpringBootApplication
 public class WindowsAgentApplication {
 
@@ -15,7 +16,7 @@ public class WindowsAgentApplication {
 		SpringApplication.run(WindowsAgentApplication.class, args);
 	}
 
-	@EventListener(ApplicationReadyEvent.class)
+	//@EventListener(ApplicationReadyEvent.class)
 	public void startupCallback() {
 		new Thread(WindowsAgentApplication::watchSysLogs).start();
 	}
