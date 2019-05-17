@@ -2,6 +2,7 @@ package com.bsep_sbz.WindowsAgent;
 
 
 import com.bsep_sbz.WindowsAgent.config.AgentConfiguration;
+import com.bsep_sbz.WindowsAgent.service.interfaces.ILogsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
@@ -19,23 +20,14 @@ import java.util.stream.Collectors;
 
 @Component
 public class LogsSender {
-    /*
-    //@Value("${scan-logs.monitoring-elements}")
-    private List<MonitoringElement> monitoringElements;
 
-    @Value("${scan-logs.includes}")
-    private List<String> inludesRegex;
-
-    @Value("${scan-logs.excludes}")
-    private List<String> excludesRegex;
-
-    @Value("${scan-logs.interval}")
-    private int interval;
-*/
     private HashMap<File, Long> startingPositions = new HashMap<File, Long>();
 
     @Autowired
     private AgentConfiguration agentConfiguration;
+
+    @Autowired
+    private ILogsService logsService;
 
     @EventListener(ApplicationReadyEvent.class)
     public void scanLogs() {
@@ -217,12 +209,13 @@ public class LogsSender {
 
             String newLogsStr = new String(bytesRead);
             newLogsStr = newLogsStr.trim();
-            String[] newLogs = newLogsStr.split("\r\n");
+            String[] newLogs = newLogsStr.split("\r?\n");
             List<String> filteredNewLogs = filterLogs(newLogs, includes, excludes);
 
             for (String fNewLog : filteredNewLogs) {
                 System.out.println("Filtered new log in file " + file.getAbsolutePath() + ": " + fNewLog);
             }
+            logsService.sendLogs(filteredNewLogs);
 
         } catch (FileNotFoundException e) {
             e.printStackTrace();
