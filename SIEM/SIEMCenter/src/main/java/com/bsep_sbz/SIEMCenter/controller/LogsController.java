@@ -38,12 +38,17 @@ public class LogsController
 
     @RequestMapping(value = "/process", consumes = MediaType.APPLICATION_JSON_VALUE,  method = RequestMethod.POST)
     public ResponseEntity processLogs(@RequestBody List<String> logs) {
-        List<Log> logRet = new ArrayList<>();
+        List<Log> logRet;
         for (String log: logs) System.out.println(log);
         logRet = ruleService.makeLogs(logs);
 
+        if(logRet == null){
+            return new ResponseEntity(HttpStatus.BAD_REQUEST);
+        }
+
         logRet.stream()
                 .forEach(log -> System.out.println(log));
+
         return new ResponseEntity(HttpStatus.OK);
     }
 

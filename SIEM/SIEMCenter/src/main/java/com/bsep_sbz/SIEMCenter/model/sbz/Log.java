@@ -7,7 +7,6 @@ import com.bsep_sbz.SIEMCenter.model.sbz.enums.LogLevel;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
@@ -21,7 +20,8 @@ public class Log {
     private String message;
     // attribute1:value1,attribute2:value2,attribute3:value3, ...  (message format)
 
-    private final SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yyyy. HH:mm:ss");
+    private final SimpleDateFormat sdf1 = new SimpleDateFormat("dd-MMM-yy HH:mm:ss");
+    private final SimpleDateFormat sdf2 = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
 
     public Log() {
 
@@ -42,7 +42,8 @@ public class Log {
         this.id = id;
         this.type = type;
         this.category = category;
-        this.timestamp = sdf.parse(timestampStr);
+        this.timestamp = timestampStr.contains("/") ? sdf2.parse(timestampStr) : sdf1.parse(timestampStr);
+
         this.source = source;
         this.hostAddress = hostAddress;
         this.message = message;
@@ -128,5 +129,11 @@ public class Log {
     @Override
     public int hashCode() {
         return Objects.hash(id, type, timestamp, hostAddress, message);
+    }
+
+    @Override
+    public String toString() {
+        return "Log(id="+id.longValue()+", type="+type.name()+", category="+category.name()+", source="+source
+                +", timestamp="+sdf1.format(timestamp)+", hostAddress="+hostAddress+", message=" + message+")";
     }
 }

@@ -22,7 +22,9 @@ public class WindowsAgentApplication {
 
 	private static void watchSysLogs() {
 		// Note: if you want to read security logs you must run your ide in administrator mode
+		//final String TEST_LOGGER_NAME = "C:\\Windows\\System32\\winevt\\Logs\\jovo.evtx";
 		EventLogIterator iter = new EventLogIterator(Constants.Application);
+
 		while(iter.hasNext()) {
 			Advapi32Util.EventLogRecord record = iter.next();
 			System.out.println(record.getRecordNumber()
@@ -30,5 +32,7 @@ public class WindowsAgentApplication {
 					+ ", Event Type: " + record.getType()
 					+ ", Event Source: " + record.getSource());
 		}
+
+		System.out.println("ZAVRSIO");
 	}
 }

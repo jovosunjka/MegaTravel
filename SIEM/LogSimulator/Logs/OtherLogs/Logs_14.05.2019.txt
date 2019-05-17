@@ -1,0 +1,315 @@
+8|8|14-May-19 13:46:58|INFO|User with username 'luser123' chose fly from 'london' to 'moscow'
+9|9|14-May-19 13:46:58|INFO|User with username 'luser123' filters results with params '< 300$' and 'discount'
+10|10|14-May-19 13:47:04|INFO|User with username 'luser123' chose fly from 'london' to 'moscow'
+11|11|14-May-19 13:47:04|INFO|User with username 'luser123' filters results with params '< 300$' and 'discount'
+13|13|14-May-19 13:48:11|INFO|User from ip address '127.0.1.3' paid '100$' for flight '8767'
+14|14|14-May-19 13:48:11|INFO|User from ip address '127.0.1.3' paid '100$' for flight '4340'
+15|15|14-May-19 13:48:11|INFO|User from ip address '127.0.1.3' paid '100$' for flight '251'
+16|16|14-May-19 13:48:11|INFO|User from ip address '127.0.1.3' paid '100$' for flight '2890'
+17|17|14-May-19 13:48:11|INFO|User from ip address '127.0.1.3' paid '100$' for flight '1071'
+18|18|14-May-19 13:48:11|INFO|User from ip address '127.0.1.3' paid '100$' for flight '4507'
+19|19|14-May-19 13:48:11|INFO|User from ip address '127.0.1.3' paid '100$' for flight '1927'
+20|20|14-May-19 13:48:11|INFO|User from ip address '127.0.1.3' paid '100$' for flight '7015'
+21|21|14-May-19 13:48:11|INFO|User from ip address '127.0.1.3' paid '100$' for flight '8885'
+22|22|14-May-19 13:48:11|INFO|User from ip address '127.0.1.3' paid '100$' for flight '5584'
+23|23|14-May-19 13:48:11|INFO|User from ip address '127.0.1.3' paid '100$' for flight '8074'
+24|24|14-May-19 13:48:11|INFO|User from ip address '127.0.1.3' paid '100$' for flight '1790'
+25|25|14-May-19 13:48:11|INFO|User from ip address '127.0.1.3' paid '100$' for flight '9150'
+26|26|14-May-19 13:48:11|INFO|User from ip address '127.0.1.3' paid '100$' for flight '4207'
+27|27|14-May-19 13:48:11|INFO|User from ip address '127.0.1.3' paid '100$' for flight '6930'
+28|28|14-May-19 13:48:11|INFO|User from ip address '127.0.1.3' paid '100$' for flight '4111'
+29|29|14-May-19 13:48:11|INFO|User from ip address '127.0.1.3' paid '100$' for flight '8139'
+30|30|14-May-19 13:48:11|INFO|User from ip address '127.0.1.3' paid '100$' for flight '7749'
+31|31|14-May-19 13:48:11|INFO|User from ip address '127.0.1.3' paid '100$' for flight '1170'
+32|32|14-May-19 13:48:12|INFO|User from ip address '127.0.1.3' paid '100$' for flight '6065'
+33|33|14-May-19 13:48:12|INFO|User from ip address '127.0.1.3' paid '100$' for flight '6986'
+34|34|14-May-19 13:48:12|INFO|User from ip address '127.0.1.3' paid '100$' for flight '1817'
+35|35|14-May-19 13:48:12|INFO|User from ip address '127.0.1.3' paid '100$' for flight '5070'
+36|36|14-May-19 13:48:12|INFO|User from ip address '127.0.1.3' paid '100$' for flight '1430'
+37|37|14-May-19 13:48:12|INFO|User from ip address '127.0.1.3' paid '100$' for flight '9112'
+38|38|14-May-19 13:48:12|INFO|User from ip address '127.0.1.3' paid '100$' for flight '6050'
+39|39|14-May-19 13:48:12|INFO|User from ip address '127.0.1.3' paid '100$' for flight '3709'
+40|40|14-May-19 13:48:12|INFO|User from ip address '127.0.1.3' paid '100$' for flight '7365'
+41|41|14-May-19 13:48:12|INFO|User from ip address '127.0.1.3' paid '100$' for flight '6880'
+42|42|14-May-19 13:48:12|INFO|User from ip address '127.0.1.3' paid '100$' for flight '7147'
+43|43|14-May-19 13:48:12|INFO|User from ip address '127.0.1.3' paid '100$' for flight '5001'
+44|44|14-May-19 13:48:12|INFO|User from ip address '127.0.1.3' paid '100$' for flight '2439'
+45|45|14-May-19 13:48:12|INFO|User from ip address '127.0.1.3' paid '100$' for flight '1030'
+46|46|14-May-19 13:48:12|INFO|User from ip address '127.0.1.3' paid '100$' for flight '3666'
+47|47|14-May-19 13:48:12|INFO|User from ip address '127.0.1.3' paid '100$' for flight '7450'
+48|48|14-May-19 13:48:12|INFO|User from ip address '127.0.1.3' paid '100$' for flight '5664'
+49|49|14-May-19 13:48:13|INFO|User from ip address '127.0.1.3' paid '100$' for flight '9560'
+50|50|14-May-19 13:48:13|INFO|User from ip address '127.0.1.3' paid '100$' for flight '1475'
+51|51|14-May-19 13:48:13|INFO|User from ip address '127.0.1.3' paid '100$' for flight '9535'
+52|52|14-May-19 13:48:13|INFO|User from ip address '127.0.1.3' paid '100$' for flight '2098'
+53|53|14-May-19 13:48:13|INFO|User from ip address '127.0.1.3' paid '100$' for flight '817'
+54|54|14-May-19 13:48:13|INFO|User from ip address '127.0.1.3' paid '100$' for flight '3255'
+55|55|14-May-19 13:48:13|INFO|User from ip address '127.0.1.3' paid '100$' for flight '8640'
+56|56|14-May-19 13:48:13|INFO|User from ip address '127.0.1.3' paid '100$' for flight '1597'
+57|57|14-May-19 13:48:13|INFO|User from ip address '127.0.1.3' paid '100$' for flight '3812'
+58|58|14-May-19 13:48:13|INFO|User from ip address '127.0.1.3' paid '100$' for flight '6911'
+59|59|14-May-19 13:48:14|INFO|User from ip address '127.0.1.3' paid '100$' for flight '7598'
+60|60|14-May-19 13:48:14|INFO|User from ip address '127.0.1.3' paid '100$' for flight '939'
+61|61|14-May-19 13:48:14|INFO|User from ip address '127.0.1.3' paid '100$' for flight '3179'
+62|62|14-May-19 13:48:14|INFO|User from ip address '127.0.1.3' paid '100$' for flight '639'
+63|63|14-May-19 13:48:14|INFO|User from ip address '127.0.1.3' paid '100$' for flight '573'
+64|64|14-May-19 13:48:14|INFO|User from ip address '127.0.1.3' paid '100$' for flight '73'
+65|65|14-May-19 13:48:14|INFO|User from ip address '127.0.1.3' paid '100$' for flight '4979'
+66|66|14-May-19 13:48:14|INFO|User from ip address '127.0.1.3' paid '100$' for flight '5272'
+67|67|14-May-19 13:48:14|INFO|User from ip address '127.0.1.3' paid '100$' for flight '6865'
+280|280|14-May-19 15:15:40|INFO|User from ip address '127.0.1.3' paid '100$' for flight '7662'
+281|281|14-May-19 15:15:40|INFO|User from ip address '127.0.1.3' paid '100$' for flight '3312'
+282|282|14-May-19 15:15:40|INFO|User from ip address '127.0.1.3' paid '100$' for flight '5681'
+283|283|14-May-19 15:15:40|INFO|User from ip address '127.0.1.3' paid '100$' for flight '5766'
+284|284|14-May-19 15:15:40|INFO|User from ip address '127.0.1.3' paid '100$' for flight '4681'
+285|285|14-May-19 15:15:40|INFO|User from ip address '127.0.1.3' paid '100$' for flight '1092'
+286|286|14-May-19 15:15:40|INFO|User from ip address '127.0.1.3' paid '100$' for flight '1546'
+287|287|14-May-19 15:15:40|INFO|User from ip address '127.0.1.3' paid '100$' for flight '1530'
+288|288|14-May-19 15:15:40|INFO|User from ip address '127.0.1.3' paid '100$' for flight '2657'
+289|289|14-May-19 15:15:40|INFO|User from ip address '127.0.1.3' paid '100$' for flight '2500'
+290|290|14-May-19 15:15:40|INFO|User from ip address '127.0.1.3' paid '100$' for flight '526'
+291|291|14-May-19 15:15:40|INFO|User from ip address '127.0.1.3' paid '100$' for flight '4719'
+292|292|14-May-19 15:15:40|INFO|User from ip address '127.0.1.3' paid '100$' for flight '5831'
+293|293|14-May-19 15:15:40|INFO|User from ip address '127.0.1.3' paid '100$' for flight '9168'
+294|294|14-May-19 15:15:41|INFO|User from ip address '127.0.1.3' paid '100$' for flight '473'
+295|295|14-May-19 15:15:41|INFO|User from ip address '127.0.1.3' paid '100$' for flight '7120'
+296|296|14-May-19 15:15:41|INFO|User from ip address '127.0.1.3' paid '100$' for flight '6730'
+297|297|14-May-19 15:15:41|INFO|User from ip address '127.0.1.3' paid '100$' for flight '2704'
+298|298|14-May-19 15:15:41|INFO|User from ip address '127.0.1.3' paid '100$' for flight '473'
+299|299|14-May-19 15:15:41|INFO|User from ip address '127.0.1.3' paid '100$' for flight '1107'
+300|300|14-May-19 15:15:41|INFO|User from ip address '127.0.1.3' paid '100$' for flight '2648'
+301|301|14-May-19 15:15:41|INFO|User from ip address '127.0.1.3' paid '100$' for flight '8830'
+302|302|14-May-19 15:15:41|INFO|User from ip address '127.0.1.3' paid '100$' for flight '153'
+303|303|14-May-19 15:15:41|INFO|User from ip address '127.0.1.3' paid '100$' for flight '3062'
+304|304|14-May-19 15:15:41|INFO|User from ip address '127.0.1.3' paid '100$' for flight '3118'
+305|305|14-May-19 15:15:41|INFO|User from ip address '127.0.1.3' paid '100$' for flight '3824'
+306|306|14-May-19 15:15:41|INFO|User from ip address '127.0.1.3' paid '100$' for flight '8116'
+307|307|14-May-19 15:15:41|INFO|User from ip address '127.0.1.3' paid '100$' for flight '2751'
+308|308|14-May-19 15:15:41|INFO|User from ip address '127.0.1.3' paid '100$' for flight '983'
+309|309|14-May-19 15:15:41|INFO|User from ip address '127.0.1.3' paid '100$' for flight '1417'
+310|310|14-May-19 15:15:41|INFO|User from ip address '127.0.1.3' paid '100$' for flight '1259'
+311|311|14-May-19 15:15:41|INFO|User from ip address '127.0.1.3' paid '100$' for flight '188'
+312|312|14-May-19 15:15:41|INFO|User from ip address '127.0.1.3' paid '100$' for flight '3941'
+313|313|14-May-19 15:15:41|INFO|User from ip address '127.0.1.3' paid '100$' for flight '5728'
+314|314|14-May-19 15:15:41|INFO|User from ip address '127.0.1.3' paid '100$' for flight '8698'
+315|315|14-May-19 15:15:42|INFO|User from ip address '127.0.1.3' paid '100$' for flight '3439'
+316|316|14-May-19 15:15:42|INFO|User from ip address '127.0.1.3' paid '100$' for flight '100'
+317|317|14-May-19 15:15:42|INFO|User from ip address '127.0.1.3' paid '100$' for flight '6020'
+318|318|14-May-19 15:15:42|INFO|User from ip address '127.0.1.3' paid '100$' for flight '2307'
+319|319|14-May-19 15:15:42|INFO|User from ip address '127.0.1.3' paid '100$' for flight '4477'
+320|320|14-May-19 15:15:42|INFO|User from ip address '127.0.1.3' paid '100$' for flight '4810'
+321|321|14-May-19 15:15:42|INFO|User from ip address '127.0.1.3' paid '100$' for flight '8925'
+322|322|14-May-19 15:15:43|INFO|User from ip address '127.0.1.3' paid '100$' for flight '9072'
+323|323|14-May-19 15:15:43|INFO|User from ip address '127.0.1.3' paid '100$' for flight '5332'
+324|324|14-May-19 15:15:43|INFO|User from ip address '127.0.1.3' paid '100$' for flight '1722'
+325|325|14-May-19 15:15:43|INFO|User from ip address '127.0.1.3' paid '100$' for flight '1211'
+326|326|14-May-19 15:15:43|INFO|User from ip address '127.0.1.3' paid '100$' for flight '4638'
+327|327|14-May-19 15:15:43|INFO|User from ip address '127.0.1.3' paid '100$' for flight '215'
+328|328|14-May-19 15:15:43|INFO|User from ip address '127.0.1.3' paid '100$' for flight '1614'
+329|329|14-May-19 15:15:43|INFO|User from ip address '127.0.1.3' paid '100$' for flight '3411'
+330|330|14-May-19 15:15:44|INFO|User from ip address '127.0.1.3' paid '100$' for flight '3266'
+331|331|14-May-19 15:15:44|INFO|User from ip address '127.0.1.3' paid '100$' for flight '6988'
+332|332|14-May-19 15:15:44|INFO|User from ip address '127.0.1.3' paid '100$' for flight '7094'
+333|333|14-May-19 15:15:44|INFO|User from ip address '127.0.1.3' paid '100$' for flight '3294'
+334|334|14-May-19 15:15:45|INFO|User from ip address '127.0.1.3' paid '100$' for flight '9227'
+335|335|14-May-19 15:15:48|INFO|User with username 'luser123' chose fly from 'london' to 'moscow'
+336|336|14-May-19 15:15:48|INFO|User with username 'luser123' filters results with params '< 300$' and 'discount'
+337|337|14-May-19 15:15:54|INFO|User with username 'luser123' sends question
+338|338|14-May-19 15:15:54|INFO|Message successfully sent on email ask@megatravel.com
+351|351|14-May-19 15:16:02|INFO|Tickets for flight '2312' successfully retrieved
+352|352|14-May-19 15:16:02|INFO|User with username 'luser123' buys bussines ticket for flight '2312'
+353|353|14-May-19 15:16:02|INFO|Transaction successfully passed for user with username 'luser123' for flight '2312'
+354|354|14-May-19 15:16:09|INFO|User with username 'luser123' sends question
+355|355|14-May-19 15:16:09|INFO|Message successfully sent on email ask@megatravel.com
+363|363|14-May-19 15:16:16|INFO|User with username 'luser123' chose fly from 'london' to 'moscow'
+364|364|14-May-19 15:16:17|INFO|User with username 'luser123' filters results with params '< 300$' and 'discount'
+365|365|14-May-19 15:16:22|INFO|User with username 'luser123' chose fly from 'london' to 'moscow'
+366|366|14-May-19 15:16:22|INFO|User with username 'luser123' filters results with params '< 300$' and 'discount'
+367|367|14-May-19 15:16:28|INFO|User from ip address '127.0.1.3' paid '100$' for flight '8608'
+368|368|14-May-19 15:16:28|INFO|User from ip address '127.0.1.3' paid '100$' for flight '7620'
+369|369|14-May-19 15:16:28|INFO|User from ip address '127.0.1.3' paid '100$' for flight '6714'
+370|370|14-May-19 15:16:28|INFO|User from ip address '127.0.1.3' paid '100$' for flight '8543'
+371|371|14-May-19 15:16:28|INFO|User from ip address '127.0.1.3' paid '100$' for flight '9023'
+372|372|14-May-19 15:16:28|INFO|User from ip address '127.0.1.3' paid '100$' for flight '9788'
+373|373|14-May-19 15:16:28|INFO|User from ip address '127.0.1.3' paid '100$' for flight '532'
+374|374|14-May-19 15:16:28|INFO|User from ip address '127.0.1.3' paid '100$' for flight '2317'
+375|375|14-May-19 15:16:28|INFO|User from ip address '127.0.1.3' paid '100$' for flight '6408'
+376|376|14-May-19 15:16:28|INFO|User from ip address '127.0.1.3' paid '100$' for flight '7050'
+377|377|14-May-19 15:16:28|INFO|User from ip address '127.0.1.3' paid '100$' for flight '3434'
+378|378|14-May-19 15:16:28|INFO|User from ip address '127.0.1.3' paid '100$' for flight '6802'
+379|379|14-May-19 15:16:28|INFO|User from ip address '127.0.1.3' paid '100$' for flight '8294'
+380|380|14-May-19 15:16:28|INFO|User from ip address '127.0.1.3' paid '100$' for flight '1381'
+381|381|14-May-19 15:16:28|INFO|User from ip address '127.0.1.3' paid '100$' for flight '3400'
+382|382|14-May-19 15:16:28|INFO|User from ip address '127.0.1.3' paid '100$' for flight '7416'
+383|383|14-May-19 15:16:28|INFO|User from ip address '127.0.1.3' paid '100$' for flight '4690'
+384|384|14-May-19 15:16:28|INFO|User from ip address '127.0.1.3' paid '100$' for flight '2771'
+385|385|14-May-19 15:16:28|INFO|User from ip address '127.0.1.3' paid '100$' for flight '3486'
+386|386|14-May-19 15:16:28|INFO|User from ip address '127.0.1.3' paid '100$' for flight '7586'
+387|387|14-May-19 15:16:28|INFO|User from ip address '127.0.1.3' paid '100$' for flight '5159'
+388|388|14-May-19 15:16:29|INFO|User from ip address '127.0.1.3' paid '100$' for flight '469'
+389|389|14-May-19 15:16:29|INFO|User from ip address '127.0.1.3' paid '100$' for flight '5998'
+390|390|14-May-19 15:16:29|INFO|User from ip address '127.0.1.3' paid '100$' for flight '5948'
+391|391|14-May-19 15:16:29|INFO|User from ip address '127.0.1.3' paid '100$' for flight '1665'
+392|392|14-May-19 15:16:29|INFO|User from ip address '127.0.1.3' paid '100$' for flight '9416'
+393|393|14-May-19 15:16:29|INFO|User from ip address '127.0.1.3' paid '100$' for flight '3293'
+394|394|14-May-19 15:16:29|INFO|User from ip address '127.0.1.3' paid '100$' for flight '6587'
+395|395|14-May-19 15:16:29|INFO|User from ip address '127.0.1.3' paid '100$' for flight '605'
+396|396|14-May-19 15:16:29|INFO|User from ip address '127.0.1.3' paid '100$' for flight '2815'
+397|397|14-May-19 15:16:29|INFO|User from ip address '127.0.1.3' paid '100$' for flight '4993'
+398|398|14-May-19 15:16:29|INFO|User from ip address '127.0.1.3' paid '100$' for flight '4192'
+399|399|14-May-19 15:16:29|INFO|User from ip address '127.0.1.3' paid '100$' for flight '5833'
+400|400|14-May-19 15:16:29|INFO|User from ip address '127.0.1.3' paid '100$' for flight '7513'
+401|401|14-May-19 15:16:29|INFO|User from ip address '127.0.1.3' paid '100$' for flight '5317'
+402|402|14-May-19 15:16:29|INFO|User from ip address '127.0.1.3' paid '100$' for flight '3024'
+403|403|14-May-19 15:16:30|INFO|User from ip address '127.0.1.3' paid '100$' for flight '688'
+404|404|14-May-19 15:16:30|INFO|User from ip address '127.0.1.3' paid '100$' for flight '6598'
+405|405|14-May-19 15:16:30|INFO|User from ip address '127.0.1.3' paid '100$' for flight '2045'
+406|406|14-May-19 15:16:30|INFO|User from ip address '127.0.1.3' paid '100$' for flight '1181'
+407|407|14-May-19 15:16:30|INFO|User from ip address '127.0.1.3' paid '100$' for flight '7785'
+408|408|14-May-19 15:16:31|INFO|User from ip address '127.0.1.3' paid '100$' for flight '2855'
+409|409|14-May-19 15:16:31|INFO|User from ip address '127.0.1.3' paid '100$' for flight '7325'
+410|410|14-May-19 15:16:31|INFO|User from ip address '127.0.1.3' paid '100$' for flight '9946'
+411|411|14-May-19 15:16:31|INFO|User from ip address '127.0.1.3' paid '100$' for flight '5435'
+412|412|14-May-19 15:16:31|INFO|User from ip address '127.0.1.3' paid '100$' for flight '7818'
+413|413|14-May-19 15:16:31|INFO|User from ip address '127.0.1.3' paid '100$' for flight '4512'
+414|414|14-May-19 15:16:32|INFO|User from ip address '127.0.1.3' paid '100$' for flight '8894'
+415|415|14-May-19 15:16:32|INFO|User from ip address '127.0.1.3' paid '100$' for flight '807'
+416|416|14-May-19 15:16:32|INFO|User from ip address '127.0.1.3' paid '100$' for flight '3468'
+417|417|14-May-19 15:16:33|INFO|User from ip address '127.0.1.3' paid '100$' for flight '341'
+418|418|14-May-19 15:16:33|INFO|User from ip address '127.0.1.3' paid '100$' for flight '8438'
+419|419|14-May-19 15:16:33|INFO|User from ip address '127.0.1.3' paid '100$' for flight '2216'
+420|420|14-May-19 15:16:33|INFO|User from ip address '127.0.1.3' paid '100$' for flight '4169'
+421|421|14-May-19 15:16:33|INFO|User from ip address '127.0.1.3' paid '100$' for flight '2155'
+422|422|14-May-19 15:16:36|INFO|User with username 'luser123' sends question
+423|423|14-May-19 15:16:36|INFO|Message successfully sent on email ask@megatravel.com
+424|424|14-May-19 15:16:40|INFO|Tickets for flight '5132' successfully retrieved
+425|425|14-May-19 15:16:40|INFO|User with username 'luser123' buys bussines ticket for flight '5132'
+426|426|14-May-19 15:16:41|INFO|Transaction successfully passed for user with username 'luser123' for flight '5132'
+427|427|14-May-19 15:16:48|INFO|User from ip address '127.0.1.3' accessed GET flights/today
+428|428|14-May-19 15:16:48|INFO|User from ip address '127.0.1.3' accessed GET flights/today
+429|429|14-May-19 15:16:48|INFO|User from ip address '127.0.1.3' accessed GET flights/today
+430|430|14-May-19 15:16:48|INFO|User from ip address '127.0.1.3' accessed GET flights/today
+431|431|14-May-19 15:16:48|INFO|User from ip address '127.0.1.3' accessed GET flights/today
+432|432|14-May-19 15:16:48|INFO|User from ip address '127.0.1.3' accessed GET flights/today
+433|433|14-May-19 15:16:48|INFO|User from ip address '127.0.1.3' accessed GET flights/today
+434|434|14-May-19 15:16:48|INFO|User from ip address '127.0.1.3' accessed GET flights/today
+435|435|14-May-19 15:16:48|INFO|User from ip address '127.0.1.3' accessed GET flights/today
+436|436|14-May-19 15:16:48|INFO|User from ip address '127.0.1.3' accessed GET flights/today
+437|437|14-May-19 15:16:48|INFO|User from ip address '127.0.1.3' accessed GET flights/today
+438|438|14-May-19 15:16:48|INFO|User from ip address '127.0.1.3' accessed GET flights/today
+439|439|14-May-19 15:16:48|INFO|User from ip address '127.0.1.3' accessed GET flights/today
+440|440|14-May-19 15:16:48|INFO|User from ip address '127.0.1.3' accessed GET flights/today
+441|441|14-May-19 15:16:48|INFO|User from ip address '127.0.1.3' accessed GET flights/today
+442|442|14-May-19 15:16:48|INFO|User from ip address '127.0.1.3' accessed GET flights/today
+443|443|14-May-19 15:16:48|INFO|User from ip address '127.0.1.3' accessed GET flights/today
+444|444|14-May-19 15:16:48|INFO|User from ip address '127.0.1.3' accessed GET flights/today
+445|445|14-May-19 15:16:48|INFO|User from ip address '127.0.1.3' accessed GET flights/today
+446|446|14-May-19 15:16:48|INFO|User from ip address '127.0.1.3' accessed GET flights/today
+447|447|14-May-19 15:16:49|INFO|User from ip address '127.0.1.3' accessed GET flights/today
+448|448|14-May-19 15:16:49|INFO|User from ip address '127.0.1.3' accessed GET flights/today
+449|449|14-May-19 15:16:49|INFO|User from ip address '127.0.1.3' accessed GET flights/today
+450|450|14-May-19 15:16:49|INFO|User from ip address '127.0.1.3' accessed GET flights/today
+451|451|14-May-19 15:16:49|INFO|User from ip address '127.0.1.3' accessed GET flights/today
+452|452|14-May-19 15:16:49|INFO|User from ip address '127.0.1.3' accessed GET flights/today
+453|453|14-May-19 15:16:49|INFO|User from ip address '127.0.1.3' accessed GET flights/today
+454|454|14-May-19 15:16:49|INFO|User from ip address '127.0.1.3' accessed GET flights/today
+455|455|14-May-19 15:16:49|INFO|User from ip address '127.0.1.3' accessed GET flights/today
+456|456|14-May-19 15:16:49|INFO|User from ip address '127.0.1.3' accessed GET flights/today
+457|457|14-May-19 15:16:49|INFO|User from ip address '127.0.1.3' accessed GET flights/today
+458|458|14-May-19 15:16:49|INFO|User from ip address '127.0.1.3' accessed GET flights/today
+459|459|14-May-19 15:16:49|INFO|User from ip address '127.0.1.3' accessed GET flights/today
+460|460|14-May-19 15:16:49|INFO|User from ip address '127.0.1.3' accessed GET flights/today
+461|461|14-May-19 15:16:49|INFO|User from ip address '127.0.1.3' accessed GET flights/today
+462|462|14-May-19 15:16:49|INFO|User from ip address '127.0.1.3' accessed GET flights/today
+463|463|14-May-19 15:16:49|INFO|User from ip address '127.0.1.3' accessed GET flights/today
+464|464|14-May-19 15:16:50|INFO|User from ip address '127.0.1.3' accessed GET flights/today
+465|465|14-May-19 15:16:50|INFO|User from ip address '127.0.1.3' accessed GET flights/today
+466|466|14-May-19 15:16:50|INFO|User from ip address '127.0.1.3' accessed GET flights/today
+467|467|14-May-19 15:16:50|INFO|User from ip address '127.0.1.3' accessed GET flights/today
+468|468|14-May-19 15:16:50|INFO|User from ip address '127.0.1.3' accessed GET flights/today
+469|469|14-May-19 15:16:50|INFO|User from ip address '127.0.1.3' accessed GET flights/today
+470|470|14-May-19 15:16:50|INFO|User from ip address '127.0.1.3' accessed GET flights/today
+471|471|14-May-19 15:16:50|INFO|User from ip address '127.0.1.3' accessed GET flights/today
+472|472|14-May-19 15:16:50|INFO|User from ip address '127.0.1.3' accessed GET flights/today
+473|473|14-May-19 15:16:50|INFO|User from ip address '127.0.1.3' accessed GET flights/today
+474|474|14-May-19 15:16:51|INFO|User from ip address '127.0.1.3' accessed GET flights/today
+475|475|14-May-19 15:16:51|INFO|User from ip address '127.0.1.3' accessed GET flights/today
+476|476|14-May-19 15:16:52|INFO|User from ip address '127.0.1.3' accessed GET flights/today
+477|477|14-May-19 15:16:52|INFO|User from ip address '127.0.1.3' accessed GET flights/today
+478|478|14-May-19 15:16:52|INFO|User from ip address '127.0.1.3' accessed GET flights/today
+479|479|14-May-19 15:16:52|INFO|User from ip address '127.0.1.3' accessed GET flights/today
+480|480|14-May-19 15:16:52|INFO|User from ip address '127.0.1.3' accessed GET flights/today
+481|481|14-May-19 15:16:53|INFO|User from ip address '127.0.1.3' accessed GET flights/today
+482|482|14-May-19 15:16:56|INFO|User with username 'luser123' sends question
+483|483|14-May-19 15:16:56|INFO|Message successfully sent on email ask@megatravel.com
+484|484|14-May-19 15:17:00|INFO|User with username 'luser123' chose fly from 'london' to 'moscow'
+485|485|14-May-19 15:17:00|INFO|User with username 'luser123' filters results with params '< 300$' and 'discount'
+486|486|14-May-19 15:17:05|ERROR|Exception in thread main java.lang.NullPointerException
+487|486|14-May-19 15:17:05|TRACE|at com.example.myproject.Flight.getTitle(Flight.java:16)
+488|486|14-May-19 15:17:05|TRACE|at com.example.myproject.Ticket.getBookTitles(Ticket.java:25)
+489|489|14-May-19 15:17:09|INFO|User with username 'luser123' chose fly from 'london' to 'moscow'
+490|490|14-May-19 15:17:09|INFO|User with username 'luser123' filters results with params '< 300$' and 'discount'
+491|491|14-May-19 15:17:15|INFO|User with username 'luser123' sends question
+492|492|14-May-19 15:17:15|INFO|Message successfully sent on email ask@megatravel.com
+548|548|14-May-19 15:17:28|INFO|Tickets for flight '2555' successfully retrieved
+549|549|14-May-19 15:17:28|INFO|User with username 'luser123' buys bussines ticket for flight '2555'
+550|550|14-May-19 15:17:28|INFO|Transaction successfully passed for user with username 'luser123' for flight '2555'
+551|551|14-May-19 15:17:35|INFO|User with username 'luser123' sends question
+552|552|14-May-19 15:17:35|INFO|Message successfully sent on email ask@megatravel.com
+553|553|14-May-19 15:17:39|INFO|User from ip address '127.0.1.3' accessed GET flights/today
+554|554|14-May-19 15:17:39|INFO|User from ip address '127.0.1.3' accessed GET flights/today
+555|555|14-May-19 15:17:39|INFO|User from ip address '127.0.1.3' accessed GET flights/today
+556|556|14-May-19 15:17:39|INFO|User from ip address '127.0.1.3' accessed GET flights/today
+557|557|14-May-19 15:17:40|INFO|User from ip address '127.0.1.3' accessed GET flights/today
+558|558|14-May-19 15:17:40|INFO|User from ip address '127.0.1.3' accessed GET flights/today
+559|559|14-May-19 15:17:40|INFO|User from ip address '127.0.1.3' accessed GET flights/today
+560|560|14-May-19 15:17:40|INFO|User from ip address '127.0.1.3' accessed GET flights/today
+561|561|14-May-19 15:17:40|INFO|User from ip address '127.0.1.3' accessed GET flights/today
+562|562|14-May-19 15:17:40|INFO|User from ip address '127.0.1.3' accessed GET flights/today
+563|563|14-May-19 15:17:40|INFO|User from ip address '127.0.1.3' accessed GET flights/today
+564|564|14-May-19 15:17:40|INFO|User from ip address '127.0.1.3' accessed GET flights/today
+565|565|14-May-19 15:17:40|INFO|User from ip address '127.0.1.3' accessed GET flights/today
+566|566|14-May-19 15:17:40|INFO|User from ip address '127.0.1.3' accessed GET flights/today
+567|567|14-May-19 15:17:40|INFO|User from ip address '127.0.1.3' accessed GET flights/today
+568|568|14-May-19 15:17:40|INFO|User from ip address '127.0.1.3' accessed GET flights/today
+569|569|14-May-19 15:17:40|INFO|User from ip address '127.0.1.3' accessed GET flights/today
+570|570|14-May-19 15:17:40|INFO|User from ip address '127.0.1.3' accessed GET flights/today
+571|571|14-May-19 15:17:40|INFO|User from ip address '127.0.1.3' accessed GET flights/today
+572|572|14-May-19 15:17:40|INFO|User from ip address '127.0.1.3' accessed GET flights/today
+573|573|14-May-19 15:17:40|INFO|User from ip address '127.0.1.3' accessed GET flights/today
+574|574|14-May-19 15:17:40|INFO|User from ip address '127.0.1.3' accessed GET flights/today
+575|575|14-May-19 15:17:40|INFO|User from ip address '127.0.1.3' accessed GET flights/today
+576|576|14-May-19 15:17:40|INFO|User from ip address '127.0.1.3' accessed GET flights/today
+577|577|14-May-19 15:17:40|INFO|User from ip address '127.0.1.3' accessed GET flights/today
+578|578|14-May-19 15:17:40|INFO|User from ip address '127.0.1.3' accessed GET flights/today
+579|579|14-May-19 15:17:41|INFO|User from ip address '127.0.1.3' accessed GET flights/today
+580|580|14-May-19 15:17:41|INFO|User from ip address '127.0.1.3' accessed GET flights/today
+581|581|14-May-19 15:17:41|INFO|User from ip address '127.0.1.3' accessed GET flights/today
+582|582|14-May-19 15:17:41|INFO|User from ip address '127.0.1.3' accessed GET flights/today
+583|583|14-May-19 15:17:41|INFO|User from ip address '127.0.1.3' accessed GET flights/today
+584|584|14-May-19 15:17:41|INFO|User from ip address '127.0.1.3' accessed GET flights/today
+585|585|14-May-19 15:17:41|INFO|User from ip address '127.0.1.3' accessed GET flights/today
+586|586|14-May-19 15:17:41|INFO|User from ip address '127.0.1.3' accessed GET flights/today
+587|587|14-May-19 15:17:41|INFO|User from ip address '127.0.1.3' accessed GET flights/today
+588|588|14-May-19 15:17:41|INFO|User from ip address '127.0.1.3' accessed GET flights/today
+589|589|14-May-19 15:17:41|INFO|User from ip address '127.0.1.3' accessed GET flights/today
+590|590|14-May-19 15:17:41|INFO|User from ip address '127.0.1.3' accessed GET flights/today
+591|591|14-May-19 15:17:41|INFO|User from ip address '127.0.1.3' accessed GET flights/today
+592|592|14-May-19 15:17:42|INFO|User from ip address '127.0.1.3' accessed GET flights/today
+593|593|14-May-19 15:17:42|INFO|User from ip address '127.0.1.3' accessed GET flights/today
+594|594|14-May-19 15:17:42|INFO|User from ip address '127.0.1.3' accessed GET flights/today
+595|595|14-May-19 15:17:42|INFO|User from ip address '127.0.1.3' accessed GET flights/today
+596|596|14-May-19 15:17:42|INFO|User from ip address '127.0.1.3' accessed GET flights/today
+597|597|14-May-19 15:17:42|INFO|User from ip address '127.0.1.3' accessed GET flights/today
+598|598|14-May-19 15:17:42|INFO|User from ip address '127.0.1.3' accessed GET flights/today
+599|599|14-May-19 15:17:42|INFO|User from ip address '127.0.1.3' accessed GET flights/today
+600|600|14-May-19 15:17:43|INFO|User from ip address '127.0.1.3' accessed GET flights/today
+601|601|14-May-19 15:17:43|INFO|User from ip address '127.0.1.3' accessed GET flights/today
+602|602|14-May-19 15:17:43|INFO|User from ip address '127.0.1.3' accessed GET flights/today
+603|603|14-May-19 15:17:43|INFO|User from ip address '127.0.1.3' accessed GET flights/today
+604|604|14-May-19 15:17:43|INFO|User from ip address '127.0.1.3' accessed GET flights/today
+605|605|14-May-19 15:17:43|INFO|User from ip address '127.0.1.3' accessed GET flights/today
+606|606|14-May-19 15:17:44|INFO|User from ip address '127.0.1.3' accessed GET flights/today
+607|607|14-May-19 15:17:44|INFO|User from ip address '127.0.1.3' accessed GET flights/today
+608|608|14-May-19 15:17:48|INFO|User with username 'luser123' sends question
+609|609|14-May-19 15:17:48|INFO|Message successfully sent on email ask@megatravel.com

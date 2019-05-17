@@ -3,18 +3,28 @@
 scan-logs:
   # lista monitoring elemenata (foldera i fajlova) koji ce biti posmatrani
   monitoring-elements:
-    -
-      path: C:\Windows\System32\winevt\Logs
-      includesFiles:
-        - Setup.*
-      excludesFiles: []
+    #-
+    #  path: C:\Windows\System32\winevt\Logs
+    #  includesFiles:
+    #    - Setup.*
+    #  excludesFiles: []
       # lista regex-a koji ce se koristiti pri filtriranju logova
-      includes: []
+    #  includes: []
       # lista regex-a - ovde ce biti filtrirani logovi koji su prosli filtriranje po includes regex-ima (regexi su razdvojeni zarezom)
-      excludes:
-        - .*Event ID:\s*1.*
+    #  excludes:
+    #    - .*Event ID:\s*1.*
+    #  interval: 0
+      # lokalni interval,
+      # u sekundama,
+      # Ako je vrednost intervala 0, onda se readi o real-time rezimu rada,
+      # ako je vrednost intervala veca od 0, onda se radi o batch rezimu rada,
+      # a ako je vrednost null onda ce se koristiti vrednost globalnog intervala.
+      # Ne smeju se zadavati negativne vrednosti
+
+
     -
       path: ./SIEM/LogSimulator/Logs/Logs_11.05.2019.txt
+      #path: C:/bsep_sbz_workspace/MegaTravel/SIEM/LogSimulator/Logs/Logs_11.05.2019.txt
       # Posto je zadata putanja bas do fajla, a ne foldera, onda ne smemo imati property-je includesFiles i excludesFiles
       # includesFiles: []
       # excludesFiles: []
@@ -25,8 +35,16 @@ scan-logs:
       # lista regex-a - ovde ce biti filtrirani logovi koji su prosli filtriranje po includes regex-ima (regexi su razdvojeni zarezom)
       excludes:
         - .*OS.*
+      interval: null
+      # lokalni interval,
+      # u sekundama,
+      # Ako je vrednost intervala 0, onda se readi o real-time rezimu rada,
+      # ako je vrednost intervala veca od 0, onda se radi o batch rezimu rada,
+      # a ako je vrednost null onda ce se koristiti vrednost globalnog intervala.
+      # Ne smeju se zadavati negativne vrednosti
     -
       path: ./SIEM/LogSimulator/Logs/AntivirusLogs
+      #path: C:/bsep_sbz_workspace/MegaTravel/SIEM/LogSimulator/Logs/AntivirusLogs
       includesFiles:
         - Logs.*
       excludesFiles: []
@@ -36,18 +54,34 @@ scan-logs:
       # lista regex-a - ovde ce biti filtrirani logovi koji su prosli filtriranje po includes regex-ima (regexi su razdvojeni zarezom)
       excludes:
         - .*OS.*
+      interval: 10
+      # lokalni interval,
+      # u sekundama,
+      # Ako je vrednost intervala 0, onda se readi o real-time rezimu rada,
+      # ako je vrednost intervala veca od 0, onda se radi o batch rezimu rada,
+      # a ako je vrednost null onda ce se koristiti vrednost globalnog intervala.
+      # Ne smeju se zadavati negativne vrednosti
     -
       path: ./SIEM/LogSimulator/Logs/LoginLogs
-      includesFiles:
-        - .*h@cker.*
+      #path: C:/bsep_sbz_workspace/MegaTravel/SIEM/LogSimulator/Logs/LoginLogs
+      includesFiles: []
       excludesFiles: []
       # lista regex-a koji ce se koristiti pri filtriranju logova
-      includes: []
+      includes:
+        - .*username.*
       # lista regex-a - ovde ce biti filtrirani logovi koji su prosli filtriranje po includes regex-ima (regexi su razdvojeni zarezom)
       excludes:
-        - .*127\.0\.1\.3.*
+        - .*127\.0\.1\.1.*
+      interval: 0
+      # lokalni interval,
+      # u sekundama,
+      # Ako je vrednost intervala 0, onda se readi o real-time rezimu rada,
+      # ako je vrednost intervala veca od 0, onda se radi o batch rezimu rada,
+      # a ako je vrednost null onda ce se koristiti vrednost globalnog intervala.
+      # Ne smeju se zadavati negativne vrednosti
     -
       path: ./SIEM/LogSimulator/Logs/OtherLogs
+      #path: C:/bsep_sbz_workspace/MegaTravel/SIEM/LogSimulator/Logs/OtherLogs
       includesFiles: []
       excludesFiles:
         - .*07.05.2019.*
@@ -58,6 +92,13 @@ scan-logs:
       # lista regex-a - ovde ce biti filtrirani logovi koji su prosli filtriranje po includes regex-ima (regexi su razdvojeni zarezom)
       excludes:
         - .*User from ip address.*
+      interval: null # mogli smo i da ne napisemo ovaj lokalni interval, i onda bi njemu isto bio dodeljen null
+      # lokalni interval,
+      # u sekundama,
+      # Ako je vrednost intervala 0, onda se readi o real-time rezimu rada,
+      # ako je vrednost intervala veca od 0, onda se radi o batch rezimu rada,
+      # a ako je vrednost null onda ce se koristiti vrednost globalnog intervala.
+      # Ne smeju se zadavati negativne vrednosti
 
   includes: []
   # globalni regexi - odnose se na sve logove
@@ -68,6 +109,8 @@ scan-logs:
   # lista regex-a - ovde ce biti filtrirani logovi koji su prosli filtriranje po includes regex-ima (regexi su razdvojeni zarezom)
 
   interval: 0
+  # globalni interval,
   # u sekundama,
   # ako je vrednost intervala 0, onda se readi o real-time rezimu rada,
   # a ako je vrednost intervala veca od 0, onda se radi o batch rezimu rada
+  # Vrednost ne sme biti negativna

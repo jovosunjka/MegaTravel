@@ -1,7 +1,6 @@
 import com.bsep_sbz.SIEMCenter.model.sbz.Log;
 import com.bsep_sbz.SIEMCenter.model.sbz.enums.LogLevel;
 import com.bsep_sbz.SIEMCenter.model.sbz.enums.LogCategory;
-import com.bsep_sbz.SIEMCenter.model.sbz.AntivirusLog;
 
 import java.lang.Number;
 

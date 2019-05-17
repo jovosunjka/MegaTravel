@@ -27,7 +27,8 @@ public class RuleService implements IRuleService {
     @Autowired
     private KieContainer kieContainer;
 
-    private DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd.MM.yyyy. HH:mm:ss");
+    //private DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd.MM.yyyy. HH:mm:ss");
+    private DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd-MMM-yy HH:mm:ss");
 
     @EventListener(ApplicationReadyEvent.class)
     @Override
@@ -119,15 +120,19 @@ public class RuleService implements IRuleService {
             try {
                 Long id = Long.parseLong(tokens[0]);
                 String timestamp = tokens[2];
+                if(timestamp.endsWith("PM")) {
+                    timestamp = timestamp.replace("PM", "").trim();
+                }
+
                 LogLevel ll = LogLevel.valueOf(tokens[3]);
                 String message = tokens[4];
                 LogCategory logCategory = LogCategory.APP;
-                Log logCreated = new Log(id,ll, logCategory,timestamp, "","", message);
+                Log logCreated = new Log(id,ll, logCategory, timestamp, "","", message);
                 logsRet.add(logCreated);
 
 
             } catch (Exception e) {
-                System.out.println(e.getMessage());
+                e.printStackTrace();
             }
 
 
