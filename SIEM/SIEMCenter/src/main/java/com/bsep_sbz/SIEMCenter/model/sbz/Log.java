@@ -1,6 +1,7 @@
 package com.bsep_sbz.SIEMCenter.model.sbz;
 
 
+import com.bsep_sbz.SIEMCenter.model.sbz.enums.LogCategory;
 import com.bsep_sbz.SIEMCenter.model.sbz.enums.LogLevel;
 
 import java.text.ParseException;
@@ -13,7 +14,8 @@ import java.util.concurrent.TimeUnit;
 public class Log {
     private Long id;
     private LogLevel type;
-    private List<String> sources;
+    private LogCategory category;
+    private String source;
     private Date timestamp;
     private String hostAddress;
     private String message;
@@ -24,15 +26,24 @@ public class Log {
     public Log() {
 
     }
-
-    public Log(Long id, LogLevel type, String timestampStr, String hostAddress, String message) {
+    
+    
+    public Log(Long id, LogLevel type, LogCategory category, Date timestamp, String source, String hostAddress, String message) throws ParseException {
         this.id = id;
         this.type = type;
-        try {
-            this.timestamp = sdf.parse(timestampStr);
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
+        this.category = category;
+        this.timestamp = timestamp;
+        this.source = source;
+        this.hostAddress = hostAddress;
+        this.message = message;
+    }
+
+    public Log(Long id, LogLevel type, LogCategory category, String timestampStr, String source, String hostAddress, String message) throws ParseException {
+        this.id = id;
+        this.type = type;
+        this.category = category;
+        this.timestamp = sdf.parse(timestampStr);
+        this.source = source;
         this.hostAddress = hostAddress;
         this.message = message;
     }
@@ -61,9 +72,13 @@ public class Log {
         this.type = type;
     }
 
-    public List<String> getSources() { return sources; }
+    public LogCategory getCategory() { return category; }
 
-    public void setSources(List<String> sources) { this.sources = sources; }
+    public void setCategory(LogCategory category) { this.category = category; }
+
+    public String getSource() { return source; }
+
+    public void setSource(String source) { this.source = source; }
 
     /*public LocalDateTime getTimestamp() {
         return timestamp;
