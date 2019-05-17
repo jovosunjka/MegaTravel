@@ -3,6 +3,7 @@ package com.bsep_sbz.WindowsAgent.controller;
 import com.bsep_sbz.WindowsAgent.controller.dto.MessageDto;
 import com.bsep_sbz.WindowsAgent.model.Address;
 import com.bsep_sbz.WindowsAgent.model.Addresses;
+import com.bsep_sbz.WindowsAgent.service.LogsService;
 import com.bsep_sbz.WindowsAgent.service.interfaces.ICommunicationConfigurationService;
 import com.bsep_sbz.WindowsAgent.service.interfaces.IConfigurationPropertiesService;
 import com.bsep_sbz.WindowsAgent.service.interfaces.IModelMapperWrapper;
@@ -13,6 +14,11 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @RestController
 @RequestMapping(value = "/logs")
@@ -22,19 +28,23 @@ public class LogsController
     private ICommunicationConfigurationService _communicationConfigurationService;
     private IModelMapperWrapper _modelMapperWrapper;
     private RestTemplate _restTemplate;
+    private LogsService _logService;
 
     @Autowired
     public LogsController(
             IConfigurationPropertiesService globalProperties,
             ICommunicationConfigurationService communicationConfigurationService,
             IModelMapperWrapper modelMapperWrapper,
-            RestTemplate restTemplate)
+            RestTemplate restTemplate,
+            LogsService logsService)
     {
         _globalProperties = globalProperties;
         _communicationConfigurationService = communicationConfigurationService;
         _modelMapperWrapper = modelMapperWrapper;
         _restTemplate = restTemplate;
+        _logService = logsService;
     }
+    /*
 
     @RequestMapping(value = "/send", method = RequestMethod.POST)
     @ResponseBody
@@ -55,4 +65,20 @@ public class LogsController
         }
         return new ResponseEntity<>(HttpStatus.OK);
     }
+    
+    @RequestMapping(value = "/send-logs", method = RequestMethod.POST)
+    public ResponseEntity<List<String>> sendLog(@RequestBody List<String> logs) throws IOException
+    {
+    	logs = _logService.logFilter(logs);
+    	
+        try {
+            _restTemplate
+                    .postForEntity("http://localhost:8081/logs/process", logs, List.class);
+        }
+        catch (Exception exception) {
+            return new ResponseEntity<>(HttpStatus.BAD_GATEWAY);
+        }
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+    */
 }

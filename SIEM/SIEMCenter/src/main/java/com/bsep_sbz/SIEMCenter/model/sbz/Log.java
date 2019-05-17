@@ -26,6 +26,17 @@ public class Log {
     public Log() {
 
     }
+    
+    
+    public Log(Long id, LogLevel type, LogCategory category, Date timestamp, String source, String hostAddress, String message) throws ParseException {
+        this.id = id;
+        this.type = type;
+        this.category = category;
+        this.timestamp = timestamp;
+        this.source = source;
+        this.hostAddress = hostAddress;
+        this.message = message;
+    }
 
     public Log(Long id, LogLevel type, LogCategory category, String timestampStr, String source, String hostAddress, String message) throws ParseException {
         this.id = id;
