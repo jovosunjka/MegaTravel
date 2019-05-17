@@ -15,7 +15,7 @@ namespace LogSimulator.State
             for(int i = 0; i < count; i++)
             {
                 var log = logService.GetLog($"User from ip address '{appSettings.MaliciousIpAddress}' accessed GET flights/today");
-                logService.WriteLogToFile(appSettings.LogsFilePath, log);
+                logService.WriteLogToFile(appSettings.OtherLogsFolderPath, log);
             }
         }
     }

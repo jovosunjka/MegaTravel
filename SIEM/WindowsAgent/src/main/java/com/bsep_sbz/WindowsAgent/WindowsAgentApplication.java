@@ -15,7 +15,7 @@ public class WindowsAgentApplication {
 		SpringApplication.run(WindowsAgentApplication.class, args);
 	}
 
-	@EventListener(ApplicationReadyEvent.class)
+	//@EventListener(ApplicationReadyEvent.class)
 	public void startupCallback() {
 		new Thread(WindowsAgentApplication::watchSysLogs).start();
 	}
