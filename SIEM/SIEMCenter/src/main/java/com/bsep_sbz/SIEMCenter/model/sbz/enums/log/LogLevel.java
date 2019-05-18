@@ -1,4 +1,4 @@
-package com.bsep_sbz.SIEMCenter.model.sbz.enums;
+package com.bsep_sbz.SIEMCenter.model.sbz.enums.log;
 
 public enum LogLevel {
     // razdvojiti developerske logove od security logova u razlicite fajlove

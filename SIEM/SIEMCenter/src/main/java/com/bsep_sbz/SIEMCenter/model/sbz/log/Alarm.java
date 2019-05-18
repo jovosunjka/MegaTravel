@@ -1,6 +1,6 @@
-package com.bsep_sbz.SIEMCenter.model.sbz;
+package com.bsep_sbz.SIEMCenter.model.sbz.log;
 
-import com.bsep_sbz.SIEMCenter.model.sbz.enums.AlarmProducerType;
+import com.bsep_sbz.SIEMCenter.model.sbz.enums.log.AlarmProducerType;
 
 import java.time.LocalDateTime;
 import java.util.List;

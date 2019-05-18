@@ -1,4 +1,4 @@
-package com.bsep_sbz.SIEMCenter.model.sbz;
+package com.bsep_sbz.SIEMCenter.model.sbz.log;
 
 public class AppMessage extends Message
 {

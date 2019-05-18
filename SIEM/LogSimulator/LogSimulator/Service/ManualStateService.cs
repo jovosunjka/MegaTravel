@@ -40,6 +40,13 @@ namespace LogSimulator.Service
                     return;
                 }
 
+                var stateNum = Enum.GetNames(typeof(StateType)).Length + 1;
+                if(choiceNum > stateNum)
+                {
+                    _viewService.PrintInvalidInput();
+                    continue;
+                }
+
                 RunChosenOption(choiceNum);
             }
         }

@@ -1,6 +1,6 @@
-package com.bsep_sbz.SIEMCenter.model.sbz;
+package com.bsep_sbz.SIEMCenter.model.sbz.log;
 
-import com.bsep_sbz.SIEMCenter.model.sbz.enums.HostType;
+import com.bsep_sbz.SIEMCenter.model.sbz.enums.log.HostType;
 
 public class LoginMessage extends Message {
     private HostType hostType;

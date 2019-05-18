@@ -1,6 +1,6 @@
-package com.bsep_sbz.SIEMCenter.model.sbz;
+package com.bsep_sbz.SIEMCenter.model.sbz.rule;
 
-import com.bsep_sbz.SIEMCenter.model.sbz.enums.LogicalOperator;
+import com.bsep_sbz.SIEMCenter.model.sbz.enums.log.LogicalOperator;
 
 import java.util.List;
 
@@ -8,11 +8,10 @@ import java.util.List;
 public class Rule {
     private String name;
     private List<Condition> conditions;
+    // number of operators = number of conditions - 1
+    // operators are placed between each two conditions respectively
+    // example: c1 o1 c2 o2 c3
     private List<LogicalOperator> operators;
-
-    public Rule() {
-
-    }
 
     public Rule(String name, List<Condition> conditions, List<LogicalOperator> operators) {
         this.name = name;

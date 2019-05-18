@@ -1,9 +1,9 @@
 package com.bsep_sbz.SIEMCenter.service;
 
 
-import com.bsep_sbz.SIEMCenter.model.sbz.Log;
-import com.bsep_sbz.SIEMCenter.model.sbz.enums.LogCategory;
-import com.bsep_sbz.SIEMCenter.model.sbz.enums.LogLevel;
+import com.bsep_sbz.SIEMCenter.model.sbz.log.Log;
+import com.bsep_sbz.SIEMCenter.model.sbz.enums.log.LogCategory;
+import com.bsep_sbz.SIEMCenter.model.sbz.enums.log.LogLevel;
 import com.bsep_sbz.SIEMCenter.service.interfaces.IRuleService;
 import com.bsep_sbz.SIEMCenter.util.DebugAgendaEventListener;
 import com.bsep_sbz.SIEMCenter.util.KnowledgeSessionHelper;

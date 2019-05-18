@@ -37,7 +37,7 @@ public class LogsSender {
     @Autowired
     private AgentConfiguration agentConfiguration;
 
-    @EventListener(ApplicationReadyEvent.class)
+    //@EventListener(ApplicationReadyEvent.class)
     public void scanLogs() {
         for(AgentConfiguration.MonitoringElement mEelement : agentConfiguration.getMonitoringElements()) {
             new Thread(new Runnable() {

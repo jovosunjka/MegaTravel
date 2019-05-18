@@ -8,7 +8,7 @@
         <groupId>com.bsep_sbz</groupId>
         <artifactId>MegaTravel</artifactId>
         <version>0.0.1-SNAPSHOT</version>
-        <relativePath>../../MegaTravel/pom.xml</relativePath>
+        <relativePath>../../bsep_sbz/pom.xml</relativePath>
     </parent>
 
     <groupId>com.bsep_sbz</groupId>

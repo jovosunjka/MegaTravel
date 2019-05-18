@@ -1,7 +1,7 @@
-package com.bsep_sbz.SIEMCenter.model.sbz;
+package com.bsep_sbz.SIEMCenter.model.sbz.log;
 
-import com.bsep_sbz.SIEMCenter.model.sbz.enums.AccountType;
-import com.bsep_sbz.SIEMCenter.model.sbz.enums.RiskLevel;
+import com.bsep_sbz.SIEMCenter.model.sbz.enums.log.AccountType;
+import com.bsep_sbz.SIEMCenter.model.sbz.enums.log.RiskLevel;
 
 import java.time.LocalDateTime;
 import java.util.List;

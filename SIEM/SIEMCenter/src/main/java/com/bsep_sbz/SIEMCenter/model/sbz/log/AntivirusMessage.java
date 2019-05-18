@@ -1,4 +1,4 @@
-package com.bsep_sbz.SIEMCenter.model.sbz;
+package com.bsep_sbz.SIEMCenter.model.sbz.log;
 
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;

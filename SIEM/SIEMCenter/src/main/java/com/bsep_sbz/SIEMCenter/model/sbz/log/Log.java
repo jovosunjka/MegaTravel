@@ -1,13 +1,12 @@
-package com.bsep_sbz.SIEMCenter.model.sbz;
+package com.bsep_sbz.SIEMCenter.model.sbz.log;
 
 
-import com.bsep_sbz.SIEMCenter.model.sbz.enums.LogCategory;
-import com.bsep_sbz.SIEMCenter.model.sbz.enums.LogLevel;
+import com.bsep_sbz.SIEMCenter.model.sbz.enums.log.LogCategory;
+import com.bsep_sbz.SIEMCenter.model.sbz.enums.log.LogLevel;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 

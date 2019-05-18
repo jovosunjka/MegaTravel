@@ -1,0 +1,5 @@
+1|1|5/14/2019 3:58:53 PM|INFO|User with username 'luser123' chose fly from 'london' to 'moscow'
+2|2|5/14/2019 3:58:53 PM|INFO|User with username 'luser123' filters results with params '< 300$' and 'discount'
+3|3|5/14/2019 3:58:59 PM|INFO|Tickets for flight '733' successfully retrieved
+4|4|5/14/2019 3:58:59 PM|INFO|User with username 'luser123' buys bussines ticket for flight '733'
+5|5|5/14/2019 3:58:59 PM|INFO|Transaction successfully passed for user with username 'luser123' for flight '733'
