@@ -20,17 +20,30 @@ public class Log {
     private String message;
     // attribute1:value1,attribute2:value2,attribute3:value3, ...  (message format)
 
-    private final SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yyyy. HH:mm:ss");
+    private final SimpleDateFormat sdf1 = new SimpleDateFormat("dd-MMM-yy HH:mm:ss");
+    private final SimpleDateFormat sdf2 = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
 
     public Log() {
 
+    }
+    
+    
+    public Log(Long id, LogLevel type, LogCategory category, Date timestamp, String source, String hostAddress, String message) throws ParseException {
+        this.id = id;
+        this.type = type;
+        this.category = category;
+        this.timestamp = timestamp;
+        this.source = source;
+        this.hostAddress = hostAddress;
+        this.message = message;
     }
 
     public Log(Long id, LogLevel type, LogCategory category, String timestampStr, String source, String hostAddress, String message) throws ParseException {
         this.id = id;
         this.type = type;
         this.category = category;
-        this.timestamp = sdf.parse(timestampStr);
+        this.timestamp = timestampStr.contains("/") ? sdf2.parse(timestampStr) : sdf1.parse(timestampStr);
+
         this.source = source;
         this.hostAddress = hostAddress;
         this.message = message;
@@ -116,5 +129,11 @@ public class Log {
     @Override
     public int hashCode() {
         return Objects.hash(id, type, timestamp, hostAddress, message);
+    }
+
+    @Override
+    public String toString() {
+        return "Log(id="+id.longValue()+", type="+type.name()+", category="+category.name()+", source="+source
+                +", timestamp="+sdf1.format(timestamp)+", hostAddress="+hostAddress+", message=" + message+")";
     }
 }

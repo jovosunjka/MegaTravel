@@ -17,6 +17,9 @@ import org.springframework.stereotype.Service;
 import java.text.ParseException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 @Service
 public class RuleService implements IRuleService {
@@ -24,7 +27,8 @@ public class RuleService implements IRuleService {
     @Autowired
     private KieContainer kieContainer;
 
-    private DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd.MM.yyyy. HH:mm:ss");
+    //private DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd.MM.yyyy. HH:mm:ss");
+    private DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd-MMM-yy HH:mm:ss");
 
     @EventListener(ApplicationReadyEvent.class)
     @Override
@@ -105,5 +109,34 @@ public class RuleService implements IRuleService {
         System.out.println("fired: " + fired);
 
         kSession.dispose();
+    }
+
+    public List<Log> makeLogs(List<String> logs) {
+
+        List<Log> logsRet = new ArrayList<>();
+        for (String log: logs) {
+            String[] tokens = log.split("\\|");
+            //# log id|event id|timestamp|log lvl type|message
+            try {
+                Long id = Long.parseLong(tokens[0]);
+                String timestamp = tokens[2];
+                if(timestamp.endsWith("PM")) {
+                    timestamp = timestamp.replace("PM", "").trim();
+                }
+
+                LogLevel ll = LogLevel.valueOf(tokens[3]);
+                String message = tokens[4];
+                LogCategory logCategory = LogCategory.APP;
+                Log logCreated = new Log(id,ll, logCategory, timestamp, "","", message);
+                logsRet.add(logCreated);
+
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+
+        }
+        return logsRet;
     }
 }

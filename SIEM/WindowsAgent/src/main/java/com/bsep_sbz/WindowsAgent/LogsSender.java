@@ -2,6 +2,7 @@ package com.bsep_sbz.WindowsAgent;
 
 
 import com.bsep_sbz.WindowsAgent.config.AgentConfiguration;
+import com.bsep_sbz.WindowsAgent.service.interfaces.ILogsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
@@ -19,25 +20,16 @@ import java.util.stream.Collectors;
 
 @Component
 public class LogsSender {
-    /*
-    //@Value("${scan-logs.monitoring-elements}")
-    private List<MonitoringElement> monitoringElements;
 
-    @Value("${scan-logs.includes}")
-    private List<String> inludesRegex;
-
-    @Value("${scan-logs.excludes}")
-    private List<String> excludesRegex;
-
-    @Value("${scan-logs.interval}")
-    private int interval;
-*/
     private HashMap<File, Long> startingPositions = new HashMap<File, Long>();
 
     @Autowired
     private AgentConfiguration agentConfiguration;
 
-    //@EventListener(ApplicationReadyEvent.class)
+    @Autowired
+    private ILogsService logsService;
+
+    @EventListener(ApplicationReadyEvent.class)
     public void scanLogs() {
         for(AgentConfiguration.MonitoringElement mEelement : agentConfiguration.getMonitoringElements()) {
             new Thread(new Runnable() {
@@ -70,17 +62,32 @@ public class LogsSender {
 
         }
 
-        if(agentConfiguration.getInterval() > 0) {
-            batchScanLogs(path, monitoringElement.getIncludesFiles(), monitoringElement.getExcludesFiles(),
+        int interval;
+        if (monitoringElement.getInterval() != null) {
+            interval = monitoringElement.getInterval();
+        }
+        else if (agentConfiguration.getInterval() != null) {
+            interval = agentConfiguration.getInterval();
+        }
+        else {
+            throw new Exception("Za monitoring element sa path-om: " + monitoringElement.getPath() + ", interval je null," +
+                    " a uz to je globalni interval null. Popravite to! Bar jedan od ta dva intervala (lokalni interval za" +
+                    " ovaj monitoring element ili globalni interval) mora biti razlicit od null i nenegativan broj.");
+        }
+
+        if(interval > 0) {
+            System.out.println("batchScanLogs (folder/file="+path.toFile().getAbsolutePath()+", interval="+interval+")(START)");
+            batchScanLogs(path, interval, monitoringElement.getIncludesFiles(), monitoringElement.getExcludesFiles(),
                     monitoringElement.getIncludes(), monitoringElement.getExcludes());
         }
         else {
+            System.out.println("realtimeScanLogs (folder/file="+path.toFile().getAbsolutePath()+")(START)");
             realtimeScanLogs(path, monitoringElement.getIncludesFiles(), monitoringElement.getExcludesFiles(),
                     monitoringElement.getIncludes(), monitoringElement.getExcludes());
         }
     }
 
-    public void batchScanLogs(Path path, List<String> includesFiles,  List<String> excludesFiles,
+    public void batchScanLogs(Path path, int interval, List<String> includesFiles,  List<String> excludesFiles,
                               List<String> includes,  List<String> excludes) {
 
         while (true) {
@@ -97,7 +104,7 @@ public class LogsSender {
 
 
             try {
-                Thread.sleep(agentConfiguration.getInterval()*1000);
+                Thread.sleep(interval*1000);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
@@ -106,7 +113,6 @@ public class LogsSender {
 
     public void realtimeScanLogs(Path path, List<String> includesFiles,  List<String> excludesFiles,
                                  List<String> includes,  List<String> excludes) {
-        System.out.println("realtimeScanLogs (folder/file="+path.toFile().getAbsolutePath()+")(START)");
         //String directoryPath = "E:"+ File.separator +"STUDIRANJE"+ File.separator +"CETVRTA GODINA";
 
         Path directoryPath;
@@ -217,12 +223,13 @@ public class LogsSender {
 
             String newLogsStr = new String(bytesRead);
             newLogsStr = newLogsStr.trim();
-            String[] newLogs = newLogsStr.split("\r\n");
+            String[] newLogs = newLogsStr.split("\r?\n");
             List<String> filteredNewLogs = filterLogs(newLogs, includes, excludes);
 
             for (String fNewLog : filteredNewLogs) {
                 System.out.println("Filtered new log in file " + file.getAbsolutePath() + ": " + fNewLog);
             }
+            logsService.sendLogs(filteredNewLogs);
 
         } catch (FileNotFoundException e) {
             e.printStackTrace();
