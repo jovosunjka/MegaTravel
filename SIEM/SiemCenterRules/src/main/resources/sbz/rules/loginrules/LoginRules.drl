@@ -1,26 +1,31 @@
 package loginrules;
 
-import com.bsep.SiemCenterRules.model.LoginLog;
-import com.bsep.SiemCenterRules.model.AntivirusLog;
+import com.bsep_sbz.SIEMCenter.model.sbz.log.Alarm;
+import com.bsep_sbz.SIEMCenter.model.sbz.log.Log;
+import com.bsep_sbz.SIEMCenter.model.sbz.enums.log.AlarmProducerType;
 import java.util.HashMap;
 import java.util.List;
 
 global java.util.ArrayList<String> maliciousIpAddresses;
 
-rule "Account inactivity"
-    when
-        $llog: LoginLog()
-        eval($llog.getDaysOfInactivity() > Long.valueOf(90))
-    then
-        System.out.println("Alarm raised from rule: 'Account inactivity', package: 'loginrules'");
+query "Get all alarms"
+    $a: Alarm()
 end
 
+// Prijava ili pokušaj prijave sa IP adrese koje se nalazi na spisku malicioznih IP adresa
 rule "Try to login from malicious ip address"
     when
-        LoginLog(maliciousIpAddresses contains ipAddress)
+        $l: Log(maliciousIpAddresses contains source)
     then
-        System.out.println("Alarm raised from rule: 'Try to login from malicious ip address', package: 'loginrules'");
+        System.out.println("malicious ip address");
+        Alarm alarm = new Alarm();
+        alarm.setAlarmProducerType(AlarmProducerType.LOGIN);
+        alarm.getLogs().add($l);
+        alarm.setMessage("Try to login from malicious ip address");
+        insert(alarm);
 end
+
+
 /*
 rule "30 or more login attempts within 24h"
     when

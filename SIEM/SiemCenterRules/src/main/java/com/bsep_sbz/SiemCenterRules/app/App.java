@@ -1,31 +1,28 @@
 package com.bsep_sbz.SiemCenterRules.app;
-/*
-import com.bsep_sbz.SIEMCenter.model.sbz.Log;
-import com.bsep_sbz.SIEMCenter.model.sbz.enums.LogCategory;
-import com.bsep_sbz.SIEMCenter.model.sbz.enums.LogLevel;
-*/
 import org.kie.api.KieBase;
 import org.kie.api.KieBaseConfiguration;
 import org.kie.api.KieServices;
 import org.kie.api.conf.EventProcessingOption;
 import org.kie.api.runtime.KieContainer;
 import org.kie.api.runtime.KieSession;
-
-
-
+/*
+import com.bsep_sbz.SIEMCenter.model.sbz.log.Log;
+import com.bsep_sbz.SIEMCenter.model.sbz.enums.log.LogLevel;
+import com.bsep_sbz.SIEMCenter.model.sbz.enums.log.LogCategory;
 import java.time.LocalDateTime;
+*/
 
 
 public class App {
 
-    /*
+
     public static void main(String[] args) {
         KieContainer kc = KnowledgeSessionHelper.createRuleBase();
         KieSession kSession = KnowledgeSessionHelper.getStatefulKnowledgeSession(kc, "SbzRulesSession");
 
         kSession.addEventListener(new DebugAgendaEventListener());
 
-
+/*
         Log loginLog1 = new Log(new Long(1L), LogLevel.ERROR, LogCategory.LOGIN, LocalDateTime.now(),
                 "username1", "hostAddress1", "login_successfull:false");
         Log loginLog2 = new Log(new Long(2L), LogLevel.ERROR, LogCategory.LOGIN, LocalDateTime.now().plusMinutes(5),
@@ -55,8 +52,9 @@ public class App {
 
         //testLogs();
         //testLogin();
+        */
     }
-    */
+
     private static KieSession getKieSession(String sessionName) {
         KieServices ks = KieServices.Factory.get();
         KieContainer kContainer = ks.getKieClasspathContainer();

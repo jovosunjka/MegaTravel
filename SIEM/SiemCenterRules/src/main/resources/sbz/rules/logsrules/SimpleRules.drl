@@ -1,10 +1,23 @@
 package logsrules;
-import com.bsep.SiemCenterRules.model.Log;
-import com.bsep.SiemCenterRules.model.enums.LogLevel;
+import com.bsep_sbz.SIEMCenter.model.sbz.log.Log;
+import com.bsep_sbz.SIEMCenter.model.sbz.enums.log.LogLevel
+import com.bsep_sbz.SIEMCenter.model.sbz.log.Alarm;
+import com.bsep_sbz.SIEMCenter.model.sbz.enums.log.AlarmProducerType;
 
+query "Get all alarms"
+    $a: Alarm()
+end
+
+// Pojava loga čiji tip je ERROR
 rule "Log with ERROR"
     when
-        Log(logLevel == LogLevel.ERROR)
+        $l: Log(type == LogLevel.ERROR)
     then
-        System.out.println("Alarm raised from rule: 'Log with ERROR', package: 'logsrules'");
+        System.out.println("log with error");
+        Alarm alarm = new Alarm();
+        alarm.setAlarmProducerType(AlarmProducerType.APP);
+        alarm.getLogs().add($l);
+        alarm.setMessage("Log with ERROR");
+        insert(alarm);
 end
+

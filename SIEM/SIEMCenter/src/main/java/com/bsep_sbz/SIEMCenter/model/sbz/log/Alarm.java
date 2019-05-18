@@ -3,11 +3,12 @@ package com.bsep_sbz.SIEMCenter.model.sbz.log;
 import com.bsep_sbz.SIEMCenter.model.sbz.enums.log.AlarmProducerType;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 public class Alarm {
+    private static Long sequencer = 0L;
     private Long id;
-    // this will be set in rules?
     private String message;
     private int priority;
     private LocalDateTime timestamp;
@@ -15,7 +16,9 @@ public class Alarm {
     private AlarmProducerType alarmProducerType;
 
     public Alarm() {
-
+        id = ++sequencer;
+        logs = new ArrayList<>();
+        timestamp = LocalDateTime.now();
     }
 
     public Alarm(Long id, String message, LocalDateTime timestamp, List<Log> logs) {
@@ -63,5 +66,13 @@ public class Alarm {
 
     public void setPriority(int priority) {
         this.priority = priority;
+    }
+
+    public AlarmProducerType getAlarmProducerType() {
+        return alarmProducerType;
+    }
+
+    public void setAlarmProducerType(AlarmProducerType alarmProducerType) {
+        this.alarmProducerType = alarmProducerType;
     }
 }

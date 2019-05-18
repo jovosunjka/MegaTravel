@@ -49,12 +49,8 @@ public class Log {
         this.message = message;
     }
 
-    public static long getDaysOfInactivity(long d1Long, long d2Long) {
-        Date d1 = new Date(d1Long);
-        long diffInMillies = Math.abs(d2Long - d1Long);
-        long diff = TimeUnit.DAYS.convert(diffInMillies, TimeUnit.MILLISECONDS);
-        System.out.println("getDaysOfInactivity(): " + diff);
-        return diff;
+    public static long getDaysOfInactivity(long first, long second) {
+        return TimeUnit.DAYS.convert(first - second, TimeUnit.MILLISECONDS);
     }
 
     public Long getId() {
@@ -133,7 +129,7 @@ public class Log {
 
     @Override
     public String toString() {
-        return "Log(id="+id.longValue()+", type="+type.name()+", category="+category.name()+", source="+source
+        return "Log(id="+ id +", type="+type.name()+", category="+category.name()+", source="+source
                 +", timestamp="+sdf1.format(timestamp)+", hostAddress="+hostAddress+", message=" + message+")";
     }
 }

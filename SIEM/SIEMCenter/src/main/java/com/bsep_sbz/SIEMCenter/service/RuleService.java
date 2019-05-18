@@ -74,7 +74,7 @@ public class RuleService implements IRuleService {
         kSession.insert(antivirusLog1);
         kSession.insert(antivirusLog2);
 
-        /*
+/*
         ArrayList<String> maliciousIps = new ArrayList<>();
         String maliciousIp = "125.6.7.8";
         maliciousIps.add("127.0.1.0");
@@ -103,8 +103,8 @@ public class RuleService implements IRuleService {
         {
             System.out.println(e.getMessage());
         }
-        */
 
+*/
         int fired = kSession.fireAllRules();
         System.out.println("fired: " + fired);
 
@@ -139,4 +139,5 @@ public class RuleService implements IRuleService {
         }
         return logsRet;
     }
+
 }

@@ -1,4 +1,4 @@
-package com.bsep_sbz.SiemCenterRules.app;
+package com.bsep_sbz.SIEMCenter.sbz;
 
 import org.kie.api.KieServices;
 import org.kie.api.runtime.KieContainer;
