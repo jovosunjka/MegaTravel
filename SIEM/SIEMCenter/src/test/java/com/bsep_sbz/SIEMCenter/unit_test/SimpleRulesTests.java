@@ -1,4 +1,4 @@
-package com.bsep_sbz.SIEMCenter.unittest;
+package com.bsep_sbz.SIEMCenter.unit_test;
 
 import com.bsep_sbz.SIEMCenter.model.sbz.enums.log.LogLevel;
 import com.bsep_sbz.SIEMCenter.model.sbz.log.Alarm;

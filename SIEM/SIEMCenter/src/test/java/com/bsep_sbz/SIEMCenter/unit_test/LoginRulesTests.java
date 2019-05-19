@@ -1,4 +1,4 @@
-package com.bsep_sbz.SIEMCenter.unittest;
+package com.bsep_sbz.SIEMCenter.unit_test;
 
 import com.bsep_sbz.SIEMCenter.model.sbz.enums.log.LogCategory;
 import com.bsep_sbz.SIEMCenter.model.sbz.enums.log.LogLevel;
@@ -7,20 +7,15 @@ import com.bsep_sbz.SIEMCenter.model.sbz.log.Log;
 import com.bsep_sbz.SIEMCenter.sbz.KnowledgeSessionHelper;
 import org.drools.core.ClockType;
 import org.junit.Test;
-import org.kie.api.KieBase;
-import org.kie.api.KieBaseConfiguration;
 import org.kie.api.KieServices;
-import org.kie.api.conf.EventProcessingOption;
 import org.kie.api.runtime.KieContainer;
 import org.kie.api.runtime.KieSession;
 import org.kie.api.runtime.KieSessionConfiguration;
 import org.kie.api.runtime.conf.ClockTypeOption;
 import org.kie.api.runtime.rule.QueryResults;
 import org.kie.api.time.SessionPseudoClock;
-
 import java.util.*;
 import java.util.concurrent.TimeUnit;
-
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
@@ -173,7 +168,7 @@ public class LoginRulesTests {
         int numOfFiredRules = kieSession.fireAllRules();
 
         // Assert
-        assertEquals(1, numOfFiredRules);
+        assertEquals(1, numOfFiredRules); // mradovic: 1 or 3 ???
         QueryResults results = kieSession.getQueryResults("Get all alarms");
         assertEquals(1, results.size());
         Alarm alarm = (Alarm) results.iterator().next().get("$a");
@@ -185,13 +180,7 @@ public class LoginRulesTests {
     @Test
     public void testThirtyPlusLoginAttemptsWithinTwentyFourHoursWithSameIP() {
         // Arrange
-        KieServices ks = KieServices.Factory.get();
-        KieContainer kc = ks.getKieClasspathContainer();
-        KieBaseConfiguration kbconf = ks.newKieBaseConfiguration();
-        kbconf.setOption(EventProcessingOption.STREAM);
-        KieBase kbase = kc.newKieBase(kbconf);
-        KieSession kieSession = kbase.newKieSession();
-
+        KieSession kieSession = getKieSessionWithPseudoClock();
         kieSession.setGlobal("maliciousIpAddresses", new ArrayList<>());
 
         String ip = "123.2.2.2";
@@ -217,12 +206,7 @@ public class LoginRulesTests {
     @Test
     public void testThirtyPlusLoginAttemptsNotWithinTwentyFourHoursWithSameIP() {
         // Arrange
-        KieServices ks = KieServices.Factory.get();
-        KieContainer kc = ks.getKieClasspathContainer();
-        KieSessionConfiguration ksconf = ks.newKieSessionConfiguration();
-        ksconf.setOption(ClockTypeOption.get(ClockType.PSEUDO_CLOCK.getId()));
-        KieSession kieSession = kc.newKieSession(ksconf);
-
+        KieSession kieSession = getKieSessionWithPseudoClock();
         kieSession.setGlobal("maliciousIpAddresses", new ArrayList<>());
 
         String ip = "123.2.2.2";
@@ -242,6 +226,82 @@ public class LoginRulesTests {
         assertEquals(0, results.size());
         List<String> maliciousIps = (List<String>)kieSession.getGlobal("maliciousIpAddresses");
         assertEquals(0, maliciousIps.size());
+    }
+
+    @Test
+    public void testPaymentSystemAttack() {
+        // Arrange
+        KieServices ks = KieServices.Factory.get();
+        KieContainer kc = ks.getKieClasspathContainer();
+        KieSessionConfiguration ksconf = ks.newKieSessionConfiguration();
+        ksconf.setOption(ClockTypeOption.get(ClockType.PSEUDO_CLOCK.getId()));
+        KieSession kieSession = kc.newKieSession(ksconf);
+
+        String ip = "133.2.5.6";
+        String host = "12.44.33.22";
+        List<Log> logs = getPaymentSystemLogs(50, ip, host);
+        logs.forEach(kieSession::insert);
+
+        // Act
+        int numOfFiredRules = kieSession.fireAllRules();
+
+        // Assert
+        assertEquals(50, numOfFiredRules); // mradovic: 30 or 1 ???
+        QueryResults results = kieSession.getQueryResults("Get all alarms");
+        assertEquals(50, results.size());
+        Alarm alarm = (Alarm) results.iterator().next().get("$a");
+        assertEquals(1, alarm.getLogs().size());
+        assertEquals(ip, alarm.getLogs().get(0).getSource());
+        assertEquals(host, alarm.getLogs().get(0).getHostAddress());
+        assertEquals("Payment system attack", alarm.getMessage());
+    }
+
+    @Test
+    public void testPaymentSystemAttackWhenThereIsNotEnoughRequestsForAlarm() {
+        // Arrange
+        KieServices ks = KieServices.Factory.get();
+        KieContainer kc = ks.getKieClasspathContainer();
+        KieSessionConfiguration ksconf = ks.newKieSessionConfiguration();
+        ksconf.setOption(ClockTypeOption.get(ClockType.PSEUDO_CLOCK.getId()));
+        KieSession kieSession = kc.newKieSession(ksconf);
+
+        String ip = "133.2.5.6";
+        String host = "12.44.33.22";
+        List<Log> logs = getPaymentSystemLogs(45, ip, host);
+        logs.forEach(kieSession::insert);
+        SessionPseudoClock clock = kieSession.getSessionClock();
+        clock.advanceTime(63, TimeUnit.SECONDS);
+        List<Log> logsAfterSomeTime = getPaymentSystemLogs(7, ip, host);
+        logsAfterSomeTime.forEach(kieSession::insert);
+
+        // Act
+        int numOfFiredRules = kieSession.fireAllRules();
+
+        // Assert
+        assertEquals(0, numOfFiredRules);
+        QueryResults results = kieSession.getQueryResults("Get all alarms");
+        assertEquals(0, results.size());
+    }
+
+    private KieSession getKieSessionWithPseudoClock() {
+        KieServices ks = KieServices.Factory.get();
+        KieContainer kc = ks.getKieClasspathContainer();
+        KieSessionConfiguration ksconf = ks.newKieSessionConfiguration();
+        ksconf.setOption(ClockTypeOption.get(ClockType.PSEUDO_CLOCK.getId()));
+        return kc.newKieSession(ksconf);
+    }
+
+    private List<Log> getPaymentSystemLogs(int count, String source, String host) {
+        List<Log> logs = new ArrayList<>();
+        for(int i = 0; i < count; i++) {
+            Log log = new Log();
+            log.setId(i + 1L);
+            log.setSource(source);
+            log.setHostAddress(host);
+            log.setCategory(LogCategory.PAYMENT_SYSTEM);
+            logs.add(log);
+        }
+        return logs;
     }
 
     private List<Log> getLoginLogsWithSameSource(int count, String source) {
@@ -270,7 +330,6 @@ public class LoginRulesTests {
 
         // Act
         int numOfFiredRules = kieSession.fireAllRules();
-
 
         // Assert
         assertEquals(1, numOfFiredRules);

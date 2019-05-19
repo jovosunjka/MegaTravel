@@ -1,0 +1,33 @@
+template header
+category
+logCount
+time
+
+package templates;
+
+import com.bsep_sbz.SIEMCenter.model.sbz.enums.log.LogCategory
+import com.bsep_sbz.SIEMCenter.model.sbz.log.Alarm;
+import com.bsep_sbz.SIEMCenter.model.sbz.log.Log;
+
+template "attack-rules"
+
+rule "Attack rule_@{row.rowNumber}"
+    when
+        $log: Log($id: id, $s: source, $h: hostAddress, category == LogCategory.@{category}) and
+        Number(intValue >= @{logCount}) from accumulate(
+                       $l: Log(
+                           source == $s,
+                           hostAddress == $h,
+                           category == LogCategory.@{category}
+                       ) over window:time(@{time}),
+                       count($l)
+                   )
+    then
+        Alarm alarm = new Alarm();
+        alarm.setMessage($log.getLogCategory().name() + " аttack");
+        alarm.getLogs().add($log);
+        insert(alarm);
+        System.out.println($log.getLogCategory().name() + " аttack");
+end
+
+end template

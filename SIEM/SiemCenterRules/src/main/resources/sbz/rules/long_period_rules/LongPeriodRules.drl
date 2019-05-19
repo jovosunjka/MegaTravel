@@ -1,0 +1,10 @@
+package long_period_rules;
+import com.bsep_sbz.SIEMCenter.model.sbz.log.Log;
+import com.bsep_sbz.SIEMCenter.model.sbz.enums.log.LogLevel
+import com.bsep_sbz.SIEMCenter.model.sbz.log.Alarm;
+import com.bsep_sbz.SIEMCenter.model.sbz.enums.log.AlarmProducerType;
+
+rule "LongPeriodRules"
+    when
+    then
+end
