@@ -5,13 +5,22 @@ import com.bsep_sbz.SIEMCenter.model.sbz.enums.log.LogLevel;
 import com.bsep_sbz.SIEMCenter.model.sbz.log.Alarm;
 import com.bsep_sbz.SIEMCenter.model.sbz.log.Log;
 import com.bsep_sbz.SIEMCenter.sbz.KnowledgeSessionHelper;
+import org.drools.core.ClockType;
 import org.junit.Test;
+import org.kie.api.KieBase;
+import org.kie.api.KieBaseConfiguration;
+import org.kie.api.KieServices;
+import org.kie.api.conf.EventProcessingOption;
+import org.kie.api.runtime.KieContainer;
 import org.kie.api.runtime.KieSession;
+import org.kie.api.runtime.KieSessionConfiguration;
+import org.kie.api.runtime.conf.ClockTypeOption;
 import org.kie.api.runtime.rule.QueryResults;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.GregorianCalendar;
+import org.kie.api.time.SessionPseudoClock;
+
+import java.util.*;
+import java.util.concurrent.TimeUnit;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
@@ -173,6 +182,82 @@ public class LoginRulesTests {
         assertEquals("Neuspesni pokusaji prijave sa istim username-om 2+", alarm.getMessage());
     }
 
+    @Test
+    public void testThirtyPlusLoginAttemptsWithinTwentyFourHoursWithSameIP() {
+        // Arrange
+        KieServices ks = KieServices.Factory.get();
+        KieContainer kc = ks.getKieClasspathContainer();
+        KieBaseConfiguration kbconf = ks.newKieBaseConfiguration();
+        kbconf.setOption(EventProcessingOption.STREAM);
+        KieBase kbase = kc.newKieBase(kbconf);
+        KieSession kieSession = kbase.newKieSession();
+
+        kieSession.setGlobal("maliciousIpAddresses", new ArrayList<>());
+
+        String ip = "123.2.2.2";
+        List<Log> logs = getLoginLogsWithSameSource(30, ip);
+        logs.forEach(kieSession::insert);
+
+        // Act
+        int numOfFiredRules = kieSession.fireAllRules();
+
+        // Assert
+        assertEquals(30, numOfFiredRules); // mradovic: 30 or 1 ???
+        QueryResults results = kieSession.getQueryResults("Get all alarms");
+        assertEquals(30, results.size());
+        Alarm alarm = (Alarm) results.iterator().next().get("$a");
+        assertEquals(1, alarm.getLogs().size());
+        assertEquals(ip, alarm.getLogs().get(0).getSource());
+        assertEquals("30+ login attempts within 24h with same ip", alarm.getMessage());
+        List<String> maliciousIps = (List<String>)kieSession.getGlobal("maliciousIpAddresses");
+        assertEquals(30, maliciousIps.size());
+        assertEquals(ip, maliciousIps.get(0));
+    }
+
+    @Test
+    public void testThirtyPlusLoginAttemptsNotWithinTwentyFourHoursWithSameIP() {
+        // Arrange
+        KieServices ks = KieServices.Factory.get();
+        KieContainer kc = ks.getKieClasspathContainer();
+        KieSessionConfiguration ksconf = ks.newKieSessionConfiguration();
+        ksconf.setOption(ClockTypeOption.get(ClockType.PSEUDO_CLOCK.getId()));
+        KieSession kieSession = kc.newKieSession(ksconf);
+
+        kieSession.setGlobal("maliciousIpAddresses", new ArrayList<>());
+
+        String ip = "123.2.2.2";
+        List<Log> logsWithin24h = getLoginLogsWithSameSource(28, ip);
+        logsWithin24h.forEach(kieSession::insert);
+        SessionPseudoClock clock = kieSession.getSessionClock();
+        clock.advanceTime(25, TimeUnit.HOURS);
+        List<Log> logsNotWithin24h = getLoginLogsWithSameSource(5, ip);
+        logsNotWithin24h.forEach(kieSession::insert);
+
+        // Act
+        int numOfFiredRules = kieSession.fireAllRules();
+
+        // Assert
+        assertEquals(0, numOfFiredRules);
+        QueryResults results = kieSession.getQueryResults("Get all alarms");
+        assertEquals(0, results.size());
+        List<String> maliciousIps = (List<String>)kieSession.getGlobal("maliciousIpAddresses");
+        assertEquals(0, maliciousIps.size());
+    }
+
+    private List<Log> getLoginLogsWithSameSource(int count, String source) {
+        List<Log> logs = new ArrayList<>();
+        for(int i = 0; i < count; i++) {
+            Log log = new Log();
+            log.setId(i + 1L);
+            log.setType(LogLevel.WARN);
+            log.setSource(source);
+            log.setMessage("login_successful:false");
+            log.setCategory(LogCategory.LOGIN);
+            logs.add(log);
+        }
+        return logs;
+    }
+
     /*
     // test template
 
@@ -191,5 +276,6 @@ public class LoginRulesTests {
         assertEquals(1, numOfFiredRules);
 
     }
+
     */
 }

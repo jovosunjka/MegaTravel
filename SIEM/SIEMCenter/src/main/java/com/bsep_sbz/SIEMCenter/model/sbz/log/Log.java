@@ -3,6 +3,7 @@ package com.bsep_sbz.SIEMCenter.model.sbz.log;
 
 import com.bsep_sbz.SIEMCenter.model.sbz.enums.log.LogCategory;
 import com.bsep_sbz.SIEMCenter.model.sbz.enums.log.LogLevel;
+import org.kie.api.definition.type.Role;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -10,6 +11,7 @@ import java.util.Date;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
+@org.kie.api.definition.type.Role(Role.Type.EVENT)
 public class Log {
     private Long id;
     private LogLevel type;

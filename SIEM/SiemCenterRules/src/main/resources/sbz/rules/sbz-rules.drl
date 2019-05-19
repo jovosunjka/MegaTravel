@@ -13,7 +13,7 @@ end
 
 // Neuspešni pokušaji prijave na sistem na istoj mašini. Prijava može biti na nivou
 // operativnog sistema ili na nivou simuliranog informacionog sistema
-// TO DO: Put all logs in alarm
+// mradovic: Put all logs in alarm ???
 // WARNING: This rule is executed for every log with given settings ! Needs to be executed only once?
 rule "Neuspesni pokusaji prijave na sistem na istoj masini 2+"
     when
@@ -62,7 +62,7 @@ rule "Neuspesni pokusaji prijave sa istim username-om 2+"
 end
 
 // Pokušaj prijave na nalog koji nije bio aktivan 90 ili više dana
-// WARNING: Po ovoj implementaciji login log od pre 90 dana bi trebao biti u radnoj memoriji !!!
+// mradovic: WARNING: Po ovoj implementaciji login log od pre 90 dana bi trebao biti u radnoj memoriji !!!
 rule "Pokusaj prijave na nalog koji nije bio aktivan 90+ dana"
     when
         $l: Log(category == LogCategory.LOGIN, $s: source, $ts: timestamp) // source je u ovom slucaju username

@@ -2,6 +2,7 @@ package loginrules;
 
 import com.bsep_sbz.SIEMCenter.model.sbz.log.Alarm;
 import com.bsep_sbz.SIEMCenter.model.sbz.log.Log;
+import com.bsep_sbz.SIEMCenter.model.sbz.enums.log.LogCategory;
 import com.bsep_sbz.SIEMCenter.model.sbz.enums.log.AlarmProducerType;
 import java.util.HashMap;
 import java.util.List;
@@ -10,6 +11,11 @@ global java.util.ArrayList<String> maliciousIpAddresses;
 
 query "Get all alarms"
     $a: Alarm()
+end
+
+declare window LoginAttempts
+    @doc("last 24h login attempts")
+    Log() over window:time( 24h )
 end
 
 // Prijava ili pokušaj prijave sa IP adrese koje se nalazi na spisku malicioznih IP adresa
@@ -23,6 +29,32 @@ rule "Try to login from malicious ip address"
         alarm.getLogs().add($l);
         alarm.setMessage("Try to login from malicious ip address");
         insert(alarm);
+end
+
+// mradovic: this rule will be triggered as many times as number of logs with given specs ???
+// Ukoliko sa iste IP adrese registruje 30 ili više neuspešnih pokušaja prijave na
+// sistem u roku od 24h, dodati tu IP adresu u spisak malicioznih IP adresa
+rule "30+ login attempts within 24h with same ip" // in this case source is ip address
+    when
+        $log: Log($id: id, $s: source, category == LogCategory.LOGIN, message contains "login_successful:false",
+        maliciousIpAddresses not contains source) and
+        Number(intValue >= 29) from accumulate(
+                       $l: Log(
+                           id != $id,
+                           source == $s,
+                           category == LogCategory.LOGIN,
+                           message.contains("login_successful:false")
+                       ) from window LoginAttempts,
+                       count($l)
+                   )
+    then
+        maliciousIpAddresses.add($log.getSource());
+        drools.getKnowledgeRuntime().setGlobal("maliciousIpAddresses", maliciousIpAddresses);
+        Alarm alarm = new Alarm();
+        alarm.setMessage("30+ login attempts within 24h with same ip");
+        alarm.getLogs().add($log);
+        insert(alarm);
+        System.out.println("30+ login attempts within 24h with same ip");
 end
 
 

@@ -60,13 +60,13 @@
             <artifactId>junit</artifactId>
             <version>4.12</version>
         </dependency>
-        <!--
-                <dependency>
-                    <groupId>com.bsep_sbz</groupId>
-                    <artifactId>SIEMCenter</artifactId>
-                    <type>jar</type>
-                    <version>0.0.1-SNAPSHOT</version>
-                </dependency>
-        -->
-            </dependencies>
-        </project>
+<!--
+        <dependency>
+            <groupId>com.bsep_sbz</groupId>
+            <artifactId>SIEMCenter</artifactId>
+            <type>jar</type>
+            <version>0.0.1-SNAPSHOT</version>
+        </dependency>
+-->
+    </dependencies>
+</project>
