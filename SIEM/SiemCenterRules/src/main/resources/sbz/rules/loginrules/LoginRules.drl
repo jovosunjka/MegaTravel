@@ -61,7 +61,6 @@ rule "30+ login attempts within 24h with same ip" // in this case source is ip a
         System.out.println("30+ login attempts within 24h with same ip");
 end
 
-
 rule "Payment system attack" // in this case source is ip address
     when
         $log: Log($id: id, $s: source, $h: hostAddress, category == LogCategory.PAYMENT_SYSTEM) and

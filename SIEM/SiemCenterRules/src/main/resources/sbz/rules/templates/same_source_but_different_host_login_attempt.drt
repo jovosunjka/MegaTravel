@@ -1,0 +1,35 @@
+template header
+logCount
+timeCount
+timeUnit
+
+package templates;
+
+import com.bsep_sbz.SIEMCenter.model.sbz.enums.log.LogCategory
+import com.bsep_sbz.SIEMCenter.model.sbz.log.Alarm;
+import com.bsep_sbz.SIEMCenter.model.sbz.log.Log;
+
+template "same_source_but_different_host_login_attempt"
+
+rule "Same sources but different hosts login attempt rule_@{row.rowNumber}"
+    when
+        $log: Log($s: source, $h: hostAddress, category == LogCategory.LOGIN,
+            message.contains("login_successful:false")) and
+        Number(intValue >= @{logCount}) from accumulate(
+                       $l: Log(
+                           hostAddress != $h,
+                           source == $s,
+                           category == LogCategory.LOGIN,
+                           message.contains("login_successful:false")
+                       ) over window:time(@{timeCount}@{timeUnit}),
+                       count($l)
+                   )
+    then
+        Alarm alarm = new Alarm();
+        alarm.setMessage("Different sources but same host rule_@{row.rowNumber}");
+        alarm.getLogs().add($log);
+        insert(alarm);
+        System.out.println("Different sources but same host rule_@{row.rowNumber}");
+end
+
+end template
