@@ -180,7 +180,7 @@ public class LoginRulesTests {
     @Test
     public void testThirtyPlusLoginAttemptsWithinTwentyFourHoursWithSameIP() {
         // Arrange
-        KieSession kieSession = getKieSessionWithPseudoClock();
+        KieSession kieSession = getDefaultKieSessionWithPseudoClock();
         kieSession.setGlobal("maliciousIpAddresses", new ArrayList<>());
 
         String ip = "123.2.2.2";
@@ -206,7 +206,7 @@ public class LoginRulesTests {
     @Test
     public void testThirtyPlusLoginAttemptsNotWithinTwentyFourHoursWithSameIP() {
         // Arrange
-        KieSession kieSession = getKieSessionWithPseudoClock();
+        KieSession kieSession = getDefaultKieSessionWithPseudoClock();
         kieSession.setGlobal("maliciousIpAddresses", new ArrayList<>());
 
         String ip = "123.2.2.2";
@@ -283,7 +283,7 @@ public class LoginRulesTests {
         assertEquals(0, results.size());
     }
 
-    private KieSession getKieSessionWithPseudoClock() {
+    private KieSession getDefaultKieSessionWithPseudoClock() {
         KieServices ks = KieServices.Factory.get();
         KieContainer kc = ks.getKieClasspathContainer();
         KieSessionConfiguration ksconf = ks.newKieSessionConfiguration();

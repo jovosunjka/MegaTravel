@@ -1,16 +1,30 @@
 package com.bsep_sbz.SIEMCenter.unit_test.template;
 
+import com.bsep_sbz.SIEMCenter.helper.HelperMethods;
 import com.bsep_sbz.SIEMCenter.model.sbz.enums.log.LogCategory;
-import com.bsep_sbz.SIEMCenter.sbz.KnowledgeSessionHelper;
+import com.bsep_sbz.SIEMCenter.model.sbz.enums.log.LogLevel;
+import com.bsep_sbz.SIEMCenter.model.sbz.log.Alarm;
+import com.bsep_sbz.SIEMCenter.model.sbz.log.Log;
 import com.bsep_sbz.SIEMCenter.unit_test.template.model.AttackData;
 import com.bsep_sbz.SIEMCenter.unit_test.template.model.LoginData;
+import org.apache.maven.shared.invoker.*;
 import org.codehaus.plexus.util.StringUtils;
+import org.drools.core.ClockType;
 import org.drools.template.*;
 import org.junit.Test;
+import org.kie.api.KieServices;
+import org.kie.api.runtime.KieContainer;
 import org.kie.api.runtime.KieSession;
+import org.kie.api.runtime.KieSessionConfiguration;
+import org.kie.api.runtime.conf.ClockTypeOption;
+import org.kie.api.runtime.rule.QueryResults;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.List;
 import java.io.InputStream;
@@ -55,11 +69,11 @@ public class TemplateRulesTests {
         // Arrange
         InputStream template = new FileInputStream(
                 "..\\SiemCenterRules\\src\\main\\resources\\sbz\\" +
-                        "rules\\templates\\different_sources_but_same_host_login_attempt.drt");
+                        "rules\\templates\\login_attempt.drt");
 
         List<LoginData> data = new ArrayList<>();
-        data.add(new LoginData(2,10,"s"));
-        data.add(new LoginData(30,5,"h"));
+        data.add(new LoginData(2,10,"s", "==", "!=", "true"));
+        data.add(new LoginData(30,5,"h", "!=", "==", "false"));
 
         ObjectDataCompiler compiler = new ObjectDataCompiler();
 
@@ -70,9 +84,80 @@ public class TemplateRulesTests {
         // Assert
         int numOfRules = StringUtils.countMatches(drl, "when");
         assertEquals(2, numOfRules);
+        assertTrue(drl.contains("source == $s"));
+        assertTrue(drl.contains("source != $s"));
+        assertTrue(drl.contains("hostAddress == $h"));
+        assertTrue(drl.contains("hostAddress != $h"));
         assertTrue(drl.contains("intValue >= 2"));
         assertTrue(drl.contains("intValue >= 30"));
         assertTrue(drl.contains("over window:time(5h)"));
         assertTrue(drl.contains("over window:time(10s)"));
+    }
+
+    @Test
+    public void testLoginTemplateWholeFlow() throws IOException, MavenInvocationException {
+        String templatePath = "..\\SiemCenterRules\\src\\main\\resources\\sbz\\" +
+                "rules\\templates\\login_attempt.drt";
+        String drlPath = "..\\SiemCenterRules\\src\\main\\resources\\sbz\\" +
+                "rules\\template_rules\\LoginAttemptRule.drl";
+        String message = "Login attempt rule_0";
+
+        // 1) Read template
+        InputStream template = new FileInputStream(templatePath);
+
+        // 2) Compile template to drl rule
+        List<LoginData> data = new ArrayList<>();
+        data.add(new LoginData(10,5,"s", "==", "!=", "false"));
+        String drl = (new ObjectDataCompiler()).compile(data, template);
+        assertTrue(drl.contains(message));
+
+        // 3) Save drl rule to file
+        Files.write( Paths.get(drlPath), drl.getBytes(), StandardOpenOption.CREATE);
+
+        // 4) maven clean, maven install
+        HelperMethods.mavenCleanAndInstallRules();
+
+        // 5) trigger rule
+        String host = "12.21.21.22";
+        List<Log> logs = getLoginLogsWithSameHost(10, host);
+        KieSession kieSession = getDefaultKieSessionWithPseudoClock();
+        logs.forEach(kieSession::insert);
+        int numOfFiredRules = kieSession.fireAllRules();
+
+        // 6) assert alarm
+        assertEquals(10, numOfFiredRules);
+        QueryResults results = kieSession.getQueryResults("Get all alarms");
+        assertEquals(10, results.size());
+        Alarm alarm = (Alarm) results.iterator().next().get("$a");
+        assertEquals(1, alarm.getLogs().size());
+        assertEquals(host, alarm.getLogs().get(0).getHostAddress());
+        assertEquals(message, alarm.getMessage());
+
+        // 7) delete rule
+        boolean isDeleted = (new File(drlPath)).delete();
+        assertTrue(isDeleted);
+    }
+
+    private List<Log> getLoginLogsWithSameHost(int count, String host) {
+        List<Log> logs = new ArrayList<>();
+        for(int i = 0; i < count; i++) {
+            Log log = new Log();
+            log.setId(i + 1L);
+            log.setType(LogLevel.WARN);
+            log.setSource(host);
+            log.setSource(String.format("127.%d2.8%d.1", i, i));
+            log.setMessage("login_successful:false");
+            log.setCategory(LogCategory.LOGIN);
+            logs.add(log);
+        }
+        return logs;
+    }
+
+    private KieSession getDefaultKieSessionWithPseudoClock() {
+        KieServices ks = KieServices.Factory.get();
+        KieContainer kc = ks.getKieClasspathContainer();
+        KieSessionConfiguration ksconf = ks.newKieSessionConfiguration();
+        ksconf.setOption(ClockTypeOption.get(ClockType.PSEUDO_CLOCK.getId()));
+        return kc.newKieSession(ksconf);
     }
 }

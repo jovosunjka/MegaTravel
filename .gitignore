@@ -65,3 +65,5 @@ SIEM/LogSimulator/LogSimulator/obj/LogSimulator\.csproj\.nuget\.g\.props
 SIEM/LogSimulator/LogSimulator/obj/LogSimulator\.csproj\.nuget\.g\.targets
 
 SIEM/LogSimulator/LogSimulator/obj/project\.assets\.json
+
+Client/application/package-lock\.json
