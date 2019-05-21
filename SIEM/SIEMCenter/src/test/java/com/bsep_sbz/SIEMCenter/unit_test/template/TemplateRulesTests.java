@@ -136,8 +136,8 @@ public class TemplateRulesTests {
         assertEquals(message, alarm.getMessage());
 
         // 7) delete rule
-        boolean isDeleted = (new File(drlPath)).delete();
-        assertTrue(isDeleted);
+        //boolean isDeleted = (new File(drlPath)).delete();
+        //assertTrue(isDeleted);
     }
 
     private List<Log> getLoginLogsWithSameHost(int count, String host) {
@@ -153,13 +153,5 @@ public class TemplateRulesTests {
             logs.add(log);
         }
         return logs;
-    }
-
-    private KieSession getDefaultKieSessionWithPseudoClock() {
-        KieServices ks = KieServices.Factory.get();
-        KieContainer kc = ks.getKieClasspathContainer();
-        KieSessionConfiguration ksconf = ks.newKieSessionConfiguration();
-        ksconf.setOption(ClockTypeOption.get(ClockType.PSEUDO_CLOCK.getId()));
-        return kc.newKieSession(ksconf);
     }
 }
