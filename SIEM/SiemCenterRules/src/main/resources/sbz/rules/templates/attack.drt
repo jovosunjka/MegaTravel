@@ -3,7 +3,7 @@ category
 logCount
 time
 
-package templates;
+package templates_rules;
 
 import com.bsep_sbz.SIEMCenter.model.sbz.enums.log.LogCategory
 import com.bsep_sbz.SIEMCenter.model.sbz.log.Alarm;

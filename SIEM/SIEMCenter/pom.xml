@@ -139,6 +139,11 @@
 		</dependency>
 
 		<dependency>
+			<groupId>org.apache.maven.shared</groupId>
+			<artifactId>maven-invoker</artifactId>
+			<version>3.0.1</version>
+		</dependency>
+		<dependency>
 			<groupId>com.bsep_sbz</groupId>
 			<artifactId>SiemCenterRules</artifactId>
 			<type>jar</type>
@@ -161,6 +166,18 @@
 					<classifier>exec</classifier>
 				</configuration>
 			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<version>2.12.4</version>
+				<configuration>
+					<systemPropertyVariables>
+						<!--<maven.home>${user.home}/../../Program Files/apache-maven-3.6.1</maven.home>-->
+						<maven.home>E:/apache-maven-3.5.3</maven.home>
+					</systemPropertyVariables>
+				</configuration>
+			</plugin>
+
 		</plugins>
 	</build>
 

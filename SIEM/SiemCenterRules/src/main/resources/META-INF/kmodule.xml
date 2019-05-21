@@ -15,4 +15,7 @@
     <kbase name="long_period_rules" eventProcessingMode="stream" packages="long_period_rules">
         <ksession clockType="pseudo" name="long_period_session"/>
     </kbase>
+    <kbase name="template_rules" eventProcessingMode="stream" packages="template_rules">
+        <ksession clockType="pseudo" name="TemplateRulesSession" />
+    </kbase>
 </kmodule>
