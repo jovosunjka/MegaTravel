@@ -3,15 +3,20 @@ package com.bsep_sbz.SIEMCenter.model.sbz.log;
 
 import com.bsep_sbz.SIEMCenter.model.sbz.enums.log.LogCategory;
 import com.bsep_sbz.SIEMCenter.model.sbz.enums.log.LogLevel;
+import org.apache.commons.lang3.StringUtils;
 import org.kie.api.definition.type.Role;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.Date;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
 @org.kie.api.definition.type.Role(Role.Type.EVENT)
+@org.kie.api.definition.type.Timestamp("timestamp")
+//@org.kie.api.definition.type.Expires()
 public class Log {
     private Long id;
     private LogLevel type;
@@ -26,7 +31,8 @@ public class Log {
     private final SimpleDateFormat sdf2 = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
 
     public Log() {
-
+        this.timestamp = new Date();
+        String dataIWant = "".replaceFirst(".*'(.*?)'.*", "$1");
     }
     
     
@@ -51,8 +57,21 @@ public class Log {
         this.message = message;
     }
 
+    public long diffrenceInHours(Date date) {
+        long difference = TimeUnit.DAYS.convert(date.getTime() - timestamp.getTime(), TimeUnit.HOURS);
+        System.out.println("diffrenceInHours(): " + difference);
+        return difference;
+    }
+
     public static long getDaysOfInactivity(long first, long second) {
         return TimeUnit.DAYS.convert(first - second, TimeUnit.MILLISECONDS);
+    }
+
+    public String getUsername() {
+        String str = StringUtils.substringBetween(message+",","username:", ",");
+        // za svaki slucaj dodajemo zarez na kraj
+        //System.out.println("getUsername(): " + str);
+        return str;
     }
 
     public Long getId() {

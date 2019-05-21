@@ -30,7 +30,7 @@ public class RuleService implements IRuleService {
     //private DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd.MM.yyyy. HH:mm:ss");
     private DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd-MMM-yy HH:mm:ss");
 
-    @EventListener(ApplicationReadyEvent.class)
+    //@EventListener(ApplicationReadyEvent.class)
     @Override
     public void initialize() {
         System.out.println("************* INITIALIZE ****************");

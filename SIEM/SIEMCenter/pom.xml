@@ -137,12 +137,14 @@
 			<artifactId>drools-templates</artifactId>
 			<version>7.20.0.Final</version>
 		</dependency>
+
 		<dependency>
 			<groupId>com.bsep_sbz</groupId>
 			<artifactId>SiemCenterRules</artifactId>
 			<type>jar</type>
 			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
+
 
 	</dependencies>
 

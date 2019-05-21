@@ -3,9 +3,11 @@ package loginrules;
 import com.bsep_sbz.SIEMCenter.model.sbz.log.Alarm;
 import com.bsep_sbz.SIEMCenter.model.sbz.log.Log;
 import com.bsep_sbz.SIEMCenter.model.sbz.enums.log.LogCategory;
+import com.bsep_sbz.SIEMCenter.model.sbz.enums.log.LogLevel;
 import com.bsep_sbz.SIEMCenter.model.sbz.enums.log.AlarmProducerType;
 import java.util.HashMap;
-import java.util.List;
+import java.util.ArrayList;
+
 
 global java.util.ArrayList<String> maliciousIpAddresses;
 
@@ -25,8 +27,9 @@ end
 
 // Prijava ili pokušaj prijave sa IP adrese koje se nalazi na spisku malicioznih IP adresa
 rule "Try to login from malicious ip address"
+    salience 2
     when
-        $l: Log(maliciousIpAddresses contains source)
+        $l: Log(type == LogLevel.WARN, category == LogCategory.LOGIN, maliciousIpAddresses contains source)
     then
         System.out.println("malicious ip address");
         Alarm alarm = new Alarm();
@@ -36,13 +39,29 @@ rule "Try to login from malicious ip address"
         insert(alarm);
 end
 
+// Pojava loga u kojoj se nalazi IP adresa sa spiska malicioznih IP adresa
+rule "Pojava loga u kojoj se nalazi IP adresa sa spiska malicioznih IP adresa"
+    salience 1
+    when
+        $l: Log(maliciousIpAddresses contains source)
+    then
+
+        Alarm alarm = new Alarm();
+        alarm.setAlarmProducerType(AlarmProducerType.APP);
+        alarm.getLogs().add($l);
+        alarm.setMessage("Pojava loga u kojoj se nalazi IP adresa sa spiska malicioznih IP adresa");
+        insert(alarm);
+end
+
+
 // mradovic: this rule will be triggered as many times as number of logs with given specs ???
 // Ukoliko sa iste IP adrese registruje 30 ili više neuspešnih pokušaja prijave na
 // sistem u roku od 24h, dodati tu IP adresu u spisak malicioznih IP adresa
 rule "30+ login attempts within 24h with same ip" // in this case source is ip address
     when
-        $log: Log($s: source, category == LogCategory.LOGIN, message contains "login_successful:false",
-        maliciousIpAddresses not contains source) and
+        $log: Log($s: source, category == LogCategory.LOGIN, message.contains("login_successful:false"),
+        source not memberOf maliciousIpAddresses) and
+        //maliciousIpAddresses not contains source) and
         Number(intValue >= 30) from accumulate(
                        $l: Log(
                            source == $s,
