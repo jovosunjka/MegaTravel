@@ -1,4 +1,5 @@
-﻿using LogSimulator.Service.Interface;
+﻿using LogSimulator.Model.Enum;
+using LogSimulator.Service.Interface;
 using System;
 
 namespace LogSimulator.State
@@ -16,7 +17,7 @@ namespace LogSimulator.State
             var random = new Random();
             for (int i = 0; i < count; i++)
             {
-                var log = logService.GetLog($"User from ip address '{appSettings.MaliciousIpAddress}' paid '100$' for flight '{random.Next(1, 10000)}'");
+                var log = logService.GetLog($"User from ip address '{appSettings.MaliciousIpAddress}' paid '100$' for flight '{random.Next(1, 10000)}'", LogCategory.PAYMENT_SYSTEM);
                 logService.WriteLogToFile(appSettings.OtherLogsFolderPath, log);
             }
         }

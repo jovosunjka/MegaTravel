@@ -1,4 +1,5 @@
-﻿using LogSimulator.Service.Interface;
+﻿using LogSimulator.Model.Enum;
+using LogSimulator.Service.Interface;
 
 namespace LogSimulator.State
 {
@@ -11,7 +12,7 @@ namespace LogSimulator.State
 
         public void Simulate(IAppSettings appSettings, ILogService logService)
         {
-            var log = logService.GetLog($"Login success with username '{appSettings.Username}' from ip address '{appSettings.IpAddress2}'");
+            var log = logService.GetLog($"Login success with username '{appSettings.Username}' from ip address '{appSettings.IpAddress2}'", LogCategory.LOGIN);
             logService.WriteLogToFile(appSettings.LoginLogsFolderPath, log);
         }
     }

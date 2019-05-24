@@ -6,6 +6,8 @@
 
         public const string StatesNamespace = "LogSimulator.State";
 
+        public const string NewLine = "\n";
+
         public static class StateDescription
         {
             public const string NoAlarm = "No alarm";

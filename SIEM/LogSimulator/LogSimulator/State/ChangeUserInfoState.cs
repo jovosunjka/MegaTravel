@@ -1,4 +1,5 @@
-﻿using LogSimulator.Service.Interface;
+﻿using LogSimulator.Model.Enum;
+using LogSimulator.Service.Interface;
 using System;
 
 namespace LogSimulator.State
@@ -15,16 +16,16 @@ namespace LogSimulator.State
             var ipAddress = appSettings.MaliciousIpAddress;
             for (int i = 0; i < 5; i++)
             {
-                var usernameLog = logService.GetLog($"Login attempt with username '{appSettings.Username}' from ip address '{ipAddress}'");
+                var usernameLog = logService.GetLog($"Login attempt with username '{appSettings.Username}' from ip address '{ipAddress}'", LogCategory.LOGIN);
                 logService.WriteLogToFile(appSettings.LoginLogsFolderPath, usernameLog);
             }
             for (int i = 0; i < 5; i++)
             {
-                var username2Log = logService.GetLog($"Login attempt with username '{appSettings.Username2}' from ip address '{ipAddress}'");
+                var username2Log = logService.GetLog($"Login attempt with username '{appSettings.Username2}' from ip address '{ipAddress}'", LogCategory.LOGIN);
                 logService.WriteLogToFile(appSettings.LoginLogsFolderPath, username2Log);
             }
-            var loginLog = logService.GetLog($"Login success with username '{appSettings.Username2}' from ip address '{ipAddress}'");
-            var changeLog = logService.GetLog($"User with username '{appSettings.Username2}' changes password settings");
+            var loginLog = logService.GetLog($"Login success with username '{appSettings.Username2}' from ip address '{ipAddress}'", LogCategory.LOGIN);
+            var changeLog = logService.GetLog($"User with username '{appSettings.Username2}' changes password settings", LogCategory.APP);
             logService.WriteLogToFile(appSettings.LoginLogsFolderPath, loginLog);
             logService.WriteLogToFile(appSettings.LoginLogsFolderPath, changeLog);
         }

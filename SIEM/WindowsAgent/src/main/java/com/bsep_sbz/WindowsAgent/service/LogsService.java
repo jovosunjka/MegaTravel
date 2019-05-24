@@ -67,7 +67,7 @@ public class LogsService implements ILogsService {
 		System.out.println("entered");
 
 		if(logs.isEmpty()) {
-			System.out.println("Nema nijedan log za slanje!");
+			System.out.println("Nema ni jedan log za slanje!");
 			return;
 		}
 

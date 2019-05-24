@@ -13,11 +13,13 @@ namespace LogSimulator.Model
 
         public LogLevelType LogLevelType { get; set; }
 
+        public LogCategory LogCategory { get; set; }
+
         public string Message { get; set; }
 
         public override string ToString()
         {
-            return string.Join("|", Id, EventId, TimeStamp, LogLevelType, Message);
+            return string.Join("|", Id, EventId, TimeStamp, LogLevelType, LogCategory, Message);
         }
     }
 }

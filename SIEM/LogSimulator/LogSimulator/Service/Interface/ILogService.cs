@@ -7,7 +7,7 @@ namespace LogSimulator.Service.Interface
     {
         void WriteLogToFile(string path, Log log);
 
-        Log GetLog(string message, LogLevelType logLevelType = LogLevelType.INFO);
+        Log GetLog(string message, LogCategory logCategory, LogLevelType logLevelType = LogLevelType.INFO);
 
         long GetNextLogId();
 

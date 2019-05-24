@@ -125,17 +125,13 @@ public class RuleService implements IRuleService {
                 }
 
                 LogLevel ll = LogLevel.valueOf(tokens[3]);
-                String message = tokens[4];
-                LogCategory logCategory = LogCategory.APP;
+                LogCategory logCategory = LogCategory.valueOf(tokens[4]);
+                String message = tokens[5];
                 Log logCreated = new Log(id,ll, logCategory, timestamp, "","", message);
                 logsRet.add(logCreated);
-
-
             } catch (Exception e) {
                 e.printStackTrace();
             }
-
-
         }
         return logsRet;
     }

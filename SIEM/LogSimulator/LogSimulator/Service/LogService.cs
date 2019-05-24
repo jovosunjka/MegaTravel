@@ -1,4 +1,5 @@
-﻿using LogSimulator.Model;
+﻿using LogSimulator.Helper;
+using LogSimulator.Model;
 using LogSimulator.Model.Enum;
 using LogSimulator.Service.Interface;
 using System;
@@ -18,7 +19,7 @@ namespace LogSimulator.Service
             _mutex = new Mutex();
         }
 
-        public Log GetLog(string message, LogLevelType logLevelType = LogLevelType.INFO)
+        public Log GetLog(string message, LogCategory logCategory, LogLevelType logLevelType = LogLevelType.INFO)
         {
             var id = GetNextLogId();
             return new Log
@@ -27,6 +28,7 @@ namespace LogSimulator.Service
                 EventId = id,
                 TimeStamp = DateTime.UtcNow,
                 LogLevelType = logLevelType,
+                LogCategory = logCategory,
                 Message = message
             };
         }
@@ -67,7 +69,7 @@ namespace LogSimulator.Service
         {
             lock (_mutex)
             {
-                File.AppendAllText(path, log.ToString() + "\n");
+                File.AppendAllText(path, log.ToString() + Constants.NewLine);
             }
         }
     }
