@@ -136,8 +136,8 @@ public class TemplateRulesTests {
         assertEquals(message, alarm.getMessage());
 
         // 7) delete rule
-        //boolean isDeleted = (new File(drlPath)).delete();
-        //assertTrue(isDeleted);
+        boolean isDeleted = (new File(drlPath)).delete();
+        assertTrue(isDeleted);
     }
 
     private List<Log> getLoginLogsWithSameHost(int count, String host) {

@@ -26,8 +26,8 @@ namespace LogSimulator.Service
             {
                 Id = id,
                 EventId = id,
-                TimeStamp = DateTime.UtcNow,
-                LogLevelType = logLevelType,
+                Timestamp = DateTime.UtcNow,
+                LogLevel = logLevelType,
                 LogCategory = logCategory,
                 Message = message
             };

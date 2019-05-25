@@ -9,9 +9,9 @@ namespace LogSimulator.Model
 
         public long EventId { get; set; }
 
-        public DateTime TimeStamp { get; set; }
+        public DateTime Timestamp { get; set; }
 
-        public LogLevelType LogLevelType { get; set; }
+        public LogLevelType LogLevel { get; set; }
 
         public LogCategory LogCategory { get; set; }
 
@@ -19,7 +19,12 @@ namespace LogSimulator.Model
 
         public override string ToString()
         {
-            return string.Join("|", Id, EventId, TimeStamp, LogLevelType, LogCategory, Message);
+            return string.Join("|", nameof(Id).ToLower() + ":" + Id, 
+                                    nameof(EventId).ToLower() + ":" + EventId, 
+                                    nameof(Timestamp).ToLower() + ":" + Timestamp,
+                                    nameof(LogLevel).ToLower() + ":" + LogLevel,
+                                    nameof(LogCategory).ToLower() + ":" + LogCategory,
+                                    nameof(Message).ToLower() + ":" + Message);
         }
     }
 }

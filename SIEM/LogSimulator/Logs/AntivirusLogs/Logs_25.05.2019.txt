@@ -1,0 +1,7 @@
+id:305|eventid:305|timestamp:5/25/2019 9:26:08 AM|loglevel:WARN|logcategory:ANTIVIRUS|message:Anstivirus found threat with id '1'
+id:306|eventid:306|timestamp:5/25/2019 9:26:08 AM|loglevel:WARN|logcategory:ANTIVIRUS|message:Anstivirus found threat with id '2'
+id:307|eventid:307|timestamp:5/25/2019 9:26:08 AM|loglevel:WARN|logcategory:ANTIVIRUS|message:Anstivirus found threat with id '3'
+id:308|eventid:308|timestamp:5/25/2019 9:26:08 AM|loglevel:WARN|logcategory:ANTIVIRUS|message:Anstivirus found threat with id '4'
+id:309|eventid:309|timestamp:5/25/2019 9:26:08 AM|loglevel:WARN|logcategory:ANTIVIRUS|message:Anstivirus found threat with id '5'
+id:310|eventid:310|timestamp:5/25/2019 9:26:08 AM|loglevel:WARN|logcategory:ANTIVIRUS|message:Anstivirus found threat with id '6'
+id:311|eventid:311|timestamp:5/25/2019 9:26:08 AM|loglevel:WARN|logcategory:ANTIVIRUS|message:Anstivirus found threat with id '7'
