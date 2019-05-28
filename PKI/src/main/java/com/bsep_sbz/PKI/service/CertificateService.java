@@ -6,6 +6,7 @@ import com.bsep_sbz.PKI.model.SubjectData;
 
 import java.security.PrivateKey;
 import java.security.PublicKey;
+import java.security.cert.CertificateEncodingException;
 import java.security.cert.X509Certificate;
 
 public interface CertificateService {
@@ -22,4 +23,6 @@ public interface CertificateService {
                                   String organizationalUnitName, String countryCode, String userId);
 
     void revoke(long serialNumber);
+
+    void saveCertificate(X509Certificate certificate) throws CertificateEncodingException;
 }

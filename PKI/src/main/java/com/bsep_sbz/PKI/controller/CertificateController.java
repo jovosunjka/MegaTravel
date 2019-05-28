@@ -36,18 +36,17 @@ public class CertificateController {
     private RestTemplate restTemplate;
 
     @RequestMapping(value = "/create", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<String> createCertificate(@RequestBody CertificateSigningRequest csr) {
+    public ResponseEntity createCertificate(@RequestBody CertificateSigningRequest csr) {
         X509Certificate certificate = null;
 
         try {
             certificate = certificateService.createCertificate(csr);
+            certificateService.saveCertificate(certificate);
         } catch (Exception e) {
-            return new ResponseEntity(e.getMessage(), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
 
-
-
-        return new ResponseEntity(certificate, HttpStatus.CREATED);
+        return new ResponseEntity<>(certificate, HttpStatus.CREATED);
     }
 
     @RequestMapping(value = "/send", method = RequestMethod.GET)
@@ -59,7 +58,7 @@ public class CertificateController {
         try {
             certificate = certificateService.createCertificate(csr);
         } catch (Exception e) {
-            return new ResponseEntity(e.getMessage(), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
         String certificateStr = null;
         try {

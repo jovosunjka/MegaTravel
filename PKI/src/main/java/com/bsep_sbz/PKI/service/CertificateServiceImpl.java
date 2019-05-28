@@ -8,8 +8,12 @@ import com.bsep_sbz.PKI.service.certificate.CertificateGeneratorService;
 import com.bsep_sbz.PKI.service.keystore.KeyStoreReaderService;
 import com.bsep_sbz.PKI.service.keystore.KeyStoreWriterService;
 import org.apache.tomcat.util.codec.binary.Base64;
+import org.bouncycastle.asn1.x500.RDN;
+import org.bouncycastle.asn1.x500.X500Name;
 import org.bouncycastle.asn1.x500.X500NameBuilder;
 import org.bouncycastle.asn1.x500.style.BCStyle;
+import org.bouncycastle.asn1.x500.style.IETFUtils;
+import org.bouncycastle.cert.jcajce.JcaX509CertificateHolder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
@@ -236,6 +240,18 @@ public class CertificateServiceImpl implements CertificateService {
     }
 
     @Override
+    public void saveCertificate(X509Certificate certificate) throws CertificateEncodingException {
+        String commonName = getCommonName(certificate);
+        Certificate dbCertificate = new Certificate()
+        {{
+           setRevoked(false);
+           setCommonName(commonName);
+           setSerialNumber(certificate.getSerialNumber().longValue());
+        }};
+        certificateRepository.save(dbCertificate);
+    }
+
+    @Override
     public SubjectData generateSubjectData(CertificateSigningRequest csr, PublicKey publicKey) {
         LocalDate startLocalDate = LocalDate.now();
 
@@ -288,6 +304,12 @@ public class CertificateServiceImpl implements CertificateService {
         // - privatni kljuc koji ce se koristiti da potpise sertifikat koji se izdaje
         // - podatke o vlasniku sertifikata koji izdaje nov sertifikat
         return new IssuerData(issuerKey, builder.build());
+    }
+
+    private String getCommonName(X509Certificate certificate) throws CertificateEncodingException {
+        X500Name x500name = new JcaX509CertificateHolder(certificate).getSubject();
+        RDN cn = x500name.getRDNs(BCStyle.CN)[0];
+        return IETFUtils.valueToString(cn.getFirst().getValue());
     }
 
     private KeyPair generateKeyPair() {
