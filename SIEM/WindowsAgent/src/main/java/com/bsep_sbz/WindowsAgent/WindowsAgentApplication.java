@@ -3,12 +3,17 @@ package com.bsep_sbz.WindowsAgent;
 import com.bsep_sbz.WindowsAgent.helper.Constants;
 import com.sun.jna.platform.win32.Advapi32Util;
 import com.sun.jna.platform.win32.WinNT;
+//import com.sun.jna.platform.win32.Advapi32Util.
+
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import com.sun.jna.platform.win32.Advapi32Util.EventLogIterator;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -20,7 +25,7 @@ public class WindowsAgentApplication {
 		SpringApplication.run(WindowsAgentApplication.class, args);
 	}
 
-	@EventListener(ApplicationReadyEvent.class)
+	//@EventListener(ApplicationReadyEvent.class)
 	public void startupCallback() {
 		new Thread(WindowsAgentApplication::watchSysLogs).start();
 	}
@@ -49,6 +54,8 @@ public class WindowsAgentApplication {
 		ArrayList<String[]> strings = new ArrayList<>();
 		byte[] data = recordList.get(0).getData();
 		WinNT.EVENTLOGRECORD record = recordList.get(0).getRecord();
+		String str = record.getPointer().getString(record.StringOffset.longValue());
+		Object obj = record.readField("EventCategory");
 		int counter = 0;
 		for(Advapi32Util.EventLogRecord rec : recordList)
 		{

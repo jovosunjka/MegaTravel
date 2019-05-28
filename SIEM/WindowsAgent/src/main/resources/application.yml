@@ -3,17 +3,17 @@
 scan-logs:
   # lista monitoring elemenata (foldera i fajlova) koji ce biti posmatrani
   monitoring-elements:
-    #-
-    #  path: C:\Windows\System32\winevt\Logs
-    #  includesFiles:
-    #    - Setup.*
-    #  excludesFiles: []
+    -
+      path: C:\Windows\System32\winevt\Logs
+      includesFiles:
+        - System.*
+      excludesFiles: []
       # lista regex-a koji ce se koristiti pri filtriranju logova
-    #  includes: []
+      includes: []
       # lista regex-a - ovde ce biti filtrirani logovi koji su prosli filtriranje po includes regex-ima (regexi su razdvojeni zarezom)
-    #  excludes:
-    #    - .*Event ID:\s*1.*
-    #  interval: 0
+      excludes:
+        - .*Event ID:\s*1.*
+      interval: 0
       # lokalni interval,
       # u sekundama,
       # Ako je vrednost intervala 0, onda se readi o real-time rezimu rada,
