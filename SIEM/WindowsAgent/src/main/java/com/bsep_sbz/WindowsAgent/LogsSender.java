@@ -2,22 +2,23 @@ package com.bsep_sbz.WindowsAgent;
 
 
 import com.bsep_sbz.WindowsAgent.config.AgentConfiguration;
+import com.bsep_sbz.WindowsAgent.model.ReadLogsResult;
 import com.bsep_sbz.WindowsAgent.service.interfaces.ILogsService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import java.io.*;
 import java.nio.file.*;
-import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 
+// Ako ovde ne stoji anotacija @Component, onda anotacija @EventListener(ApplicationReadyEvent.class) iznad metode scanLogs,
+// nece imati nikakvog efekta
 @Component
 public class LogsSender {
 
@@ -29,8 +30,11 @@ public class LogsSender {
     @Autowired
     private ILogsService logsService;
 
+    private Path windowsLogsDirectory = Paths.get("C:\\Windows\\System32\\winevt\\Logs");
+
+
     @EventListener(ApplicationReadyEvent.class)
-    public void scanLogs() {
+    private void scanLogs() {
         for(AgentConfiguration.MonitoringElement mEelement : agentConfiguration.getMonitoringElements()) {
             new Thread(new Runnable() {
                 @Override
@@ -45,7 +49,7 @@ public class LogsSender {
         }
     }
 
-    public void runScanLogs(AgentConfiguration.MonitoringElement monitoringElement) throws Exception {
+    private void runScanLogs(AgentConfiguration.MonitoringElement monitoringElement) throws Exception {
         Path path = Paths.get(monitoringElement.getPath());
 
         if(!Files.isDirectory(path)) {
@@ -87,7 +91,7 @@ public class LogsSender {
         }
     }
 
-    public void batchScanLogs(Path path, int interval, List<String> includesFiles,  List<String> excludesFiles,
+    private void batchScanLogs(Path path, int interval, List<String> includesFiles,  List<String> excludesFiles,
                               List<String> includes,  List<String> excludes) {
 
         while (true) {
@@ -111,7 +115,7 @@ public class LogsSender {
         }
     }
 
-    public void realtimeScanLogs(Path path, List<String> includesFiles,  List<String> excludesFiles,
+    private void realtimeScanLogs(Path path, List<String> includesFiles,  List<String> excludesFiles,
                                  List<String> includes,  List<String> excludes) {
         //String directoryPath = "E:"+ File.separator +"STUDIRANJE"+ File.separator +"CETVRTA GODINA";
 
@@ -181,7 +185,7 @@ public class LogsSender {
         System.out.println("realtimeScanLogs (END)");
     }
 
-    public void readLogsAndUpdateStartPosition(File file, List<String> includes, List<String> excludes) {
+    private void readLogsAndUpdateStartPosition(File file, List<String> includes, List<String> excludes) {
         long startPos;
 
         if(startingPositions.containsKey(file)) {
@@ -195,50 +199,35 @@ public class LogsSender {
         startingPositions.put(file, startPos);
     }
 
-    public long readLogs(File file, long startingPosition, List<String> includes, List<String> excludes) {
-        long lengthRead;
-        byte[] bytesRead;
+    private long readLogs(File file, long startingPosition, List<String> includes, List<String> excludes) {
+        ReadLogsResult rlr;
 
-        try {
-            RandomAccessFile randomAccessFile = new RandomAccessFile(file, "r");
-            long fileLength = file.length();
+        if(file.toPath().startsWith(windowsLogsDirectory)) {
+            String fileName = file.getName();
+            fileName = fileName.substring(0, fileName.length()-5); // .evtx je ekstenzija za windows lgove,
+                                                                    // skinucemo ovih 5 karaktera
+            rlr = readWindowsLogs(fileName, startingPosition);
+            // fileName bice dovoljan, jer powerShell koji koristimo, zna gde da trazi windows logove
+            // za readWindowsLogs, startingPosition predstavlja broj karaktera koje cemo preskociti
+        }
+        else {
+            rlr = readPlainLogs(file, startingPosition);
+        }
 
-            if (fileLength == 0) {
-                startingPosition = 0;
-                System.out.println("File " + file.getAbsolutePath() + " is empty!");
-                return startingPosition;
-            }
-            else if (startingPosition > fileLength) {
-                startingPosition = fileLength;
-                System.out.println("Something in the file " + file.getAbsolutePath() + " has been deleted. Check it out!");
-                return startingPosition;
-            }
-            lengthRead = fileLength - startingPosition;
+        List<String> filteredNewLogs = filterLogs(rlr.getLogs(), includes, excludes);
 
-            randomAccessFile.seek(startingPosition);
-            bytesRead = new byte[(int) lengthRead];
-            randomAccessFile.read(bytesRead);
-            startingPosition += lengthRead;
-            randomAccessFile.close();
+        for (String fNewLog : filteredNewLogs) {
+            System.out.println("Filtered new log in file " + file.getAbsolutePath() + ": " + fNewLog);
+        }
 
-            String newLogsStr = new String(bytesRead);
-            newLogsStr = newLogsStr.trim();
-            String[] newLogs = newLogsStr.split("\r?\n");
-            List<String> filteredNewLogs = filterLogs(newLogs, includes, excludes);
-
-            for (String fNewLog : filteredNewLogs) {
-                System.out.println("Filtered new log in file " + file.getAbsolutePath() + ": " + fNewLog);
-            }
+        /*try {
             logsService.sendLogs(filteredNewLogs);
-
-        } catch (FileNotFoundException e) {
+        } catch (IOException e) {
             e.printStackTrace();
-        }
-        catch (IOException e) {
-            e.printStackTrace();
-        }
+        }*/
 
-        return startingPosition;
+
+        return rlr.getNumberOfCharactersOrBytesRead();
     }
 
     private File[] filterFilesInDirectory(File directory, List<String> includesFiles, List<String> excludesFiles) {
@@ -260,8 +249,8 @@ public class LogsSender {
         return filteredFiles;
     }
 
-    private List<String> filterLogs(String[] newLogs, List<String> includes, List<String> excludes) {
-        List<String> filteredLogs = Arrays.stream(newLogs)
+    private List<String> filterLogs(List<String> newLogs, List<String> includes, List<String> excludes) {
+        List<String> filteredLogs = newLogs.stream()
                 .filter(newLog -> !newLog.equals("")
                         && (includes.isEmpty() || matchesRegexes(newLog, includes)) // lokalni regexi
                         && (excludes.isEmpty() || !matchesRegexes(newLog, excludes)) // lokalni regexi
@@ -273,12 +262,120 @@ public class LogsSender {
         return  filteredLogs;
     }
 
-    public boolean matchesRegexes(String str, List<String> regexes) {
+    private boolean matchesRegexes(String str, List<String> regexes) {
         for (String regex : regexes) {
             if(str.matches(regex)) return true;
         }
 
         return false;
+    }
+
+    private ReadLogsResult readWindowsLogs(String logName, long skipCharacters) {
+        System.out.println("READ WINDOWS LOGS (logName="+logName+", skipCharacters="+skipCharacters+")");
+        //https://docs.microsoft.com/en-us/powershell/module/microsoft.powershell.management/get-eventlog?view=powershell-5.1
+
+        // Get-EventLog -LogName Security -Newest 5 | Select-Object -Property *
+        //  Get-EventLog -LogName Security | Format-Table TimeCreated,Message -wrap
+        String command = "powershell.exe  Get-EventLog -LogName " + logName + " | Select-Object -Property *";
+
+        ArrayList<String> logs = new ArrayList<String>();
+
+        try {
+            // Executing the command
+            Process powerShellProcess = Runtime.getRuntime().exec(command);
+            // Getting the results
+            powerShellProcess.getOutputStream().close();
+            //System.out.println("Standard Output:");
+            InputStreamReader isr = new InputStreamReader(powerShellProcess.getInputStream());
+            if(skipCharacters > 0) isr.skip(skipCharacters);
+            BufferedReader br = new BufferedReader(isr);
+
+            String line;
+            String newLog;
+            StringBuilder logBuilder = new StringBuilder("");
+
+            boolean removeLine = false;
+            while ((line = br.readLine()) != null) {
+                skipCharacters += line.length();
+
+                if (line.matches("Source\\s*:.*")) {
+                    removeLine = false;
+                }
+                if (removeLine) continue;
+
+                line = line.trim();
+                if (line.equals("")) continue;
+
+
+                //line.split("\\s*:\\s*"); // nula ili vise razmaka sa obe strane dvotacke
+                logBuilder.append("|");
+                logBuilder.append(line);
+
+                if (line.matches("Message\\s*:.*")) {
+                    newLog = logBuilder.substring(1);
+                    newLog = newLog.replaceAll("\\s*:\\s*", "=");
+                    logs.add(newLog);
+                    logBuilder = new StringBuilder("");
+                    removeLine = true;
+                }
+            }
+            br.close();
+
+            /*System.out.println("Standard Error:");
+            BufferedReader stderr = new BufferedReader(new InputStreamReader(powerShellProcess.getErrorStream()));
+            while ((line = stderr.readLine()) != null) {
+                System.out.println(line);
+            }
+            stderr.close();*/
+            //System.out.println("Done");
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return new ReadLogsResult(logs, skipCharacters);
+    }
+
+    private ReadLogsResult readPlainLogs(File file, long startingPosition) {
+        long lengthRead;
+        byte[] bytesRead;
+
+        try {
+            RandomAccessFile randomAccessFile = new RandomAccessFile(file, "r");
+            long fileLength = file.length();
+
+            if (fileLength == 0) {
+                startingPosition = 0;
+                System.out.println("File " + file.getAbsolutePath() + " is empty!");
+                return new ReadLogsResult(startingPosition);
+            }
+            else if (startingPosition > fileLength) {
+                startingPosition = fileLength;
+                System.out.println("Something in the file " + file.getAbsolutePath() + " has been deleted. Check it out!");
+                return  new ReadLogsResult(startingPosition);
+            }
+            lengthRead = fileLength - startingPosition;
+
+            randomAccessFile.seek(startingPosition);
+            bytesRead = new byte[(int) lengthRead];
+            randomAccessFile.read(bytesRead);
+            startingPosition += lengthRead;
+            randomAccessFile.close();
+
+            String newLogsStr = new String(bytesRead);
+            newLogsStr = newLogsStr.trim();
+            String[] newLogs = newLogsStr.split("\r?\n");
+
+            return new ReadLogsResult(Arrays.asList(newLogs), startingPosition);
+
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return null;
     }
 
 }
