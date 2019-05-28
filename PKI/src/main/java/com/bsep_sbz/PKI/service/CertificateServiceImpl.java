@@ -208,19 +208,31 @@ public class CertificateServiceImpl implements CertificateService {
             out = new FileOutputStream(directoryStoresPath + "/" + commonName + ".cer");
             out.write(certificate.getEncoded());
             out.close();
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (CertificateEncodingException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
+        } catch (CertificateEncodingException|IOException e) {
             e.printStackTrace();
         }
     }
 
-    public boolean isRevoked(Long certificateId) throws Exception {
+    public boolean isRevokedById(Long certificateId) throws Exception {
         Certificate certificate = certificateRepository.findById(certificateId).orElseThrow(
                 () -> new Exception(String.format("Certificate with id %d is revoked!", certificateId.longValue())));
         return certificate.isRevoked();
+    }
+
+    @Override
+    public boolean isRevoked(Long serialNumber) throws Exception {
+        Certificate certificate = certificateRepository.findBySerialNumber(serialNumber);
+        if(certificate == null) {
+            throw new Exception("Certificate does not exist");
+        }
+        return certificate.isRevoked();
+    }
+
+    @Override
+    public void revoke(long serialNumber) {
+        Certificate certificate = certificateRepository.findBySerialNumber(serialNumber);
+        certificate.setRevoked(true);
+        certificateRepository.save(certificate);
     }
 
     @Override
@@ -277,7 +289,6 @@ public class CertificateServiceImpl implements CertificateService {
         // - podatke o vlasniku sertifikata koji izdaje nov sertifikat
         return new IssuerData(issuerKey, builder.build());
     }
-
 
     private KeyPair generateKeyPair() {
         try {

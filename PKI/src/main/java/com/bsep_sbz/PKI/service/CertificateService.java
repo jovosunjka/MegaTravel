@@ -12,10 +12,14 @@ public interface CertificateService {
 
     X509Certificate createCertificate(CertificateSigningRequest csr) throws Exception;
 
-    boolean isRevoked(Long certificateId) throws Exception;
+    boolean isRevokedById(Long certificateId) throws Exception;
+
+    boolean isRevoked(Long serialNumber)throws Exception;
 
     SubjectData generateSubjectData(CertificateSigningRequest csr, PublicKey publicKey);
 
     IssuerData generateIssuerData(PrivateKey issuerKey, String commonName, String organizationName,
                                   String organizationalUnitName, String countryCode, String userId);
+
+    void revoke(long serialNumber);
 }

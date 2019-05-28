@@ -9,6 +9,9 @@ public class Certificate {
     @Column(name="id", unique=true, nullable=false)
     private Long id;
 
+    @Column(name="serial_number", unique = true, nullable = false)
+    private Long serialNumber;
+
     @Column(name="common_name", unique=false, nullable=false)
     private String commonName;
 
@@ -51,5 +54,13 @@ public class Certificate {
 
     public void setRevoked(boolean revoked) {
         this.revoked = revoked;
+    }
+
+    public Long getSerialNumber() {
+        return serialNumber;
+    }
+
+    public void setSerialNumber(Long serialNumber) {
+        this.serialNumber = serialNumber;
     }
 }
