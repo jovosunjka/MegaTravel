@@ -1,6 +1,8 @@
 package com.bsep_sbz.PKI.controller;
 
 import com.bsep_sbz.PKI.config.ftp.MyGateway;
+import com.bsep_sbz.PKI.dto.CertificateRevocationRequest;
+import com.bsep_sbz.PKI.dto.CertificateRevocationResponse;
 import com.bsep_sbz.PKI.dto.CertificateSigningRequest;
 import com.bsep_sbz.PKI.model.CertificateType;
 import com.bsep_sbz.PKI.model.IntermediateCA;
@@ -24,7 +26,9 @@ import java.io.File;
 import java.io.IOException;
 import java.security.cert.CertificateEncodingException;
 import java.security.cert.X509Certificate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Date;
 
 @RestController
 @RequestMapping(value = "/certificate")
@@ -60,21 +64,20 @@ public class CertificateController {
 
 
     @RequestMapping(value = "/create", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<String> createCertificate(@RequestBody CertificateSigningRequest csr) {
+    public ResponseEntity createCertificate(@RequestBody CertificateSigningRequest csr) {
         X509Certificate certificate = null;
 
         try {
             certificate = certificateService.createCertificate(csr);
+            certificateService.saveCertificate(certificate);
         } catch (Exception e) {
-            return new ResponseEntity(e.getMessage(), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
 
-
-
-        return new ResponseEntity(certificate, HttpStatus.CREATED);
+        return new ResponseEntity<>(certificate, HttpStatus.CREATED);
     }
 
-    //@RequestMapping(value = "/send", method = RequestMethod.GET)
+    @RequestMapping(value = "/send", method = RequestMethod.GET)
     //@EventListener(ApplicationReadyEvent.class)
     public ResponseEntity<String> sendCertificate() {
         String publicKeyStr = "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAjR5ZccKEIbuUA/MUVoYkcaqFimsLKvR2KmaxVbMojPb9rSXQnnFBTDscvsXMfaY4Ezv3k33K4NzVNCfOE6wqJRFN70dO5VVVyhupsuyxcsfrDPZ8vhmuNjl/FGUNGEIv5LV+6BzkXUDeAP4w1zOLMXUcUQv2cT0GKtMu53tT02qvLhWTJs8F7YL172gPDz3Hggp/l8oriBazhMO43diyYUVfK8dRgKHHCyuIg0JPTuz7w2WuRooiSnROiO19C1FUUjJGQvmZjYLhLcgY89XNQOvQiKKh3ipxX4VhtOy5uDARmrUoB7SBlIIvDqOK1c3G7kUuuofK6X2IMtKqA21y9QIDAQAB";
@@ -83,7 +86,7 @@ public class CertificateController {
         try {
             certificate = certificateService.createCertificate(csr);
         } catch (Exception e) {
-            return new ResponseEntity(e.getMessage(), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
         String certificateStr = null;
         try {
@@ -103,15 +106,29 @@ public class CertificateController {
         return new ResponseEntity(message, responseEntity.getStatusCode());
     }
 
-    @RequestMapping(value = "/is-revoked", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Boolean> isRevoked(@RequestParam("serialNumber") Long serialNumber) {
-        boolean retValue = false;
+    @RequestMapping(value = "/is-revoked", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity isRevoked(@RequestBody CertificateRevocationRequest request) {
         try {
-            retValue = certificateService.isRevoked(serialNumber);
+            boolean retValue = certificateService.isRevoked(request.getSerialNumber());
+            return new ResponseEntity<>(new CertificateRevocationResponse(retValue, new Date()), HttpStatus.OK);
         } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
-        return new ResponseEntity<>(retValue, HttpStatus.OK);
+    }
+
+    @RequestMapping(value = "/revoke", method = RequestMethod.PUT, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity revoke(@RequestBody CertificateRevocationRequest request) {
+        try {
+            boolean retValue = certificateService.isRevoked(request.getSerialNumber());
+            if(retValue) {
+                return new ResponseEntity<>("Certificate is already revoked", HttpStatus.BAD_REQUEST);
+            }
+        } catch (Exception e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
+
+        certificateService.revoke(request.getSerialNumber());
+        return new ResponseEntity(HttpStatus.OK);
     }
 
     @RequestMapping(value = "/cao", method = RequestMethod.GET, produces = MediaType.TEXT_PLAIN_VALUE)

@@ -8,8 +8,12 @@ import com.bsep_sbz.PKI.service.certificate.CertificateGeneratorService;
 import com.bsep_sbz.PKI.service.keystore.KeyStoreReaderService;
 import com.bsep_sbz.PKI.service.keystore.KeyStoreWriterService;
 import org.apache.tomcat.util.codec.binary.Base64;
+import org.bouncycastle.asn1.x500.RDN;
+import org.bouncycastle.asn1.x500.X500Name;
 import org.bouncycastle.asn1.x500.X500NameBuilder;
 import org.bouncycastle.asn1.x500.style.BCStyle;
+import org.bouncycastle.asn1.x500.style.IETFUtils;
+import org.bouncycastle.cert.jcajce.JcaX509CertificateHolder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
@@ -208,19 +212,43 @@ public class CertificateServiceImpl implements CertificateService {
             out = new FileOutputStream(directoryStoresPath + "/" + commonName + ".cer");
             out.write(certificate.getEncoded());
             out.close();
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (CertificateEncodingException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
+        } catch (CertificateEncodingException|IOException e) {
             e.printStackTrace();
         }
     }
 
-    public boolean isRevoked(Long certificateId) throws Exception {
+    public boolean isRevokedById(Long certificateId) throws Exception {
         Certificate certificate = certificateRepository.findById(certificateId).orElseThrow(
                 () -> new Exception(String.format("Certificate with id %d is revoked!", certificateId.longValue())));
         return certificate.isRevoked();
+    }
+
+    @Override
+    public boolean isRevoked(Long serialNumber) throws Exception {
+        Certificate certificate = certificateRepository.findBySerialNumber(serialNumber);
+        if(certificate == null) {
+            throw new Exception("Certificate does not exist");
+        }
+        return certificate.isRevoked();
+    }
+
+    @Override
+    public void revoke(long serialNumber) {
+        Certificate certificate = certificateRepository.findBySerialNumber(serialNumber);
+        certificate.setRevoked(true);
+        certificateRepository.save(certificate);
+    }
+
+    @Override
+    public void saveCertificate(X509Certificate certificate) throws CertificateEncodingException {
+        String commonName = getCommonName(certificate);
+        Certificate dbCertificate = new Certificate()
+        {{
+           setRevoked(false);
+           setCommonName(commonName);
+           setSerialNumber(certificate.getSerialNumber().longValue());
+        }};
+        certificateRepository.save(dbCertificate);
     }
 
     @Override
@@ -278,6 +306,11 @@ public class CertificateServiceImpl implements CertificateService {
         return new IssuerData(issuerKey, builder.build());
     }
 
+    private String getCommonName(X509Certificate certificate) throws CertificateEncodingException {
+        X500Name x500name = new JcaX509CertificateHolder(certificate).getSubject();
+        RDN cn = x500name.getRDNs(BCStyle.CN)[0];
+        return IETFUtils.valueToString(cn.getFirst().getValue());
+    }
 
     private KeyPair generateKeyPair() {
         try {
