@@ -1,5 +1,6 @@
 package com.bsep_sbz.PKI.controller;
 
+import com.bsep_sbz.PKI.config.ftp.MyGateway;
 import com.bsep_sbz.PKI.dto.CertificateSigningRequest;
 import com.bsep_sbz.PKI.model.CertificateType;
 import com.bsep_sbz.PKI.model.IntermediateCA;
@@ -7,15 +8,20 @@ import com.bsep_sbz.PKI.model.RootCA;
 import com.bsep_sbz.PKI.model.User;
 import com.bsep_sbz.PKI.repository.UserRepository;
 import com.bsep_sbz.PKI.service.CertificateService;
+import org.apache.commons.net.ftp.FTPSClient;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.http.*;
+import org.springframework.integration.ftp.session.DefaultFtpsSessionFactory;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 
 import org.apache.tomcat.util.codec.binary.Base64;
 
+import java.io.File;
+import java.io.IOException;
 import java.security.cert.CertificateEncodingException;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
@@ -33,6 +39,26 @@ public class CertificateController {
     @Autowired
     private RestTemplate restTemplate;
 
+    @Autowired
+    private MyGateway gateway;
+
+    //@Autowired
+    //private FTPSClient ftpsClient;
+
+
+    @Value("${ftp.host}")
+    private String ftpHost;
+
+    @Value("${ftp.port}")
+    private int ftpPort;
+
+    @Value("${ftp.username}")
+    private String ftpUsername;
+
+    @Value("${ftp.password}")
+    private String ftpPassword;
+
+
     @RequestMapping(value = "/create", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<String> createCertificate(@RequestBody CertificateSigningRequest csr) {
         X509Certificate certificate = null;
@@ -49,7 +75,7 @@ public class CertificateController {
     }
 
     //@RequestMapping(value = "/send", method = RequestMethod.GET)
-    @EventListener(ApplicationReadyEvent.class)
+    //@EventListener(ApplicationReadyEvent.class)
     public ResponseEntity<String> sendCertificate() {
         String publicKeyStr = "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAjR5ZccKEIbuUA/MUVoYkcaqFimsLKvR2KmaxVbMojPb9rSXQnnFBTDscvsXMfaY4Ezv3k33K4NzVNCfOE6wqJRFN70dO5VVVyhupsuyxcsfrDPZ8vhmuNjl/FGUNGEIv5LV+6BzkXUDeAP4w1zOLMXUcUQv2cT0GKtMu53tT02qvLhWTJs8F7YL172gPDz3Hggp/l8oriBazhMO43diyYUVfK8dRgKHHCyuIg0JPTuz7w2WuRooiSnROiO19C1FUUjJGQvmZjYLhLcgY89XNQOvQiKKh3ipxX4VhtOy5uDARmrUoB7SBlIIvDqOK1c3G7kUuuofK6X2IMtKqA21y9QIDAQAB";
         CertificateSigningRequest csr = new CertificateSigningRequest("test", "test", "test", "RS", "12345", publicKeyStr, CertificateType.OTHER, null);
@@ -118,5 +144,37 @@ public class CertificateController {
         }
 
         return new ResponseEntity<String>("Komunikacija uspesno izvrsena", HttpStatus.OK);
+    }
+
+    //@RequestMapping(value = "/send-truststore", method = RequestMethod.PUT)
+    @EventListener(ApplicationReadyEvent.class)
+    public /*ResponseEntity*/void sendTruststore() {
+        System.out.println("Saljem...");
+        gateway.sendToFtp(new File("C:\\bsep_sbz_workspace\\MegaTravel\\PKI\\src\\main\\resources\\foo\\bar.txt"));
+        System.out.println("Poslao");
+
+        /*try {
+            ftpsClient.connect(ftpHost, ftpPort);
+            ftpsClient.login(ftpUsername, ftpPassword);
+
+            if (ftpsClient.isConnected()) {
+                System.out.println("Uspesno smo se ulogovali!");
+            }
+            else {
+                System.out.println("Nismo uspeli da se ulogujemo!");
+            }
+            ftpsClient.logout();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                ftpsClient.disconnect();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }*/
+
+        //return new ResponseEntity(HttpStatus.OK);
     }
 }
