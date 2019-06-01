@@ -1,37 +1,23 @@
-package com.bsep_sbz.PKI.config.ftp;
+package com.bsep_sbz.PKI.ftp;
 
-import org.apache.commons.net.ftp.FTPClient;
-import org.apache.commons.net.ftp.FTPClientConfig;
-import org.apache.commons.net.ftp.FTPFile;
-import org.apache.commons.net.ftp.FTPSClient;
 import org.apache.commons.net.util.KeyManagerUtils;
 import org.apache.commons.net.util.TrustManagerUtils;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.Resource;
-import org.springframework.integration.annotation.IntegrationComponentScan;
 import org.springframework.integration.dsl.IntegrationFlow;
 import org.springframework.integration.dsl.IntegrationFlows;
-import org.springframework.integration.file.FileHeaders;
-import org.springframework.integration.file.remote.session.CachingSessionFactory;
+import org.springframework.integration.file.FileNameGenerator;
 import org.springframework.integration.file.support.FileExistsMode;
 import org.springframework.integration.ftp.dsl.Ftp;
 import org.springframework.integration.ftp.session.DefaultFtpSessionFactory;
-import org.springframework.integration.ftp.session.DefaultFtpsSessionFactory;
+import org.springframework.messaging.Message;
 
-import javax.net.ssl.SSLSession;
-import javax.net.ssl.SSLSessionContext;
-import javax.net.ssl.SSLSocket;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
-import java.net.Socket;
 import java.security.GeneralSecurityException;
 import java.security.KeyStore;
-import java.util.Locale;
 
 @Configuration
 public class FtpsConfiguration {
@@ -54,7 +40,7 @@ public class FtpsConfiguration {
     @Value("${ftp.target-directory-name}")
     private String ftpTargetDirectoryName;
 
-    @Value("${ftp.host}")
+    /*@Value("${ftp.host}")
     private String ftpHost;
 
     @Value("${ftp.port}")
@@ -64,7 +50,7 @@ public class FtpsConfiguration {
     private String ftpUsername;
 
     @Value("${ftp.password}")
-    private String ftpPassword;
+    private String ftpPassword;*/
 
 
 
@@ -87,10 +73,10 @@ public class FtpsConfiguration {
     public DefaultFtpSessionFactory defaultFtpSessionFactory() {
         DefaultFtpSessionFactory dfsf = new DefaultFtpSessionFactory();
 
-        dfsf.setHost(ftpHost);
+        /*dfsf.setHost(ftpHost);
         dfsf.setPort(ftpPort);
         dfsf.setUsername(ftpUsername);
-        dfsf.setPassword(ftpPassword);
+        dfsf.setPassword(ftpPassword);*/
         //dfsf.setClientMode(1);
         dfsf.setFileType(2);
 
@@ -102,10 +88,10 @@ public class FtpsConfiguration {
     public FtpsSessionFactory ftpsSessionFactory() throws IOException, GeneralSecurityException {
         FtpsSessionFactory fsf = new FtpsSessionFactory();
 
-        fsf.setHost(ftpHost);
+        /*fsf.setHost(ftpHost);
         fsf.setPort(ftpPort);
         fsf.setUsername(ftpUsername);
-        fsf.setPassword(ftpPassword);
+        fsf.setPassword(ftpPassword);*/
         //dfsf.setClientMode(1);
         fsf.setFileType(2);
         fsf.setUseClientMode(true);
@@ -129,7 +115,13 @@ public class FtpsConfiguration {
                 .handle(Ftp.outboundAdapter(defaultFtpSessionFactory(), FileExistsMode.REPLACE)
                 //.handle(Ftp.outboundAdapter(ftpsSessionFactory(), FileExistsMode.FAIL)
                         .useTemporaryFileName(false)
-                        .fileNameExpression("headers['" + FileHeaders.FILENAME + "']")
+                        //.fileNameExpression("headers['" + FileHeaders.FILENAME + "']")
+                        .fileNameGenerator(new FileNameGenerator() {
+                            @Override
+                            public String generateFileName(Message<?> message) {
+                                return "truststore.jks";
+                            }
+                        })
                         .remoteDirectory(ftpTargetDirectoryName)
 
                 ).get();

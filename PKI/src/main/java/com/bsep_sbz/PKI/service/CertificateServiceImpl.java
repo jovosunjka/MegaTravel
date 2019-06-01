@@ -1,6 +1,8 @@
 package com.bsep_sbz.PKI.service;
 
 import com.bsep_sbz.PKI.dto.CertificateSigningRequest;
+import com.bsep_sbz.PKI.dto.TrustStoreConfigDTO;
+import com.bsep_sbz.PKI.ftp.MyGateway;
 import com.bsep_sbz.PKI.model.*;
 import com.bsep_sbz.PKI.model.Certificate;
 import com.bsep_sbz.PKI.repository.CertificateRepository;
@@ -16,21 +18,27 @@ import org.bouncycastle.asn1.x500.style.IETFUtils;
 import org.bouncycastle.cert.jcajce.JcaX509CertificateHolder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.context.event.ApplicationReadyEvent;
+import org.springframework.context.event.EventListener;
 import org.springframework.core.io.Resource;
+import org.springframework.integration.ftp.session.DefaultFtpSessionFactory;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.security.*;
 import java.security.cert.CertificateEncodingException;
 import java.security.cert.X509Certificate;
 import java.security.spec.X509EncodedKeySpec;
 import java.time.LocalDate;
 import java.time.ZoneId;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class CertificateServiceImpl implements CertificateService {
@@ -51,8 +59,19 @@ public class CertificateServiceImpl implements CertificateService {
     private CertificateRepository certificateRepository;
 
     @Autowired
-    private RestTemplate restTemplate;
+    private MyGateway gateway;
 
+    @Autowired
+    private FtpApplicationService ftpApplicationService;
+
+    //@Autowired
+    //private FTPSClient ftpsClient;
+
+    @Autowired
+    private DefaultFtpSessionFactory defaultFtpSessionFactory;
+
+
+    private FtpApplication rootCA;
 
     @Value("${server.ssl.key-store}")
     private Resource keyStore;
@@ -68,6 +87,7 @@ public class CertificateServiceImpl implements CertificateService {
 
 
     private final String directoryClassesPath = this.getClass().getResource("../../../../").getPath(); // target/classes folder
+    private final String directoryTempPath = System.getProperty("java.io.tmpdir");
     private String directoryStoresPath = directoryClassesPath + "stores"; // target/classes/stores folder
 
     private final String keyStorePath = directoryStoresPath + "/keystore.jks";
@@ -116,12 +136,49 @@ public class CertificateServiceImpl implements CertificateService {
         }
     }
 
+    @EventListener(ApplicationReadyEvent.class)
+    private void prepareCertificatesForDataBase() {
+        try {
+            if(certificateRepository.findAll().size() > 0) return;
+
+            // aliases == null -> aliases = all alliases from keystore
+            List<java.security.cert.Certificate> certificates = keyStoreReaderService.readCertificates(trustStore.getFile(), trustStorePassword, null, true);
+            List<Certificate> listCertificates = certificates.stream()
+                    .map(cert -> {
+                            try {
+                                X509Certificate x509Cert = (X509Certificate) cert;
+                                X500Name x500Name = new JcaX509CertificateHolder(x509Cert).getSubject();
+                                long serialNumber = x509Cert.getSerialNumber().longValue();
+                                String commonName = IETFUtils.valueToString(x500Name.getRDNs(BCStyle.CN)[0].getFirst().getValue());
+                                String organizationalUnitName = IETFUtils.valueToString(x500Name.getRDNs(BCStyle.OU)[0].getFirst().getValue());
+                                return new Certificate(serialNumber, commonName, organizationalUnitName);
+                            } catch (CertificateEncodingException e) {
+                                e.printStackTrace();
+                            }
+                            return null;
+                        }
+                    )
+                    .collect(Collectors.toList());
+            certificateRepository.saveAll(listCertificates);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    private FtpApplication loadRootCA() {
+        if(rootCA == null) {
+            rootCA = ftpApplicationService.getFtpApplication(1L);
+        }
+
+        return rootCA;
+    }
+
     @Override
     public X509Certificate createCertificate(CertificateSigningRequest csr) throws Exception {
         //String str = Base64.encodeBase64String(generateKeyPair().getPublic().getEncoded());
-        User admin = userService.getLoggedUser();
-        CA ca = admin.getCa();
-        String alias = ca.getOrganizationalUnitName();
+        FtpApplication ftpRootCa = loadRootCA();
+        String alias = ftpRootCa.getOrganizationalUnitName();
 
         PublicKey publicKeyOfSubject;
         //PrivateKey privateKeyOfSubject = null;
@@ -149,9 +206,10 @@ public class CertificateServiceImpl implements CertificateService {
         }
         SubjectData subjectData = generateSubjectData(csr, publicKeyOfSubject);
 
-        Certificate certificate = new Certificate(csr.getCommonName());
+        Certificate certificate = new Certificate(csr.getCommonName(), csr.getOrganizationalUnitName());
         certificateRepository.save(certificate);
         subjectData.setSerialNumber(""+certificate.getId());
+        certificate.setSerialNumber(certificate.getId());
 
         X509Certificate certificateX509 = certificateGeneratorService.generateCertificate(subjectData, issuerData);
 
@@ -240,6 +298,18 @@ public class CertificateServiceImpl implements CertificateService {
     }
 
     @Override
+    public List<Certificate> getNonRevokedCertiificates() {
+        List<Certificate> certificates = certificateRepository.findDistinctByRevoked(false);
+        certificates.stream()
+                .forEach(cert -> cert.setTrustStoreCertificates(
+                        cert.getTrustStoreCertificates().stream()
+                                .filter(c -> !c.isRevoked())
+                                .collect(Collectors.toList())
+                ));
+        return certificates;
+    }
+
+    @Override
     public void saveCertificate(X509Certificate certificate) throws CertificateEncodingException {
         String commonName = getCommonName(certificate);
         Certificate dbCertificate = new Certificate()
@@ -249,6 +319,36 @@ public class CertificateServiceImpl implements CertificateService {
            setSerialNumber(certificate.getSerialNumber().longValue());
         }};
         certificateRepository.save(dbCertificate);
+    }
+
+    @Override
+    public void saveCertificate(Certificate certificate) {
+        certificateRepository.save(certificate);
+    }
+
+    @Override
+    public File prepareTrustStoreFile(String organizationalUnitName, List<String> trustStoreCertificateOrganizationalUnitNames) throws Exception {
+        List<java.security.cert.Certificate> certificates = keyStoreReaderService.readCertificates(trustStore.getFile(), trustStorePassword, trustStoreCertificateOrganizationalUnitNames, true);
+
+        char[] password = "trust_store_pass".toCharArray();
+        String newTrustStoreFilePath = directoryTempPath+"truststore_"+organizationalUnitName+".jks";
+        //newTrustStoreFilePath = newTrustStoreFilePath.substring(1);
+
+        File trustStoreFile = new File(newTrustStoreFilePath);
+
+        keyStoreWriterService.writeCertificates(trustStoreFile, password, trustStoreCertificateOrganizationalUnitNames, certificates);
+
+        if(!trustStoreFile.exists()) {
+            throw new Exception("Nije pronadjen novi truststore, a mora bi postojati");
+        }
+        else {
+            /*boolean success = trustStoreFile.delete();
+            if(!success) {
+                throw new Exception("Problem sa brisanjem novog truststore-a ("+newTrustStoreFilePath+")!");
+            }*/
+
+            return trustStoreFile;
+        }
     }
 
     @Override
@@ -344,4 +444,74 @@ public class CertificateServiceImpl implements CertificateService {
     private Date asDate(LocalDate localDate) {
         return Date.from(localDate.atStartOfDay().atZone(ZoneId.systemDefault()).toInstant());
     }
+
+    @Override
+    public void sendFile(File trustStoreFile, String organizationalUnitName) throws Exception {
+        FtpApplication ftpApplication = ftpApplicationService.getFtpApplication(organizationalUnitName);
+        if(ftpApplication != null) {
+            defaultFtpSessionFactory.setHost(ftpApplication.getHost());
+            defaultFtpSessionFactory.setPort(ftpApplication.getPort());
+            defaultFtpSessionFactory.setUsername(ftpApplication.getUsername());
+            defaultFtpSessionFactory.setPassword(ftpApplication.getPassword());
+            gateway.sendToFtp(trustStoreFile);
+        }
+        else {
+            throw new Exception("Nije pronadjena aplikacija sa organizationalUnitName: " + organizationalUnitName);
+        }
+
+    }
+
+    @Override
+    public ChangedTrustStoreConfig isChangedTrustStoreConfig(TrustStoreConfigDTO trustStoreConfig, List<Certificate> nonRevokedCertificates) {
+        Certificate certificate = nonRevokedCertificates.stream()
+                .filter(cert -> cert.getOrganizationalUnitName().equals(trustStoreConfig.getOrganizationalUnitName()))
+                .findFirst().get();
+
+        int firstSize = certificate.getTrustStoreCertificates().size();
+
+        List<Certificate> newTrustStoreCertificates = new ArrayList<Certificate>();
+        List<String> copyTrustStoreCertificateOrganizationalUnitNames = new ArrayList<String>();
+        copyTrustStoreCertificateOrganizationalUnitNames.addAll(trustStoreConfig.getTrustStoreCertificateOrganizationalUnitNames());
+        String currentOrganizationalUnitName;
+
+        for (Certificate cert : certificate.getTrustStoreCertificates()) {
+            if((currentOrganizationalUnitName = getOrganizationalUnitName(cert,
+                    copyTrustStoreCertificateOrganizationalUnitNames)) != null) {
+                newTrustStoreCertificates.add(cert);
+                copyTrustStoreCertificateOrganizationalUnitNames.remove(currentOrganizationalUnitName);
+            }
+        }
+
+        int secondSize = newTrustStoreCertificates.size();
+
+
+        for (String organizationalUnitName : copyTrustStoreCertificateOrganizationalUnitNames) {
+            newTrustStoreCertificates.add(getCertificate(organizationalUnitName, nonRevokedCertificates));
+        }
+
+        int thirdSize = newTrustStoreCertificates.size();
+
+        if(firstSize == secondSize && secondSize == thirdSize) {
+            // sva tri su jednaka, nista se nije promenilo
+            return new ChangedTrustStoreConfig(null, false);
+        }
+        else {
+            certificate.setTrustStoreCertificates(newTrustStoreCertificates);
+            return new ChangedTrustStoreConfig(certificate, true);
+        }
+
+    }
+
+    private Certificate getCertificate(String organizationalUnitName, List<Certificate> nonRevokedCertificates) {
+        return nonRevokedCertificates.stream()
+                .filter(cert -> cert.getOrganizationalUnitName().equals(organizationalUnitName))
+                .findFirst().orElseGet(null);
+    }
+
+    private String getOrganizationalUnitName(Certificate certificate, List<String> organizationalUnitNames) {
+        return organizationalUnitNames.stream()
+                .filter(oun -> oun.equals(certificate.getOrganizationalUnitName()))
+                .findFirst().orElseGet(null);
+    }
+
 }

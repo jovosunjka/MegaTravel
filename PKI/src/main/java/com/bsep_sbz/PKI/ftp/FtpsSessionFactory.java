@@ -1,8 +1,7 @@
-package com.bsep_sbz.PKI.config.ftp;
+package com.bsep_sbz.PKI.ftp;
 
 import org.apache.commons.net.ftp.FTPSClient;
 import org.springframework.integration.ftp.session.DefaultFtpsSessionFactory;
-import org.springframework.stereotype.Component;
 
 import javax.net.ssl.SSLSession;
 import javax.net.ssl.SSLSessionContext;
