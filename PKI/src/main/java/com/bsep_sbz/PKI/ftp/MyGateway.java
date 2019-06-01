@@ -1,4 +1,4 @@
-package com.bsep_sbz.PKI.config.ftp;
+package com.bsep_sbz.PKI.ftp;
 
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.integration.annotation.Gateway;

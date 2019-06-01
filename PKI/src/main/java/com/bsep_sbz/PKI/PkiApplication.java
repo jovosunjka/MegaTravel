@@ -1,13 +1,7 @@
 package com.bsep_sbz.PKI;
 
-import com.bsep_sbz.PKI.config.ftp.MyGateway;
 import org.springframework.boot.SpringApplication;
-import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.builder.SpringApplicationBuilder;
-import org.springframework.context.ConfigurableApplicationContext;
-
-import java.io.File;
 
 
 @SpringBootApplication

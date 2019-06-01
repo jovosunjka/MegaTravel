@@ -1,39 +1,33 @@
 package com.bsep_sbz.PKI.controller;
 
-import com.bsep_sbz.PKI.config.ftp.MyGateway;
 import com.bsep_sbz.PKI.dto.CertificateRevocationRequest;
 import com.bsep_sbz.PKI.dto.CertificateRevocationResponse;
 import com.bsep_sbz.PKI.dto.CertificateSigningRequest;
-import com.bsep_sbz.PKI.model.CertificateType;
-import com.bsep_sbz.PKI.model.IntermediateCA;
-import com.bsep_sbz.PKI.model.RootCA;
-import com.bsep_sbz.PKI.model.User;
+import com.bsep_sbz.PKI.dto.TrustStoreConfigDTO;
+import com.bsep_sbz.PKI.model.*;
 import com.bsep_sbz.PKI.repository.UserRepository;
 import com.bsep_sbz.PKI.service.CertificateService;
-import org.apache.commons.net.ftp.FTPSClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.context.event.ApplicationReadyEvent;
-import org.springframework.context.event.EventListener;
 import org.springframework.http.*;
-import org.springframework.integration.ftp.session.DefaultFtpsSessionFactory;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 
 import org.apache.tomcat.util.codec.binary.Base64;
 
 import java.io.File;
-import java.io.IOException;
 import java.security.cert.CertificateEncodingException;
 import java.security.cert.X509Certificate;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping(value = "/certificate")
 public class CertificateController {
 
+    private static final String MAIN_COMPANY_UNIT = "MegaTravelRootCA";
     @Autowired
     private CertificateService certificateService;
 
@@ -42,25 +36,6 @@ public class CertificateController {
 
     @Autowired
     private RestTemplate restTemplate;
-
-    @Autowired
-    private MyGateway gateway;
-
-    //@Autowired
-    //private FTPSClient ftpsClient;
-
-
-    @Value("${ftp.host}")
-    private String ftpHost;
-
-    @Value("${ftp.port}")
-    private int ftpPort;
-
-    @Value("${ftp.username}")
-    private String ftpUsername;
-
-    @Value("${ftp.password}")
-    private String ftpPassword;
 
 
     @RequestMapping(value = "/create", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
@@ -136,7 +111,7 @@ public class CertificateController {
         return new ResponseEntity<String>("Cao druze", HttpStatus.OK);
     }
 
-    @RequestMapping(value = "/database", method = RequestMethod.GET)
+    /*@RequestMapping(value = "/database", method = RequestMethod.GET)
     public ResponseEntity database() {
         ArrayList<User> users = new ArrayList<User>();
         users.add(new User("pera", "pera", new RootCA( "localhost", "MegaTravel",
@@ -145,9 +120,9 @@ public class CertificateController {
                 "MegaTravelRoot", "RS", "http://localhost:8080/pki/certificate/create")));
         userRepository.saveAll(users);
         return new ResponseEntity(HttpStatus.CREATED);
-    }
+    }*/
 
-    //@RequestMapping(value = "/windows-agent", method = RequestMethod.GET)
+    @RequestMapping(value = "/windows-agent", method = RequestMethod.GET)
     //@EventListener(ApplicationReadyEvent.class)
     public ResponseEntity<String> communicateWithWindowsAgent() {
         //ResponseEntity<String> responseEntity = restTemplate.postForEntity("https://localhost:8082/api/bez-veze/poruka", new String("Cao Windows Agente"), String.class);
@@ -163,35 +138,64 @@ public class CertificateController {
         return new ResponseEntity<String>("Komunikacija uspesno izvrsena", HttpStatus.OK);
     }
 
-    //@RequestMapping(value = "/send-truststore", method = RequestMethod.PUT)
-    @EventListener(ApplicationReadyEvent.class)
-    public /*ResponseEntity*/void sendTruststore() {
-        System.out.println("Saljem...");
-        gateway.sendToFtp(new File("C:\\bsep_sbz_workspace\\MegaTravel\\PKI\\src\\main\\resources\\foo\\bar.txt"));
-        System.out.println("Poslao");
+    @RequestMapping(value = "/save-and-send-truststore", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE)
+    //@EventListener(ApplicationReadyEvent.class)
+    public ResponseEntity sendTruststore(@RequestBody List<TrustStoreConfigDTO> trustStoreConfigDtos) {
+        List<Certificate> nonRevokedCertificates = certificateService.getNonRevokedCertiificates();
 
-        /*try {
-            ftpsClient.connect(ftpHost, ftpPort);
-            ftpsClient.login(ftpUsername, ftpPassword);
+        trustStoreConfigDtos.parallelStream()
+            .filter(tsConfigDTO -> {
+                    ChangedTrustStoreConfig changedTrustStoreConfig = certificateService.isChangedTrustStoreConfig(tsConfigDTO, nonRevokedCertificates);
+                    if(changedTrustStoreConfig.isChanged()) {
+                        // samo one trustStore konfiguracije koje su promenjene za odredjeni sertifikat (aplikaciju),
+                        // se cuvaju u bazi
+                        certificateService.saveCertificate(changedTrustStoreConfig.getCertificate());
+                    }
 
-            if (ftpsClient.isConnected()) {
-                System.out.println("Uspesno smo se ulogovali!");
-            }
-            else {
-                System.out.println("Nismo uspeli da se ulogujemo!");
-            }
-            ftpsClient.logout();
+                    return changedTrustStoreConfig.isChanged();
+                }
+            )
+            .forEach(tsConfigDTO -> {
+                    // samo one trustStore konfiguracije koje su promenjene za odredjeni sertifikat (aplikaciju),
+                    // se salju toj aplikaciji koristeci ftp
+                    List<String> tscOrganizationalUnitNames = tsConfigDTO.getTrustStoreCertificateOrganizationalUnitNames();
+                    // svaka aplikacija treba da moze pricati preko HTTPS i sa PKI-jem
+                    tscOrganizationalUnitNames.add(MAIN_COMPANY_UNIT);
+                    System.out.println("Saljem "+tsConfigDTO.getOrganizationalUnitName()+"-u njegov truststore...");
 
-        } catch (IOException e) {
-            e.printStackTrace();
-        } finally {
-            try {
-                ftpsClient.disconnect();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }*/
+                    File trustStoreFile = null;
+                    try {
+                        trustStoreFile = certificateService.prepareTrustStoreFile(tsConfigDTO.getOrganizationalUnitName(), tscOrganizationalUnitNames);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
 
-        //return new ResponseEntity(HttpStatus.OK);
+                    try {
+                        certificateService.sendFile(trustStoreFile, tsConfigDTO.getOrganizationalUnitName());
+                        System.out.println("Poslao "+tsConfigDTO.getOrganizationalUnitName()+"-u njegov truststore.");
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+            );
+
+        return new ResponseEntity(HttpStatus.OK);
+    }
+
+    @RequestMapping(value = "/get-trust-store-configs", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    //@EventListener(ApplicationReadyEvent.class)
+    public ResponseEntity<List<TrustStoreConfigDTO>> getTruststoreConfigs() {
+        List<Certificate> certificates = certificateService.getNonRevokedCertiificates();
+        List<TrustStoreConfigDTO> trustStoreConfigDTOS = certificates.stream()
+                .filter(cer -> !cer.getOrganizationalUnitName().equalsIgnoreCase(MAIN_COMPANY_UNIT))
+                // iskljucujemo root ca-ov sertifikat
+                .map(cer -> new TrustStoreConfigDTO(cer.getOrganizationalUnitName(),
+                        cer.getTrustStoreCertificates().stream()
+                                        .map(c -> c.getOrganizationalUnitName())
+                                        .collect(Collectors.toList())
+                        )
+                )
+                .collect(Collectors.toList());
+        return new ResponseEntity<List<TrustStoreConfigDTO>>(trustStoreConfigDTOS, HttpStatus.OK);
     }
 }

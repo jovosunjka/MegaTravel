@@ -4,5 +4,5 @@ import com.bsep_sbz.PKI.model.User;
 
 public interface UserService {
 
-    User getLoggedUser();
+    //User getLoggedUser();
 }

@@ -2,6 +2,7 @@ package com.bsep_sbz.PKI.service.keystore;
 
 import com.bsep_sbz.PKI.model.IssuerData;
 import org.bouncycastle.asn1.x500.X500Name;
+import org.bouncycastle.asn1.x500.style.BCStyle;
 import org.bouncycastle.cert.jcajce.JcaX509CertificateHolder;
 import org.springframework.stereotype.Service;
 
@@ -10,6 +11,9 @@ import java.security.*;
 import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 @Service
 public class KeyStoreReaderServiceImpl implements KeyStoreReaderService {
@@ -41,9 +45,11 @@ public class KeyStoreReaderServiceImpl implements KeyStoreReaderService {
 	 */
 	@Override
 	public IssuerData readIssuerFromStore(Object fileOrFileName, String alias, char[] password, char[] keyPass) {
-		try {
+        FileInputStream fis = null;
+        PrivateKey privKey = null;
+        X500Name issuerName = null;
+	    try {
 			//Datoteka se ucitava
-			FileInputStream fis;
 			if(fileOrFileName instanceof String) fis = new FileInputStream((String) fileOrFileName);
 			else if(fileOrFileName instanceof File) fis = new FileInputStream((File) fileOrFileName);
 			else throw new Exception("Argument fileOrFileName must be String or File!");
@@ -52,10 +58,10 @@ public class KeyStoreReaderServiceImpl implements KeyStoreReaderService {
 			//Iscitava se sertifikat koji ima dati alias
 			Certificate cert = keyStore.getCertificate(alias);
 			//Iscitava se privatni kljuc vezan za javni kljuc koji se nalazi na sertifikatu sa datim aliasom
-			PrivateKey privKey = (PrivateKey) keyStore.getKey(alias, keyPass);
+			privKey = (PrivateKey) keyStore.getKey(alias, keyPass);
 
-			X500Name issuerName = new JcaX509CertificateHolder((X509Certificate) cert).getSubject();
-			return new IssuerData(privKey, issuerName);
+			issuerName = new JcaX509CertificateHolder((X509Certificate) cert).getSubject();
+
 		} catch (KeyStoreException e) {
 			e.printStackTrace();
 		} catch (FileNotFoundException e) {
@@ -71,25 +77,34 @@ public class KeyStoreReaderServiceImpl implements KeyStoreReaderService {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		return null;
+		finally {
+            try {
+                if(fis != null) fis.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+        return new IssuerData(privKey, issuerName);
 	}
-	
+
+
 	/**
 	 * Ucitava sertifikat is KS fajla
 	 */
 	@Override
     public Certificate readCertificate(Object fileOrFileName, String keyStorePass, String alias) {
-		try {
+        FileInputStream fis = null;
+	    try {
 			//kreiramo instancu KeyStore
 			KeyStore ks = KeyStore.getInstance("JKS", "SUN");
 			//ucitavamo podatke
-			FileInputStream fis;
 			if(fileOrFileName instanceof String) fis = new FileInputStream((String) fileOrFileName);
 			else if(fileOrFileName instanceof File) fis = new FileInputStream((File) fileOrFileName);
 			else throw new Exception("Argument fileOrFileName must be String or File!");
 			BufferedInputStream in = new BufferedInputStream(fis);
 			ks.load(in, keyStorePass.toCharArray());
-			
+
 			if(ks.isKeyEntry(alias)) {
 				Certificate cert = ks.getCertificate(alias);
 				return cert;
@@ -109,19 +124,92 @@ public class KeyStoreReaderServiceImpl implements KeyStoreReaderService {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+        finally {
+            try {
+                if(fis != null) fis.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
 		return null;
 	}
-	
+
+	@Override
+	public List<Certificate> readCertificates(Object fileOrFileName, char[] keyStorePass, List<String> aliases, boolean trustStore) {
+        FileInputStream fis = null;
+	    try {
+			//kreiramo instancu KeyStore
+			KeyStore ks = KeyStore.getInstance("JKS", "SUN");
+			//ucitavamo podatke
+			if(fileOrFileName instanceof String) fis = new FileInputStream((String) fileOrFileName);
+			else if(fileOrFileName instanceof File) fis = new FileInputStream((File) fileOrFileName);
+			else throw new Exception("Argument fileOrFileName must be String or File!");
+			BufferedInputStream in = new BufferedInputStream(fis);
+			ks.load(in, keyStorePass);
+
+			if(aliases == null) {
+				aliases = Collections.list(ks.aliases());
+			}
+
+			Certificate cert;
+			List<Certificate> certificates = new ArrayList<Certificate>();
+
+			boolean tmp;
+			for(String alias : aliases) {
+				if(trustStore) {
+					tmp = ks.isCertificateEntry(alias);
+				}
+				else {
+					tmp = ks.isKeyEntry(alias);
+				}
+
+				if(tmp) {
+					cert = ks.getCertificate(alias);
+					certificates.add(cert);
+				}
+				else {
+					throw new Exception("Alias '"+alias+"' ne postoji!");
+				}
+			}
+
+			return certificates;
+
+		} catch (KeyStoreException e) {
+			e.printStackTrace();
+		} catch (NoSuchProviderException e) {
+			e.printStackTrace();
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (NoSuchAlgorithmException e) {
+			e.printStackTrace();
+		} catch (CertificateException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+        finally {
+            try {
+                if(fis != null) fis.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+		return null;
+	}
+
 	/**
 	 * Ucitava privatni kljuc is KS fajla
 	 */
 	@Override
 	public PrivateKey readPrivateKey(Object fileOrFileName, char[] keyStorePass, String alias, char[] pass) {
-		try {
+        FileInputStream fis = null;
+
+	    try {
 			//kreiramo instancu KeyStore
 			KeyStore ks = KeyStore.getInstance("JKS", "SUN");
 			//ucitavamo podatke
-			FileInputStream fis;
 			if(fileOrFileName instanceof String) fis = new FileInputStream((String) fileOrFileName);
 			else if(fileOrFileName instanceof File) fis = new FileInputStream((File) fileOrFileName);
 			else throw new Exception("Argument fileOrFileName must be String or File!");
@@ -149,6 +237,14 @@ public class KeyStoreReaderServiceImpl implements KeyStoreReaderService {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+        finally {
+            try {
+                if(fis != null) fis.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
 		return null;
 	}
 }
