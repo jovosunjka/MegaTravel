@@ -1,8 +1,8 @@
-package com.bsep_sbz.SIEMCenter.controller;
+package com.bsep_sbz.WindowsAgent.controller;
 
 
-import com.bsep_sbz.SIEMCenter.controller.dto.CertificateSigningRequest;
-import com.bsep_sbz.SIEMCenter.service.interfaces.ICertificateService;
+import com.bsep_sbz.WindowsAgent.controller.dto.CertificateSigningRequest;
+import com.bsep_sbz.WindowsAgent.service.interfaces.ICertificateService;
 import org.apache.tomcat.util.codec.binary.Base64;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;

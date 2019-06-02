@@ -1,6 +1,5 @@
-package com.bsep_sbz.PKI.dto;
+package com.bsep_sbz.WindowsAgent.controller.dto;
 
-import com.bsep_sbz.PKI.model.CertificateType;
 
 public class CertificateSigningRequest {
     private String commonName;

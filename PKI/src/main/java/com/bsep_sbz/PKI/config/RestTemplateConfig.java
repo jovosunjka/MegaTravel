@@ -18,6 +18,7 @@ import org.apache.http.ssl.SSLContextBuilder;
 import org.apache.http.ssl.SSLContexts;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -32,7 +33,7 @@ import java.io.FileInputStream;
 import java.io.InputStream;
 import java.security.KeyStore;
 
-
+@EnableAutoConfiguration // ovo smo stavili jer Intellij vristi za RestTemplateBuilder, da ne moze pronaci bean
 @Configuration
 public class RestTemplateConfig {
 
@@ -42,18 +43,27 @@ public class RestTemplateConfig {
     @Value("${server.ssl.key-store-password}")
     private char[] keyStorePassword;
 
+    @Value("${server.ssl.key-store-type}")
+    private String keyStoreType;
+
     @Value("${server.ssl.trust-store}")
     private Resource trustStore;
 
     @Value("${server.ssl.trust-store-password}")
     private char[] trustStorePassword;
 
+    @Value("${server.ssl.protocol}")
+    private String protocol;
+
 
     @Bean
     public RestTemplate restTemplate(RestTemplateBuilder builder) throws Exception {
         SSLContext sslContext = SSLContextBuilder.create()
+                .setProtocol(protocol)
                 .loadKeyMaterial(keyStore.getFile(), keyStorePassword, keyStorePassword)
+                .setKeyStoreType(keyStoreType)
                 .loadTrustMaterial(trustStore.getFile(), trustStorePassword)
+                //.setTrustManagerFactoryAlgorithm(TrustManagerFactory.)
                 .build();
 
         HttpClient client = HttpClients.custom().setSSLContext(sslContext).build();

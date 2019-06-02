@@ -38,6 +38,7 @@ import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 @Service
@@ -53,7 +54,8 @@ public class CertificateServiceImpl implements CertificateService {
     private CertificateGeneratorService certificateGeneratorService;
 
     @Autowired
-    private UserService userService;
+    private  ApplicationAddressService applicationAddressService;
+
 
     @Autowired
     private CertificateRepository certificateRepository;
@@ -175,7 +177,14 @@ public class CertificateServiceImpl implements CertificateService {
     }
 
     @Override
-    public X509Certificate createCertificate(CertificateSigningRequest csr) throws Exception {
+    public CertificateSigningRequest prepareRootCaIssuerCSR() {
+        CertificateSigningRequest csr = new CertificateSigningRequest("localhost", "MegaTravel",
+                "MegaTravelRootCA", "RS", "45687", null, null);
+        return csr;
+    }
+
+    @Override
+    public X509Certificate createCertificate(CertificateSigningRequest csr, CertificateType certificateType) throws Exception {
         //String str = Base64.encodeBase64String(generateKeyPair().getPublic().getEncoded());
         FtpApplication ftpRootCa = loadRootCA();
         String alias = ftpRootCa.getOrganizationalUnitName();
@@ -183,39 +192,46 @@ public class CertificateServiceImpl implements CertificateService {
         PublicKey publicKeyOfSubject;
         //PrivateKey privateKeyOfSubject = null;
         IssuerData issuerData;
-        if(csr.getCertificateType() == CertificateType.OTHER) {
+        if(certificateType == CertificateType.OTHER) {
             //issuerData = keyStoreReaderService.readIssuerFromStore(keyStorePath, alias, keyStorePassword.toCharArray(), keyStorePassword.toCharArray());
-            issuerData = keyStoreReaderService.readIssuerFromStore(keyStore.getFile(), alias, keyStorePassword, keyStorePassword);
-            if(issuerData == null) {
-                throw new Exception("Prvo mora biti napravljen CA-ov sertifikat!");
+            X509Certificate issuerCertificate = (X509Certificate) keyStoreReaderService.readCertificate(keyStore.getFile(), keyStorePassword, alias);
+            if(issuerCertificate == null || certificateExpiresFor(issuerCertificate) < OTHER_CERTIFICATE_DURATION *365 ) {
+                // kada jos nije napravljen RootCA-ov sertifikat ili ako istice za manje od 2 godine
+                // pravimo novi sertifikat za RootCA
+                CertificateSigningRequest issuerCsr = prepareRootCaIssuerCSR();
+                issuerCertificate = createCertificate(issuerCsr, CertificateType.ROOT);
             }
 
+            issuerData = keyStoreReaderService.getIssuerData(keyStore.getFile(), alias, keyStorePassword, keyStorePassword, issuerCertificate);
+
             publicKeyOfSubject =  getPublicKey(csr.getPublicKey());
-            //KeyPair keyPair = generateKeyPair();
-            //publicKeyOfSubject = keyPair.getPublic();
-            //privateKeyOfSubject = keyPair.getPrivate();
-            //String privateKeyOfSubjectstr = Base64.encodeBase64String(privateKeyOfSubject.getEncoded());
-            //System.out.println();
+            applicationAddressService.setApplicationAddress(csr.getOrganizationalUnitName(), csr.getDestinationUrl());
         }
-        else {
+        else if (certificateType == CertificateType.ROOT) {
             KeyPair keyPair = generateKeyPair();
             publicKeyOfSubject = keyPair.getPublic(); // u ovom slucaju RootCA je i Subject i Issuer
             PrivateKey privateKeyOfIssuer = keyPair.getPrivate(); // u ovom slucaju RootCA je i Subject i Issuer
             issuerData = generateIssuerData(privateKeyOfIssuer, csr.getCommonName(),
                     csr.getOrganizationName(), csr.getOrganizationalUnitName(),csr.getCountryCode(), ""+csr.getUserId());
         }
-        SubjectData subjectData = generateSubjectData(csr, publicKeyOfSubject);
+        else {
+            throw new Exception("Za sada CertificateTYpe ima vrednosti ROOT i OTHER");
+        }
+
+        SubjectData subjectData = generateSubjectData(csr, certificateType, publicKeyOfSubject);
 
         Certificate certificate = new Certificate(csr.getCommonName(), csr.getOrganizationalUnitName());
         certificateRepository.save(certificate);
         subjectData.setSerialNumber(""+certificate.getId());
         certificate.setSerialNumber(certificate.getId());
+        // TODO trbe ovo srediti, i videti da li nam treba ovaj serialNumber
+        certificateRepository.save(certificate);
 
         X509Certificate certificateX509 = certificateGeneratorService.generateCertificate(subjectData, issuerData);
 
         writeCertificateInFile(csr.getOrganizationalUnitName(), certificateX509);
 
-        if(csr.getCertificateType() == CertificateType.OTHER) {
+        if(certificateType == CertificateType.OTHER) {
             //keyStoreWriterService.loadKeyStore(trustStorePath, trustStorePassword.toCharArray());
             keyStoreWriterService.loadKeyStore(trustStore.getFile(), trustStorePassword);
             keyStoreWriterService.writeCertificate(csr.getOrganizationalUnitName(), certificateX509);
@@ -352,15 +368,16 @@ public class CertificateServiceImpl implements CertificateService {
     }
 
     @Override
-    public SubjectData generateSubjectData(CertificateSigningRequest csr, PublicKey publicKey) {
+    public SubjectData generateSubjectData(CertificateSigningRequest csr, CertificateType certificateType, PublicKey publicKey) {
         LocalDate startLocalDate = LocalDate.now();
 
         long years;
-        if(csr.getCertificateType() == CertificateType.ROOT) years = ROOT_CERTIFICATE_DURATION;
-        else if(csr.getCertificateType() == CertificateType.INTERMEDIATE) years = INTERMEDIATE_CERTIFICATE_DURATION;
+        if(certificateType == CertificateType.ROOT) years = ROOT_CERTIFICATE_DURATION;
+        //else if(certificateType == CertificateType.INTERMEDIATE) years = INTERMEDIATE_CERTIFICATE_DURATION;
         else years = OTHER_CERTIFICATE_DURATION;
 
         LocalDate endLocalDate = startLocalDate.plusYears(years);
+        //LocalDate endLocalDate = startLocalDate.plusDays(2);
         Date startDate = asDate(startLocalDate);
         Date endDate = asDate(endLocalDate);
 
@@ -459,6 +476,14 @@ public class CertificateServiceImpl implements CertificateService {
             throw new Exception("Nije pronadjena aplikacija sa organizationalUnitName: " + organizationalUnitName);
         }
 
+    }
+
+    @Override
+    public long certificateExpiresFor(X509Certificate certificate) {
+        Date date = certificate.getNotAfter();
+        long difference = TimeUnit.DAYS.convert(date.getTime() - new Date().getTime(), TimeUnit.MILLISECONDS);
+        System.out.println("certificateExpiresFor(): " + difference + " (DAYS)");
+        return difference;
     }
 
     @Override

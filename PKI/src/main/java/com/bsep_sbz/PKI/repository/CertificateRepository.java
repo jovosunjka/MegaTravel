@@ -12,4 +12,5 @@ public interface CertificateRepository extends JpaRepository<Certificate, Long> 
     List<Certificate> findDistinctByRevoked(boolean revoked);
 
     Certificate save(Certificate c);
+
 }

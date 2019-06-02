@@ -11,7 +11,7 @@ public class Certificate {
     @Column(name="id", unique=true, nullable=false)
     private Long id;
 
-    @Column(name="serial_number", unique = false, nullable = false)
+    @Column(name="serial_number", unique = false, nullable = true)
     private Long serialNumber;
 
     @Column(name="common_name", unique=false, nullable=false)
