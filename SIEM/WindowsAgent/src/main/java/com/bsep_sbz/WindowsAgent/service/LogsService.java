@@ -1,6 +1,10 @@
 package com.bsep_sbz.WindowsAgent.service;
 
 import java.io.IOException;
+import java.net.InetAddress;
+import java.net.NetworkInterface;
+import java.net.SocketException;
+import java.net.UnknownHostException;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -35,31 +39,26 @@ public class LogsService implements ILogsService {
         if (logs!=null && logs.size() != 0) {
         	for (String log: logs) {
         		for (String key : include.keySet()) {
-        			 Pattern patternInclude = Pattern.compile(key);
-        			 Matcher matcherInc = patternInclude.matcher(log);
-        		        if (matcherInc.matches()) {
-        		        	
-        		        	for (String keyEx : exclude.keySet()) {
-        		        		Pattern patternExclude = Pattern.compile(keyEx);
-        	        			Matcher matcherExc = patternExclude.matcher(log);
-        	        			if (matcherExc.matches()) flag = true;
-        		        	}
-        		        	if (!flag) { 
-        		        		logRet.add(log+"|"+ include.get(key));
-        		        		
-        		        	}
-        		        	flag = false;
-        		        	
-        		        	}
-        		        	
-        		        }
-        		        
-        		}
-        	}    
+        			Pattern patternInclude = Pattern.compile(key);
+        			Matcher matcherInc = patternInclude.matcher(log);
+					if (matcherInc.matches()) {
+
+						for (String keyEx : exclude.keySet()) {
+							Pattern patternExclude = Pattern.compile(keyEx);
+							Matcher matcherExc = patternExclude.matcher(log);
+							if (matcherExc.matches()) flag = true;
+						}
+						if (!flag) {
+							logRet.add(log+"|"+ include.get(key));
+
+						}
+						flag = false;
+					}
+				}
+			}
+		}
         
         return logRet;
-    	
-		
 	}
 
 	public void sendLogs(List<String> logs) throws IOException
@@ -69,6 +68,12 @@ public class LogsService implements ILogsService {
 		if(logs.isEmpty()) {
 			System.out.println("Nema ni jedan log za slanje!");
 			return;
+		}
+
+		// add data to log which windows agent knows
+		String host = getHostAddress();
+		for(int i=0; i<logs.size(); i++) {
+			logs.set(i, logs.get(i) + "|hostaddress:" + host);
 		}
 
 		try {
@@ -89,6 +94,33 @@ public class LogsService implements ILogsService {
 		}
 	}
 
+	private String getHostAddress()
+	{
+		InetAddress ip;
+		try {
 
+			ip = InetAddress.getLocalHost();
+			System.out.println("Current IP address : " + ip.getHostAddress());
+
+			NetworkInterface network = NetworkInterface.getByInetAddress(ip);
+
+			byte[] mac = network.getHardwareAddress();
+
+			System.out.print("Current MAC address : ");
+
+			StringBuilder sb = new StringBuilder();
+			for (int i = 0; i < mac.length; i++) {
+				sb.append(String.format("%02X%s", mac[i], (i < mac.length - 1) ? "-" : ""));
+			}
+			System.out.print(sb.toString());
+
+			return sb.toString();
+		}
+		catch (UnknownHostException | SocketException e) {
+			e.printStackTrace();
+		}
+
+		return "";
+	}
 
 }

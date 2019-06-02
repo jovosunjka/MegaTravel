@@ -18,6 +18,7 @@ import java.text.ParseException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -112,23 +113,22 @@ public class RuleService implements IRuleService {
     }
 
     public List<Log> makeLogs(List<String> logs) {
-
+        //# log id|event id|timestamp|log lvl type|message
         List<Log> logsRet = new ArrayList<>();
         for (String log: logs) {
             String[] tokens = log.split("\\|");
-            //# log id|event id|timestamp|log lvl type|message
             try {
-                Long id = Long.parseLong(tokens[0]);
-                String timestamp = tokens[2];
+                Long id = Long.parseLong(getValue(tokens,"id"));
+                String timestamp = getValue(tokens,"timestamp");
                 if(timestamp.endsWith("PM")) {
                     timestamp = timestamp.replace("PM", "").trim();
                 }
-
-                LogLevel ll = LogLevel.valueOf(tokens[3]);
-                LogCategory logCategory = LogCategory.valueOf(tokens[4]);
-                String message = tokens[5];
-                Log logCreated = new Log(id,ll, logCategory, timestamp, "","", message);
-                logsRet.add(logCreated);
+                String hostAddress = getValue(tokens, "hostaddress");
+                LogLevel logLevel = LogLevel.valueOf(getValue(tokens, "loglevel"));
+                LogCategory logCategory = LogCategory.valueOf(getValue(tokens, "logcategory"));
+                String message = getValue(tokens, "message");
+                String source = getSource(message);
+                logsRet.add(new Log(id, logLevel, logCategory, new Date(timestamp), source, hostAddress, message));
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -136,4 +136,36 @@ public class RuleService implements IRuleService {
         return logsRet;
     }
 
+    private String getValue(String[] tokens, String key) {
+        return Arrays.stream(tokens).filter(x -> x.startsWith(key)).findFirst().get().split(":", 2)[1].trim();
+    }
+
+    private String getSource(String message) {
+        if(message.contains("ip address"))
+        {
+            String[] splittedMessage = message.split("\\s+");
+            int i = 0;
+            for(; i<splittedMessage.length; i++) {
+                if(splittedMessage[i].equals("address")) {
+                    break;
+                }
+            }
+            String ipAddress = splittedMessage[++i];
+            return ipAddress.replaceAll("'", "");
+        }
+        else if(message.contains("username"))
+        {
+            String[] splittedMessage = message.split("\\s+");
+            int i = 0;
+            for(; i<splittedMessage.length; i++) {
+                if(splittedMessage[i].equals("username")) {
+                    break;
+                }
+            }
+            String username = splittedMessage[++i];
+            return username.replaceAll("'", "");
+        }
+
+        return "";
+    }
 }

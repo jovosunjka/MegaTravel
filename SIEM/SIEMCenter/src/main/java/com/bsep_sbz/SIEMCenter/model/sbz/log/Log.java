@@ -1,34 +1,46 @@
 package com.bsep_sbz.SIEMCenter.model.sbz.log;
 
-
 import com.bsep_sbz.SIEMCenter.model.sbz.enums.log.LogCategory;
 import com.bsep_sbz.SIEMCenter.model.sbz.enums.log.LogLevel;
 import org.apache.commons.lang3.StringUtils;
 import org.kie.api.definition.type.Role;
-
+import javax.persistence.*;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
 import java.util.Date;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
+@Entity
 @org.kie.api.definition.type.Role(Role.Type.EVENT)
 @org.kie.api.definition.type.Timestamp("timestamp")
 //@org.kie.api.definition.type.Expires()
 public class Log {
+    @Id
+    @Column(name = "id", unique = true, nullable = false)
     private Long id;
+
+    @Column(name = "type", nullable = false)
     private LogLevel type;
+
+    @Column(name = "category", nullable = false)
     private LogCategory category;
+
+    @Column(name = "source", nullable = false)
     private String source;
+
+    @Column(name = "timestamp", nullable = false)
     private Date timestamp;
+
+    @Column(name = "hostAddress", nullable = false)
     private String hostAddress;
+
+    @Column(name = "message", nullable = false)
     private String message;
     // attribute1:value1,attribute2:value2,attribute3:value3, ...  (message format)
 
+    @Transient
     private final SimpleDateFormat sdf1 = new SimpleDateFormat("dd-MMM-yy HH:mm:ss");
-    private final SimpleDateFormat sdf2 = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
 
     public Log() {
         this.timestamp = new Date();
@@ -50,8 +62,7 @@ public class Log {
         this.id = id;
         this.type = type;
         this.category = category;
-        this.timestamp = timestampStr.contains("/") ? sdf2.parse(timestampStr) : sdf1.parse(timestampStr);
-
+        this.timestamp = new Date(timestampStr);
         this.source = source;
         this.hostAddress = hostAddress;
         this.message = message;
