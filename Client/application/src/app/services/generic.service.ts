@@ -37,7 +37,7 @@ export class GenericService {
     return this.http.post(this.baseUrl + relativeUrl, t,  { headers });
   }
 
-  post(relativeUrl: string, t: any) {
+  post(relativeUrl: string, t: any): any {
     const headers: HttpHeaders = new HttpHeaders({'Content-Type': 'application/json'});
     return this.http.post(this.baseUrl + relativeUrl, t, { headers });
   }

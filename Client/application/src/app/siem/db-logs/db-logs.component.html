@@ -1,0 +1,49 @@
+<div>
+  <div>
+    <table>
+      <tr>
+        <td><label for="sizeInput">Logs per page: </label></td>
+        <td><input id="sizeInput" [(ngModel)]="size" style="width: 30px;"/></td>
+        <td><label for="regexInput">Regex: </label></td>
+        <td><input id="regexInput" [(ngModel)]="regExp" /></td>
+        <td></td>
+        <td><label for="columnInput">Column: </label></td>
+        <td><input id="columnInput" [(ngModel)]="column" /></td>
+        <td><button (click)="getCurrentPage()">Filter!</button></td>
+      </tr>
+    </table>
+  </div>
+  <div>
+    <table class="table" cellpadding="5">
+      <tr class="table">
+        <th class="table">id</th>
+        <th class="table">timestamp</th>
+        <th class="table">type</th>
+        <th class="table">category</th>
+        <th class="table">source</th>
+        <th class="table">host_address</th>
+        <th class="table">message</th>
+      </tr>
+      <tr class="table" *ngFor="let log of logs">
+        <td class="table">{{log.id}}</td>
+        <td class="table">{{getDate(log.timestamp)}}</td>
+        <td class="table">{{log.type}}</td>
+        <td class="table">{{log.category}}</td>
+        <td class="table">{{log.source}}</td>
+        <td class="table">{{log.hostAddress}}</td>
+        <td class="table">{{log.message}}</td>
+      </tr>
+    </table>
+  </div>
+  <div>
+    <table>
+      <tr>
+        <td><button (click)="getFirstPage()" [disabled]="isFirstPage"> << </button></td>
+        <td><button (click)="getPreviousPage()" [disabled]="isFirstPage"> < </button></td>
+        <td><label>Page: {{page + 1}}</label></td>
+        <td><button (click)="getNextPage()" [disabled]="isLastPage"> > </button></td>
+        <td><button (click)="getLastPage()" [disabled]="isLastPage"> >> </button></td>
+      </tr>
+    </table>
+  </div>
+</div>

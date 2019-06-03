@@ -32,12 +32,12 @@ public class CertificateController {
     private String caUrl;
 
 
-    /**
+    /*
      * Ova metoda ce traziti od svog CA-a da joj izgenerise sertifikat, pa ce dobijeni sertifikat sacuvati u keystore.
      * Ima li smisla da metod bude POST ??? Ipak ce kao rezultat ovog metoda biti dobijanje novog resursa na ovom serveru,
      * sto je valjda i smisao POST metoda.
      * @return
-     */
+    */
     @RequestMapping(value = "/send-request", method = RequestMethod.POST)
     public ResponseEntity sendRequestForCertificate() {
         KeyPair keyPair = certificateService.generateKeyPair();
@@ -93,4 +93,5 @@ public class CertificateController {
 
         return new ResponseEntity<String>("Komunikacija uspesno izvrsena", HttpStatus.OK);
     }
+
 }

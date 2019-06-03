@@ -14,6 +14,7 @@ import { GenericService } from './services/generic.service';
 import { ToastrModule } from 'ngx-toastr';
 import { TokenInterceptorService } from './services/token-interceptor-service/token-interceptor.service';
 import { RbacPageComponent } from './rbac-page/rbac-page.component';
+import { DbLogsComponent } from './siem/db-logs/db-logs.component';
 
 
 
@@ -21,6 +22,7 @@ const appRoutes: Routes = [
   { path: 'send-message', component: SendMessageComponent},
   { path: 'rbac', component: RbacPageComponent},
   { path: 'login', component: LoginPageComponent},
+  { path: 'dblogs', component: DbLogsComponent},
   { path: '', // localhost:4200 redirect to localhost:4200/login
     redirectTo: '/login',
     pathMatch: 'full'
@@ -34,7 +36,8 @@ const appRoutes: Routes = [
     SendMessageComponent,
     LoginPageComponent,
     NotFoundPageComponent,
-    RbacPageComponent
+    RbacPageComponent,
+    DbLogsComponent
   ],
   imports: [
     BrowserModule,

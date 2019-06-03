@@ -1,26 +1,18 @@
 package com.bsep_sbz.SIEMCenter.controller;
 
+import com.bsep_sbz.SIEMCenter.controller.dto.FilterDto;
 import com.bsep_sbz.SIEMCenter.model.sbz.log.Log;
 
-import java.net.InetAddress;
-import java.net.NetworkInterface;
-import java.net.SocketException;
-import java.net.UnknownHostException;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-
+import java.util.*;
 import com.bsep_sbz.SIEMCenter.service.interfaces.ILogsService;
 import com.bsep_sbz.SIEMCenter.service.interfaces.IRuleService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping(value = "/logs")
@@ -45,6 +37,15 @@ public class LogsController
         logRet.forEach(System.out::println);
         logsService.save(logRet);
         return new ResponseEntity(HttpStatus.OK);
+    }
+
+    @RequestMapping(value = "/filter", consumes = MediaType.APPLICATION_JSON_VALUE,  method = RequestMethod.POST)
+    public ResponseEntity<Page<Log>> getFilteredLogs(@RequestBody FilterDto filterDto, Pageable pageable) {
+        Page<Log> logs = logsService.getFilteredLogs(filterDto.getColumn(), filterDto.getRegExp(), pageable);
+        if(logs == null) {
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        }
+        return new ResponseEntity<>(logs, HttpStatus.OK);
     }
 
 
