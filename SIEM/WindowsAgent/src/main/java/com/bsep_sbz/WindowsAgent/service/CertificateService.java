@@ -1,9 +1,9 @@
-package com.bsep_sbz.SIEMCenter.service;
+package com.bsep_sbz.WindowsAgent.service;
 
-import com.bsep_sbz.SIEMCenter.controller.dto.CertificateSigningRequest;
-import com.bsep_sbz.SIEMCenter.service.interfaces.ICertificateService;
-import com.bsep_sbz.SIEMCenter.service.keystore.KeyStoreReaderService;
-import com.bsep_sbz.SIEMCenter.service.keystore.KeyStoreWriterService;
+import com.bsep_sbz.WindowsAgent.controller.dto.CertificateSigningRequest;
+import com.bsep_sbz.WindowsAgent.service.interfaces.ICertificateService;
+import com.bsep_sbz.WindowsAgent.service.keystore.KeyStoreReaderService;
+import com.bsep_sbz.WindowsAgent.service.keystore.KeyStoreWriterService;
 import org.apache.tomcat.util.codec.binary.Base64;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -50,7 +50,7 @@ public class CertificateService implements ICertificateService
     public CertificateSigningRequest prepareCSR(PublicKey publicKey) {
         String publicKeyStr = Base64.encodeBase64String(publicKey.getEncoded());
         CertificateSigningRequest csr = new CertificateSigningRequest("localhost", "MegaTravel",
-                "MegaTravelSiemCenter", "RS", "61897", publicKeyStr, myUrl);
+                "MegaTravelSiemCenter22222", "RS", "61897", publicKeyStr, myUrl);
         return csr;
     }
 

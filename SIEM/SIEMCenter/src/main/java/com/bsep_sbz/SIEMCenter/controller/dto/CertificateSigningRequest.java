@@ -10,7 +10,6 @@ public class CertificateSigningRequest {
     private String countryCode;
     //private String emailAddress;
     private String userId;
-    private String certificateType;
     private String publicKey;  // ovaj atribut je null za certifikate za CA-a
     private String destinationUrl; // nije obavezan
 
@@ -30,7 +29,6 @@ public class CertificateSigningRequest {
         //this.emailAddress = emailAddress;
         this.userId = userId;
         this.publicKey = publicKey;
-        this.certificateType = "OTHER";
         this.destinationUrl = destinationUrl;
     }
 
@@ -105,14 +103,6 @@ public class CertificateSigningRequest {
 
     public void setPublicKey(String publicKey) {
         this.publicKey = publicKey;
-    }
-
-    public String getCertificateType() {
-        return certificateType;
-    }
-
-    public void setCertificateType(String certificateType) {
-        this.certificateType = certificateType;
     }
 
     public String getDestinationUrl() {

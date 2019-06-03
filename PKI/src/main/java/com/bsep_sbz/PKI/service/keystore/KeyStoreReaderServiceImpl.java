@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import java.io.*;
 import java.security.*;
 import java.security.cert.Certificate;
+import java.security.cert.CertificateEncodingException;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
@@ -60,7 +61,8 @@ public class KeyStoreReaderServiceImpl implements KeyStoreReaderService {
 			//Iscitava se privatni kljuc vezan za javni kljuc koji se nalazi na sertifikatu sa datim aliasom
 			privKey = (PrivateKey) keyStore.getKey(alias, keyPass);
 
-			issuerName = new JcaX509CertificateHolder((X509Certificate) cert).getSubject();
+			//issuerName = new JcaX509CertificateHolder((X509Certificate) cert).getSubject();
+			issuerName = getIssuerName((X509Certificate) cert);
 
 		} catch (KeyStoreException e) {
 			e.printStackTrace();
@@ -89,11 +91,31 @@ public class KeyStoreReaderServiceImpl implements KeyStoreReaderService {
 	}
 
 
+	@Override
+	public IssuerData getIssuerData(Object fileOrFileName, String alias, char[] password, char[] keyPass, X509Certificate certificate) {
+		PrivateKey privateKey = readPrivateKey(fileOrFileName, keyPass, alias, password);
+		X500Name issuerName = getIssuerName(certificate);
+
+		if(privateKey == null || issuerName == null) return null;
+
+		return new IssuerData(privateKey, issuerName);
+	}
+
+	private X500Name getIssuerName(X509Certificate certificate) {
+		try {
+			return new JcaX509CertificateHolder(certificate).getIssuer();
+		} catch (CertificateEncodingException e) {
+			e.printStackTrace();
+		}
+
+		return null;
+	}
+
 	/**
 	 * Ucitava sertifikat is KS fajla
 	 */
 	@Override
-    public Certificate readCertificate(Object fileOrFileName, String keyStorePass, String alias) {
+    public Certificate readCertificate(Object fileOrFileName, char[] keyStorePass, String alias) {
         FileInputStream fis = null;
 	    try {
 			//kreiramo instancu KeyStore
@@ -103,7 +125,7 @@ public class KeyStoreReaderServiceImpl implements KeyStoreReaderService {
 			else if(fileOrFileName instanceof File) fis = new FileInputStream((File) fileOrFileName);
 			else throw new Exception("Argument fileOrFileName must be String or File!");
 			BufferedInputStream in = new BufferedInputStream(fis);
-			ks.load(in, keyStorePass.toCharArray());
+			ks.load(in, keyStorePass);
 
 			if(ks.isKeyEntry(alias)) {
 				Certificate cert = ks.getCertificate(alias);

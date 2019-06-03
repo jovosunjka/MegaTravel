@@ -16,7 +16,7 @@ public class FtpApplication {
     private String host;
 
     @Column(name="port", unique=false, nullable=true)
-    private int port;
+    private Integer port;
 
     @Column(name="username", unique=false, nullable=true)
     private String username;
@@ -61,11 +61,11 @@ public class FtpApplication {
         this.host = host;
     }
 
-    public int getPort() {
+    public Integer getPort() {
         return port;
     }
 
-    public void setPort(int port) {
+    public void setPort(Integer port) {
         this.port = port;
     }
 

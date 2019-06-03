@@ -1,8 +1,8 @@
-package com.bsep_sbz.SIEMCenter.controller;
+package com.bsep_sbz.WindowsAgent.controller;
 
 
-import com.bsep_sbz.SIEMCenter.controller.dto.CertificateSigningRequest;
-import com.bsep_sbz.SIEMCenter.service.interfaces.ICertificateService;
+import com.bsep_sbz.WindowsAgent.controller.dto.CertificateSigningRequest;
+import com.bsep_sbz.WindowsAgent.service.interfaces.ICertificateService;
 import org.apache.tomcat.util.codec.binary.Base64;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -34,12 +34,12 @@ public class CertificateController {
     private String caUrl;
 
 
-    /*
+    /**
      * Ova metoda ce traziti od svog CA-a da joj izgenerise sertifikat, pa ce dobijeni sertifikat sacuvati u keystore.
      * Ima li smisla da metod bude POST ??? Ipak ce kao rezultat ovog metoda biti dobijanje novog resursa na ovom serveru,
      * sto je valjda i smisao POST metoda.
      * @return
-    */
+     */
     @RequestMapping(value = "/send-request", method = RequestMethod.POST)
     @EventListener(ApplicationReadyEvent.class)
     public ResponseEntity sendRequestForCertificate() {
@@ -97,5 +97,4 @@ public class CertificateController {
 
         return new ResponseEntity<String>("Komunikacija uspesno izvrsena", HttpStatus.OK);
     }
-
 }
