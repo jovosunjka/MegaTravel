@@ -1,5 +1,5 @@
 template header
-logCount
+loginAttemptCount
 timeCount
 timeUnit
 hostRelation
@@ -22,7 +22,7 @@ rule "Login attempt rule_@{row.rowNumber}"
     when
         $log: Log($s: source, $h: hostAddress, category == LogCategory.LOGIN,
             message.contains("login_successful:@{loginSuccess}")) and
-        Number(intValue >= @{logCount}) from accumulate(
+        Number(intValue >= @{loginAttemptCount}) from accumulate(
                        $l: Log(
                            hostAddress @{hostRelation} $h,
                            this == $log || source @{sourceRelation} $s,

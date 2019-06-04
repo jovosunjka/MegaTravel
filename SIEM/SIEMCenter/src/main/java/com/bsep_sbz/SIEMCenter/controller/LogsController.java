@@ -1,11 +1,15 @@
 package com.bsep_sbz.SIEMCenter.controller;
 
 import com.bsep_sbz.SIEMCenter.controller.dto.FilterDto;
+import com.bsep_sbz.SIEMCenter.controller.dto.LoginTemplateDto;
+import com.bsep_sbz.SIEMCenter.helper.ValidationException;
 import com.bsep_sbz.SIEMCenter.model.sbz.log.Log;
 
+import java.io.IOException;
 import java.util.*;
 import com.bsep_sbz.SIEMCenter.service.interfaces.ILogsService;
 import com.bsep_sbz.SIEMCenter.service.interfaces.IRuleService;
+import org.apache.maven.shared.invoker.MavenInvocationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -48,5 +52,15 @@ public class LogsController
         return new ResponseEntity<>(logs, HttpStatus.OK);
     }
 
+    @RequestMapping(value = "/template", consumes = MediaType.APPLICATION_JSON_VALUE,  method = RequestMethod.POST)
+    public ResponseEntity createNewRule(@RequestBody LoginTemplateDto loginTemplateDto)
+            throws IOException, MavenInvocationException {
+        try {
+            logsService.generateRule(loginTemplateDto);
+        } catch (ValidationException e) {
+            return new ResponseEntity(e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
+        return new ResponseEntity(HttpStatus.CREATED);
+    }
 
 }

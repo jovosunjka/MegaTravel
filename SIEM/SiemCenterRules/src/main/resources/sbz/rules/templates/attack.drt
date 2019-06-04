@@ -1,6 +1,6 @@
 template header
 category
-logCount
+loginAttemptCount
 time
 
 package templates_rules;
@@ -14,7 +14,7 @@ template "attack-rules"
 rule "Attack rule_@{row.rowNumber}"
     when
         $log: Log($id: id, $s: source, $h: hostAddress, category == LogCategory.@{category}) and
-        Number(intValue >= @{logCount}) from accumulate(
+        Number(intValue >= @{loginAttemptCount}) from accumulate(
                        $l: Log(
                            source == $s,
                            hostAddress == $h,

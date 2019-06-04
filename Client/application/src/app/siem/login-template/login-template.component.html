@@ -1,0 +1,69 @@
+<div>
+  <h1>Login template</h1>
+  <table>
+    <tr>
+      <td><label for="loginSuccess">Was login attempt(s) successful?</label></td>
+      <td><select style="width: 50px;" id="loginSuccess" [(ngModel)]="template.loginSuccess">
+        <option [value]="true">Yes</option>
+        <option [value]="false">No</option>
+      </select></td>
+      <td><label for="sourceRelation">.</label></td>
+      <td></td>
+    </tr>
+  </table>
+  <table>
+    <tr>
+      <td><input style="width: 50px;" type="number" min="1" id="loginAttemptCount"
+                 [(ngModel)]="template.loginAttemptCount"></td>
+      <td><label for="loginAttemptCount">number of login attempts.</label></td>
+      <td></td>
+      <td></td>
+    </tr>
+  </table>
+  <table>
+    <tr>
+      <td><label for="sourceRelation">Login attempt(s) from </label></td>
+      <td><select id="sourceRelation" [(ngModel)]="template.sourceRelation">
+        <option [value]="Relation.EQUAL">same</option>
+        <option [value]="Relation.NOT_EQUAL">different</option>
+      </select></td>
+      <td><label for="sourceRelation">source(s).</label></td>
+    </tr>
+  </table>
+  <table>
+    <tr>
+      <td><label for="hostRelation">Login attempt on </label></td>
+      <td><select id="hostRelation" [(ngModel)]="template.hostRelation">
+        <option [value]="Relation.EQUAL">same</option>
+        <option [value]="Relation.NOT_EQUAL">different</option>
+      </select></td>
+      <td><label for="hostRelation">host(s).</label></td>
+      <td></td>
+    </tr>
+  </table>
+  <table>
+    <tr>
+      <td><label for="timeCount">Within</label></td>
+      <td><input style="width: 50px;" type="number" min="1" id="timeCount"
+                 [(ngModel)]="template.timeCount"></td>
+      <td><select id="timeUnit" [(ngModel)]="template.timeUnit">
+        <option [value]="TimeUnit.SECOND">second(s)</option>
+        <option [value]="TimeUnit.MINUTE">minute(s)</option>
+        <option [value]="TimeUnit.HOUR">hour(s)</option>
+        <option [value]="TimeUnit.DAY">day(s)</option>
+        <option [value]="TimeUnit.MONTH">month(s)</option>
+        <option [value]="TimeUnit.YEAR">year(s)</option>
+      </select></td>
+      <td><label for="timeUnit">time period.</label></td>
+    </tr>
+  </table>
+</div>
+<div>
+  <table>
+    <tr>
+      <td><button [disabled]="isLoaderVisible" (click)="save()">Save</button></td>
+      <td><div [hidden]="!isLoaderVisible" class="loader"></div></td>
+    </tr>
+  </table>
+
+</div>
