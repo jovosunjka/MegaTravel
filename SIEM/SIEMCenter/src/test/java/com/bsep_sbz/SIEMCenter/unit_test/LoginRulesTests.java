@@ -289,7 +289,7 @@ public class LoginRulesTests {
 
         String ip = "133.2.5.6";
         String host = "12.44.33.22";
-        List<Log> logs = getPaymentSystemLogs(50, ip, host);
+        List<Log> logs = getPaymentSystemLogs(50, ip, host, dtf.format(LocalDateTime.now()));
         logs.forEach(kieSession::insert);
 
         // Act
@@ -305,23 +305,24 @@ public class LoginRulesTests {
         assertEquals(host, alarm.getLogs().get(0).getHostAddress());
         assertEquals("Payment system attack", alarm.getMessage());
     }
-/*
+
     @Test
     public void testPaymentSystemAttackWhenThereIsNotEnoughRequestsForAlarm() {
         // Arrange
         KieServices ks = KieServices.Factory.get();
         KieContainer kc = ks.getKieClasspathContainer();
-        KieSessionConfiguration ksconf = ks.newKieSessionConfiguration();
-        ksconf.setOption(ClockTypeOption.get(ClockType.PSEUDO_CLOCK.getId()));
-        KieSession kieSession = kc.newKieSession(ksconf);
+        ///KieSessionConfiguration ksconf = ks.newKieSessionConfiguration();
+        //ksconf.setOption(ClockTypeOption.get(ClockType.PSEUDO_CLOCK.getId()));
+        //KieSession kieSession = kc.newKieSession(ksconf);
+        KieSession kieSession = KnowledgeSessionHelper.getKieSession("login-session");
 
         String ip = "133.2.5.6";
         String host = "12.44.33.22";
-        List<Log> logs = getPaymentSystemLogs(45, ip, host);
+        List<Log> logs = getPaymentSystemLogs(45, ip, host, dtf.format(LocalDateTime.now()));
         logs.forEach(kieSession::insert);
-        SessionPseudoClock clock = kieSession.getSessionClock();
-        clock.advanceTime(63, TimeUnit.SECONDS);
-        List<Log> logsAfterSomeTime = getPaymentSystemLogs(7, ip, host);
+        /*SessionPseudoClock clock = kieSession.getSessionClock();
+        clock.advanceTime(63, TimeUnit.SECONDS);*/
+        List<Log> logsAfterSomeTime = getPaymentSystemLogs(7, ip, host, dtf.format(LocalDateTime.now().minusSeconds(65)));
         logsAfterSomeTime.forEach(kieSession::insert);
 
         // Act
@@ -332,7 +333,7 @@ public class LoginRulesTests {
         QueryResults results = kieSession.getQueryResults("Get all alarms");
         assertEquals(0, results.size());
     }
-*/
+
     @Test
     public void test_Neuspesni_pokusaji_prijave_15plus_u_roku_od_5_dana() {
         // Arrange
@@ -394,7 +395,8 @@ public class LoginRulesTests {
 
         try {
             for(int i = 0; i < 7; i++) {
-                kieSession.insert(new Log(new Long(i), LogLevel.ERROR, LogCategory.ANTIVIRUS , dtf.format(LocalDateTime.now().minusDays(i)), "", "hostAddress", ""));
+                kieSession.insert(new Log(new Long(i), LogLevel.ERROR, LogCategory.ANTIVIRUS , dtf.format(LocalDateTime.now().minusDays(i)),
+                        "", "hostAddress", ""));
             }
         } catch (ParseException e) {
             e.printStackTrace();
@@ -410,6 +412,34 @@ public class LoginRulesTests {
         Alarm alarm = (Alarm) results.iterator().next().get("$a");
         //assertEquals(1, alarm.getLogs().size());
         assertEquals("U periodu od 10 dana registrovano 7 ili vise pretnji od strane antivirusa za isti racunar", alarm.getMessage());
+    }
+
+    @Test
+    public void test_Non_Activate_U_periodu_od_10_dana_registrovano_7_ili_vise_pretnji_od_strane_antivirusa_za_isti_racunar() {
+        // Arrange
+        KieSession kieSession = KnowledgeSessionHelper.getKieSession("SbzRulesSession");
+
+        try {
+            for(int i = 0; i < 6; i++) {
+                kieSession.insert(new Log(new Long(i), LogLevel.ERROR, LogCategory.ANTIVIRUS , dtf.format(LocalDateTime.now().minusDays(i)),
+                        "", "hostAddress", ""));
+            }
+
+            for(int i = 0; i < 3; i++) {
+                kieSession.insert(new Log(new Long(i), LogLevel.ERROR, LogCategory.ANTIVIRUS , dtf.format(LocalDateTime.now().minusDays((i+1)*11)),
+                        "", "hostAddress", ""));
+            }
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+        // Act
+        int numOfFiredRules = kieSession.fireAllRules();
+
+        // Assert
+        assertEquals(0, numOfFiredRules);
+        QueryResults results = kieSession.getQueryResults("Get all alarms");
+        assertEquals(0, results.size());
     }
 
     @Test
@@ -577,14 +607,20 @@ public class LoginRulesTests {
         return kc.newKieSession(ksconf);
     }
 
-    private List<Log> getPaymentSystemLogs(int count, String source, String host) {
+    private List<Log> getPaymentSystemLogs(int count, String source, String host, String timestampStr) {
         List<Log> logs = new ArrayList<>();
         for(int i = 0; i < count; i++) {
-            Log log = new Log();
-            log.setId(i + 1L);
+            Log log = null;
+            try {
+                log = new Log(i +1L, LogLevel.WARN, LogCategory.PAYMENT_SYSTEM, timestampStr, source, host, "");
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+            /*log.setId(i + 1L);
             log.setSource(source);
             log.setHostAddress(host);
             log.setCategory(LogCategory.PAYMENT_SYSTEM);
+            log.setTimestamp(timestamp);*/
             logs.add(log);
         }
         return logs;

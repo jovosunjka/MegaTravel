@@ -9,7 +9,8 @@
     </kbase>
 
     <kbase name="loginrules" eventProcessingMode="stream" default="true" packages="loginrules">
-        <ksession default="true" clockType="pseudo" name="login-session"/>
+        <ksession default="true" name="login-session"/>
+        <!--<ksession default="true" clockType="pseudo" name="login-session"/>-->
     </kbase>
 
     <kbase name="long_period_rules" eventProcessingMode="stream" packages="long_period_rules">
