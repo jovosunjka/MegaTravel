@@ -20,4 +20,6 @@ public interface ILogsService {
 
     void generateRule(LoginTemplateDto loginTemplateDto)
             throws ValidationException, IOException, MavenInvocationException;
+
+    void insertInSession(List<Log> logRet);
 }

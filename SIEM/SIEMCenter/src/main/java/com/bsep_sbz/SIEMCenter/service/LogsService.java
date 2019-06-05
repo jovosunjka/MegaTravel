@@ -16,6 +16,12 @@ import java.nio.file.StandardOpenOption;
 import java.util.*;
 import org.apache.maven.shared.invoker.MavenInvocationException;
 import org.drools.template.ObjectDataCompiler;
+import org.kie.api.KieBase;
+import org.kie.api.KieBaseConfiguration;
+import org.kie.api.conf.EventProcessingOption;
+import org.kie.api.runtime.KieContainer;
+import org.kie.api.runtime.KieSession;
+import org.kie.api.runtime.KieSessionConfiguration;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -24,10 +30,19 @@ import org.springframework.stereotype.Service;
 @Service
 public class LogsService implements ILogsService
 {
-    private static int loginTemplateCounter = 0;
-
     @Autowired
     private LogsRepository logsRepository;
+
+    @Autowired
+    private KieContainer kieContainer;
+
+    private KieSession kieSession;
+
+    public LogsService() {
+        kieSession = kieContainer.getKieBase().newKieSession();
+    }
+
+    private static int loginTemplateCounter = 0;
 
     public void save(List<Log> logs) {
         logs.forEach(logsRepository::save);
@@ -98,6 +113,11 @@ public class LogsService implements ILogsService
 
         // 4) maven clean, maven install
         HelperMethods.mavenCleanAndInstallRules();
+    }
+
+    @Override
+    public void insertInSession(List<Log> logRet) {
+
     }
 
     private void validateLoginTemplateRequestDto(LoginTemplateDto loginTemplateDto) throws ValidationException {

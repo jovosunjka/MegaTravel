@@ -1,15 +1,13 @@
 package com.bsep_sbz.SIEMCenter.unit_test.template.model;
 
-import com.bsep_sbz.SIEMCenter.model.sbz.enums.log.LogCategory;
-
 public class AttackData {
     private String category;
-    private int logCount;
+    private int loginAttemptCount;
     private String time;
 
-    public AttackData(String category, int logCount, String time) {
+    public AttackData(String category, int loginAttemptCount, String time) {
         this.category = category;
-        this.logCount = logCount;
+        this.loginAttemptCount = loginAttemptCount;
         this.time = time;
     }
 
@@ -21,12 +19,12 @@ public class AttackData {
         this.category = category;
     }
 
-    public int getLogCount() {
-        return logCount;
+    public int getLoginAttemptCount() {
+        return loginAttemptCount;
     }
 
-    public void setLogCount(int logCount) {
-        this.logCount = logCount;
+    public void setLoginAttemptCount(int loginAttemptCount) {
+        this.loginAttemptCount = loginAttemptCount;
     }
 
     public String getTime() {

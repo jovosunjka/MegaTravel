@@ -10,6 +10,8 @@ import java.util.*;
 import com.bsep_sbz.SIEMCenter.service.interfaces.ILogsService;
 import com.bsep_sbz.SIEMCenter.service.interfaces.IRuleService;
 import org.apache.maven.shared.invoker.MavenInvocationException;
+import org.kie.api.runtime.KieContainer;
+import org.kie.api.runtime.KieSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -40,6 +42,8 @@ public class LogsController
 
         logRet.forEach(System.out::println);
         logsService.save(logRet);
+        logsService.insertInSession(logRet);
+
         return new ResponseEntity(HttpStatus.OK);
     }
 
