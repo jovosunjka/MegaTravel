@@ -9,5 +9,5 @@ public enum LogLevel {
 
     //owasp dependency check proverava ranjivosti biblioteka prilikom builda
 
-    INFO, WARN, ERROR, DEBUG
+    INFO, WARN, ERROR, DEBUG, TRACE
 }

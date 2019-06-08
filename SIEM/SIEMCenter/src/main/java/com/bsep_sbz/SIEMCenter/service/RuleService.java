@@ -123,6 +123,9 @@ public class RuleService implements IRuleService {
                 if(timestamp.endsWith("PM")) {
                     timestamp = timestamp.replace("PM", "").trim();
                 }
+                if((new Date(timestamp)).after(new Date(dtf.format(LocalDateTime.now())))) {
+                    continue;
+                }
                 String hostAddress = getValue(tokens, "hostaddress");
                 LogLevel logLevel = LogLevel.valueOf(getValue(tokens, "loglevel"));
                 LogCategory logCategory = LogCategory.valueOf(getValue(tokens, "logcategory"));

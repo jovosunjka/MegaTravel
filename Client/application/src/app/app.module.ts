@@ -16,6 +16,8 @@ import { TokenInterceptorService } from './services/token-interceptor-service/to
 import { RbacPageComponent } from './rbac-page/rbac-page.component';
 import { DbLogsComponent } from './siem/db-logs/db-logs.component';
 import { LoginTemplateComponent } from './siem/login-template/login-template.component';
+import { SessionLogsComponent } from './siem/session-logs/session-logs.component';
+import { LogsComponent } from './siem/logs/logs.component';
 
 
 
@@ -24,6 +26,7 @@ const appRoutes: Routes = [
   { path: 'rbac', component: RbacPageComponent},
   { path: 'login', component: LoginPageComponent},
   { path: 'dblogs', component: DbLogsComponent},
+  { path: 'session_logs', component: SessionLogsComponent},
   { path: 'login_template', component: LoginTemplateComponent},
   { path: '', // localhost:4200 redirect to localhost:4200/login
     redirectTo: '/login',
@@ -40,7 +43,11 @@ const appRoutes: Routes = [
     NotFoundPageComponent,
     RbacPageComponent,
     DbLogsComponent,
-    LoginTemplateComponent
+    SessionLogsComponent,
+    LogsComponent,
+    LoginTemplateComponent,
+    SessionLogsComponent,
+    LogsComponent
   ],
   imports: [
     BrowserModule,

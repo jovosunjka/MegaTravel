@@ -2,16 +2,14 @@ package com.bsep_sbz.SIEMCenter.controller;
 
 import com.bsep_sbz.SIEMCenter.controller.dto.FilterDto;
 import com.bsep_sbz.SIEMCenter.controller.dto.LoginTemplateDto;
+import com.bsep_sbz.SIEMCenter.controller.dto.PageableDto;
 import com.bsep_sbz.SIEMCenter.helper.ValidationException;
 import com.bsep_sbz.SIEMCenter.model.sbz.log.Log;
-
 import java.io.IOException;
 import java.util.*;
 import com.bsep_sbz.SIEMCenter.service.interfaces.ILogsService;
 import com.bsep_sbz.SIEMCenter.service.interfaces.IRuleService;
 import org.apache.maven.shared.invoker.MavenInvocationException;
-import org.kie.api.runtime.KieContainer;
-import org.kie.api.runtime.KieSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -65,6 +63,18 @@ public class LogsController
             return new ResponseEntity(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
         return new ResponseEntity(HttpStatus.CREATED);
+    }
+
+    @RequestMapping(value = "/session", consumes = MediaType.APPLICATION_JSON_VALUE,  method = RequestMethod.POST)
+    public ResponseEntity getSessionLogs(@RequestBody FilterDto filterDto, Pageable pageable)
+    {
+        try {
+            PageableDto<Log> logs = logsService.getSessionLogs(filterDto.getColumn(), filterDto.getRegExp(),
+                    pageable.getPageNumber(), pageable.getPageSize());
+            return new ResponseEntity<>(logs, HttpStatus.OK);
+        } catch (ValidationException e) {
+            return new ResponseEntity(e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
     }
 
 }

@@ -1,6 +1,7 @@
 package com.bsep_sbz.SIEMCenter.service;
 
 import com.bsep_sbz.SIEMCenter.controller.dto.LoginTemplateDto;
+import com.bsep_sbz.SIEMCenter.controller.dto.PageableDto;
 import com.bsep_sbz.SIEMCenter.helper.Constants;
 import com.bsep_sbz.SIEMCenter.helper.HelperMethods;
 import com.bsep_sbz.SIEMCenter.helper.ValidationException;
@@ -16,12 +17,9 @@ import java.nio.file.StandardOpenOption;
 import java.util.*;
 import org.apache.maven.shared.invoker.MavenInvocationException;
 import org.drools.template.ObjectDataCompiler;
-import org.kie.api.KieBase;
-import org.kie.api.KieBaseConfiguration;
-import org.kie.api.conf.EventProcessingOption;
 import org.kie.api.runtime.KieContainer;
 import org.kie.api.runtime.KieSession;
-import org.kie.api.runtime.KieSessionConfiguration;
+import org.kie.api.runtime.rule.QueryResults;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -30,27 +28,21 @@ import org.springframework.stereotype.Service;
 @Service
 public class LogsService implements ILogsService
 {
-    @Autowired
     private LogsRepository logsRepository;
-
-    @Autowired
-    private KieContainer kieContainer;
-
-    private KieSession kieSession;
-
-    public LogsService() {
-        kieSession = kieContainer.getKieBase().newKieSession();
-    }
-
+    private HashMap<String, KieSession> kieSessions;
     private static int loginTemplateCounter = 0;
 
-    public void save(List<Log> logs) {
-        logs.forEach(logsRepository::save);
+    @Autowired
+    public LogsService(KieContainer kieContainer, LogsRepository logsRepository) {
+        this.logsRepository = logsRepository;
+        kieSessions = new HashMap<>();
+        String session1 = "login-session";
+        kieSessions.put(session1, kieContainer.newKieSession(session1));
     }
 
     @Override
-    public Page<Log> getRange(Pageable pageable) {
-        return logsRepository.findAll(pageable);
+    public void save(List<Log> logs) {
+        logs.forEach(logsRepository::save);
     }
 
     @Override
@@ -69,19 +61,19 @@ public class LogsService implements ILogsService
         }
 
         switch (column) {
-            case Constants.id:
+            case Constants.LogFields.id:
                 return logsRepository.findByIdRegexAndPagination(regExp, pageable);
-            case Constants.type:
+            case Constants.LogFields.type:
                 return logsRepository.findByTypeRegexAndPagination(regExp, pageable);
-            case Constants.category:
+            case Constants.LogFields.category:
                 return logsRepository.findByCategoryRegexAndPagination(regExp, pageable);
-            case Constants.source:
+            case Constants.LogFields.source:
                 return logsRepository.findBySourceRegexAndPagination(regExp, pageable);
-            case Constants.timestamp:
+            case Constants.LogFields.timestamp:
                 return logsRepository.findByTimestampRegexAndPagination(regExp, pageable);
-            case Constants.host_address:
+            case Constants.LogFields.host_address:
                 return logsRepository.findByHostAddressRegexAndPagination(regExp, pageable);
-            case Constants.message:
+            case Constants.LogFields.message:
                 return logsRepository.findByMessageRegexAndPagination(regExp, pageable);
             default:
                 return null;
@@ -117,7 +109,70 @@ public class LogsService implements ILogsService
 
     @Override
     public void insertInSession(List<Log> logRet) {
+        KieSession kieSession = kieSessions.get("login-session");
+        logRet.forEach(kieSession::insert);
+    }
 
+    @Override
+    public PageableDto<Log> getSessionLogs(String column, String value, int pageNumber, int pageSize)
+            throws ValidationException{
+        // 0) Validate
+        if(!isColumnValid(column)) {
+            throw new ValidationException("Column is not valid");
+        }
+        if(value.isEmpty()) {
+            throw new ValidationException("Filter param can not be empty");
+        }
+        if(pageSize < 1) {
+            throw new ValidationException("Page size can not be lower than 1");
+        }
+        if(pageNumber < 0) {
+            throw new ValidationException("Page number can not be lower than 0");
+        }
+
+        List<Log> result = new ArrayList<>();
+        KieSession kieSession = kieSessions.get("login-session");
+
+        // 1) Get logs
+        QueryResults queryResults = kieSession.getQueryResults("Get logs by message", value);
+
+        int resultsCount = queryResults.size();
+        int startIndex = pageNumber * pageSize;
+        if(startIndex >= resultsCount) {
+            return new PageableDto<>();
+        }
+        int endIndex = startIndex + pageSize;
+        if(endIndex >= resultsCount) {
+            endIndex = resultsCount;
+        }
+        boolean isFirstPage = pageNumber == 0;
+        int numberOfPages = resultsCount / pageSize;
+        if(resultsCount % pageSize != 0) {
+            numberOfPages++;
+        }
+        boolean isLastPage = pageNumber == numberOfPages - 1;
+
+        // 2) Sort by timestamp
+        queryResults.forEach(x -> result.add((Log)x.get("$l")));
+        result.sort(Comparator.comparing(Log::getTimestamp));
+
+        // 3) Take range
+        return new PageableDto<>(result.subList(startIndex, endIndex), isFirstPage, isLastPage, numberOfPages);
+    }
+
+    private boolean isColumnValid(String column) {
+        switch (column) {
+            case Constants.LogFields.id:
+            case Constants.LogFields.type:
+            case Constants.LogFields.category:
+            case Constants.LogFields.source:
+            case Constants.LogFields.timestamp:
+            case Constants.LogFields.host_address:
+            case Constants.LogFields.message:
+                return true;
+            default:
+                return false;
+        }
     }
 
     private void validateLoginTemplateRequestDto(LoginTemplateDto loginTemplateDto) throws ValidationException {
@@ -138,4 +193,5 @@ public class LogsService implements ILogsService
             throw new ValidationException("Time unit is not valid");
         }
     }
+
 }

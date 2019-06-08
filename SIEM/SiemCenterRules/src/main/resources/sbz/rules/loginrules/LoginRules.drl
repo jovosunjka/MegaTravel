@@ -15,6 +15,26 @@ query "Get all alarms"
     $a: Alarm()
 end
 
+query "Get logs by type" (String $type)
+    $l: Log(eval(type.name().contains($type)))
+end
+
+query "Get logs by category" (String $category)
+    $l: Log(eval(category.name().contains($category)))
+end
+
+query "Get logs by source" (String $source)
+    $l: Log(eval(source.contains($source)))
+end
+
+query "Get logs by host_address" (String $hostAddress)
+    $l: Log(eval(hostAddress.contains($hostAddress)))
+end
+
+query "Get logs by message" (String $message)
+    $l: Log(eval(message.contains($message)))
+end
+
 declare window LoginAttempts
     @doc("last 24h login attempts")
     Log() over window:time( 24h )
@@ -60,8 +80,9 @@ end
 rule "30+ login attempts within 24h with same ip" // in this case source is ip address
     when
         $log: Log($s: source, category == LogCategory.LOGIN, message.contains("login_successful:false"),
-        source not memberOf maliciousIpAddresses) and
-        //maliciousIpAddresses not contains source) and
+        source not memberOf maliciousIpAddresses) not
+        Log(source == $s, category == LogCategory.LOGIN, message.contains("login_successful:false"),
+                source not memberOf maliciousIpAddresses, this after $log) and
         Number(intValue >= 30) from accumulate(
                        $l: Log(
                            source == $s,
@@ -82,7 +103,8 @@ end
 
 rule "Payment system attack" // in this case source is ip address
     when
-        $log: Log($id: id, $s: source, $h: hostAddress, category == LogCategory.PAYMENT_SYSTEM) and
+        $log: Log($id: id, $s: source, $h: hostAddress, category == LogCategory.PAYMENT_SYSTEM) not
+        Log(source == $s, hostAddress == $h, category == LogCategory.PAYMENT_SYSTEM, this after $log)  and
         Number(intValue >= 50) from accumulate(
                        $l: Log(
                            source == $s,
@@ -98,42 +120,3 @@ rule "Payment system attack" // in this case source is ip address
         insert(alarm);
         System.out.println("Payment system attack");
 end
-
-/*
-rule "30 or more login attempts within 24h"
-    when
-        Number(intValue >= 30) from accumulate(
-            $e: LoginLog()
-            over window:time(24h), sum($e)
-        )
-    then
-
-        System.out.println("Alarm raised from rule: '', package: ''");
-end
-*/
-/*
-rule "Grouping example"
-    when
-        $tests: HashMap()
-            from accumulate( $test : LoginLog( ipAddress == "asd" ),
-                init( HashMap tests = new HashMap(); ),
-                action(
-                    if (tests.get($name) == null) tests.put($name, new ArrayList();
-                    tests.get($name).add($test);
-                ),
-                reverse(
-                    tests.get($name).remove($test);
-                ),
-                result( tests )
-            )
-    then
-        System.out.println("Alarm raised from rule: ''");
-end
-
-rule ""
-    when
-
-    then
-        System.out.println("Alarm raised from rule: '', package: ''");
-end
-*/
