@@ -5,6 +5,8 @@ import com.bsep_sbz.WindowsAgent.service.interfaces.ICertificateService;
 import com.bsep_sbz.WindowsAgent.service.keystore.KeyStoreReaderService;
 import com.bsep_sbz.WindowsAgent.service.keystore.KeyStoreWriterService;
 import org.apache.tomcat.util.codec.binary.Base64;
+import org.bouncycastle.util.io.pem.PemObject;
+import org.bouncycastle.util.io.pem.PemWriter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -13,6 +15,7 @@ import org.springframework.core.io.Resource;
 import java.io.*;
 import java.security.*;
 import java.security.cert.*;
+import java.util.UUID;
 
 
 @Service
@@ -50,13 +53,25 @@ public class CertificateService implements ICertificateService
     public CertificateSigningRequest prepareCSR(PublicKey publicKey) {
         String publicKeyStr = Base64.encodeBase64String(publicKey.getEncoded());
         CertificateSigningRequest csr = new CertificateSigningRequest("localhost", "MegaTravel",
-                "MegaTravelSiemCenter22222", "RS", "61897", publicKeyStr, myUrl);
+                "MegaTravelSiemWindowsAgent", "RS", UUID.randomUUID().toString(), publicKeyStr, myUrl);
         return csr;
     }
+
+    /*@Override
+    public CertificateSigningRequest prepareCSR(PublicKey publicKey) {
+        String publicKeyStr = Base64.encodeBase64String(publicKey.getEncoded());
+        CertificateSigningRequest csr = new CertificateSigningRequest("localhost", "MegaTravel",
+                "MegaTravelClient", "RS", UUID.randomUUID().toString(), publicKeyStr, "https://localhost:4200");
+        return csr;
+    }*/
 
     @Override
     public void saveCertificate(PrivateKey privateKey, X509Certificate certificate) throws IOException {
         writeCertificateInFile(aliasKeyStore, certificate);
+
+        //writePrivateKeyInFile("localhost", privateKey);
+        //writeCertificateInFile("MegaTravelClient", certificate);
+
         keyStoreWriterService.loadKeyStore(keyStore.getFile(), keyStorePassword);
         keyStoreWriterService.write(aliasKeyStore, privateKey, keyStorePassword, certificate);
         keyStoreWriterService.saveKeyStore(keyStore.getFile(), keyStorePassword);
@@ -131,6 +146,26 @@ public class CertificateService implements ICertificateService
             e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
+        }
+    }
+
+    private void writePrivateKeyInFile(String filename, PrivateKey privateKey) {
+        PemWriter pemWriter = null;
+        try {
+            pemWriter = new PemWriter(new OutputStreamWriter(new FileOutputStream(directoryStoresPath+"/" +filename+".key.pem")));
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        try {
+            pemWriter.writeObject(new PemObject("RSA PRIVATE KEY", privateKey.getEncoded()));
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                pemWriter.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 

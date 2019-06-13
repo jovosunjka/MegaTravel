@@ -221,6 +221,47 @@ public class KeyStoreReaderServiceImpl implements KeyStoreReaderService {
 		return null;
 	}
 
+	@Override
+	public int getNumOfAliases(Object fileOrFileName, char[] keyStorePass) {
+		FileInputStream fis = null;
+		try {
+			//kreiramo instancu KeyStore
+			KeyStore ks = KeyStore.getInstance("JKS", "SUN");
+			//ucitavamo podatke
+			if(fileOrFileName instanceof String) fis = new FileInputStream((String) fileOrFileName);
+			else if(fileOrFileName instanceof File) fis = new FileInputStream((File) fileOrFileName);
+			else throw new Exception("Argument fileOrFileName must be String or File!");
+			BufferedInputStream in = new BufferedInputStream(fis);
+			ks.load(in, keyStorePass);
+
+			List<String> aliases = Collections.list(ks.aliases());
+			return aliases.size();
+
+		} catch (KeyStoreException e) {
+			e.printStackTrace();
+		} catch (NoSuchProviderException e) {
+			e.printStackTrace();
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (NoSuchAlgorithmException e) {
+			e.printStackTrace();
+		} catch (CertificateException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		finally {
+			try {
+				if(fis != null) fis.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+		return 0;
+	}
+
 	/**
 	 * Ucitava privatni kljuc is KS fajla
 	 */

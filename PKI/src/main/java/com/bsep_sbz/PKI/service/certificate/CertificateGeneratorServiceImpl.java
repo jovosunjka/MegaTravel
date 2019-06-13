@@ -4,9 +4,13 @@ package com.bsep_sbz.PKI.service.certificate;
 import com.bsep_sbz.PKI.model.IssuerData;
 import com.bsep_sbz.PKI.model.SubjectData;
 import org.bouncycastle.asn1.ASN1Encodable;
+import org.bouncycastle.asn1.ASN1EncodableVector;
+import org.bouncycastle.asn1.DERIA5String;
 import org.bouncycastle.asn1.DERSequence;
+import org.bouncycastle.asn1.x509.AccessDescription;
 import org.bouncycastle.asn1.x509.Extension;
 import org.bouncycastle.asn1.x509.GeneralName;
+import org.bouncycastle.asn1.x509.X509ObjectIdentifiers;
 import org.bouncycastle.cert.CertIOException;
 import org.bouncycastle.cert.X509CertificateHolder;
 import org.bouncycastle.cert.X509v3CertificateBuilder;
@@ -17,6 +21,7 @@ import org.bouncycastle.operator.ContentSigner;
 import org.bouncycastle.operator.OperatorCreationException;
 import org.bouncycastle.operator.jcajce.JcaContentSignerBuilder;
 import org.springframework.stereotype.Service;
+import sun.security.provider.certpath.OCSP;
 
 import java.math.BigInteger;
 import java.security.Security;
@@ -28,6 +33,8 @@ import java.util.List;
 
 @Service
 public class CertificateGeneratorServiceImpl implements CertificateGeneratorService {
+	private static final String OCSP_URL = "https://localhost:8443/pki/certificate/is-revoked";
+
 	public CertificateGeneratorServiceImpl() {}
 
 	@Override
@@ -52,6 +59,7 @@ public class CertificateGeneratorServiceImpl implements CertificateGeneratorServ
 					subjectData.getX500name(),
 					subjectData.getPublicKey());
 
+
 			// JOVO DODAO, NIJE BILO U LUBURINOM KODU
 			//----------------------------------------------------------------------------------------------------------
 			// Na ovom linku je objasnjeno zasto treba koristiti subjectAlternativeNames:
@@ -71,6 +79,19 @@ public class CertificateGeneratorServiceImpl implements CertificateGeneratorServ
 			//zastarelo
 			//certGen.addExtension(X509Extensions.SubjectAlternativeName, false, subjectAlternativeNamesExtension);
 			certGen.addExtension(Extension.subjectAlternativeName, false, subjectAlternativeNamesExtension);
+
+			// Podesavanje ekstenzije za OCSP
+			//*****************************************************************************************************
+			//AccessDescription accessDescription = new AccessDescription(AccessDescription.id_ad_ocsp, new GeneralName(GeneralName.uniformResourceIdentifier, new DERIA5String(OCSP_URL)));
+			//AccessDescription accessDescription = new AccessDescription(X509ObjectIdentifiers.ocspAccessMethod, new GeneralName(GeneralName.uniformResourceIdentifier, OCSP_URL));
+			/*AccessDescription accessDescription = new AccessDescription(X509ObjectIdentifiers.ocspAccessMethod,
+					new GeneralName(GeneralName.uniformResourceIdentifier, new DERIA5String(OCSP_URL+"/"+subjectData.getSerialNumber())));
+			ASN1EncodableVector authorityInfoAccess_ASN = new ASN1EncodableVector();
+			authorityInfoAccess_ASN.add(accessDescription);
+			certGen.addExtension(Extension.authorityInfoAccess, false, new DERSequence(authorityInfoAccess_ASN));*/
+			//******************************************************************************************************
+			
+			
 			//----------------------------------------------------------------------------------------------------------
 
 			//Generise se sertifikat

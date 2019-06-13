@@ -18,4 +18,6 @@ public interface KeyStoreReaderService {
     PrivateKey readPrivateKey(Object fileOrFileName, char[] keyStorePass, String alias, char[] pass);
 
     IssuerData getIssuerData(Object fileOrFileName, String alias, char[] password, char[] keyPass, X509Certificate certificate);
+
+    int getNumOfAliases(Object fileOrFileName, char[] keyStorePass);
 }
