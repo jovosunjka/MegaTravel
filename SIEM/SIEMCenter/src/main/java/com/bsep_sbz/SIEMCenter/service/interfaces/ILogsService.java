@@ -3,6 +3,7 @@ package com.bsep_sbz.SIEMCenter.service.interfaces;
 import com.bsep_sbz.SIEMCenter.controller.dto.LoginTemplateDto;
 import com.bsep_sbz.SIEMCenter.controller.dto.PageableDto;
 import com.bsep_sbz.SIEMCenter.helper.ValidationException;
+import com.bsep_sbz.SIEMCenter.model.sbz.log.Alarm;
 import com.bsep_sbz.SIEMCenter.model.sbz.log.Log;
 import org.apache.maven.shared.invoker.MavenInvocationException;
 import org.springframework.data.domain.Page;
@@ -23,4 +24,6 @@ public interface ILogsService
 
     PageableDto<Log> getSessionLogs(String column, String value, int pageNumber, int pageSize)
             throws ValidationException;
+
+    Page<Alarm> getAlarms(Pageable pageable);
 }

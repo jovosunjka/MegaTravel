@@ -1,0 +1,38 @@
+<div>
+  <div>
+    <table>
+      <tr>
+        <td><label for="sizeInput">Logs per page: </label></td>
+        <td><input id="sizeInput" [(ngModel)]="size" style="width: 30px;"/></td>
+        <td><button (click)="getCurrentPage()">Filter!</button></td>
+      </tr>
+    </table>
+  </div>
+  <div>
+    <table class="table" cellpadding="5">
+      <tr class="table">
+        <th class="table">id</th>
+        <th class="table">timestamp</th>
+        <th class="table">alarm producer</th>
+        <th class="table">message</th>
+      </tr>
+      <tr class="table" *ngFor="let alarm of alarms">
+        <td class="table">{{alarm.id}}</td>
+        <td class="table">{{getDate(alarm.timestamp)}}</td>
+        <td class="table">{{alarm.alarmProducerType}}</td>
+        <td class="table">{{alarm.message}}</td>
+      </tr>
+    </table>
+  </div>
+  <div>
+    <table>
+      <tr>
+        <td><button (click)="getFirstPage()" [disabled]="isFirstPage"> << </button></td>
+        <td><button (click)="getPreviousPage()" [disabled]="isFirstPage"> < </button></td>
+        <td><label>Page: {{page + 1}}</label></td>
+        <td><button (click)="getNextPage()" [disabled]="isLastPage"> > </button></td>
+        <td><button (click)="getLastPage()" [disabled]="isLastPage"> >> </button></td>
+      </tr>
+    </table>
+  </div>
+</div>

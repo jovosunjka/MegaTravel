@@ -2,23 +2,43 @@ package com.bsep_sbz.SIEMCenter.model.sbz.log;
 
 import com.bsep_sbz.SIEMCenter.model.sbz.enums.log.AlarmProducerType;
 
+import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+@Entity
 public class Alarm {
+    @Transient
     private static Long sequencer = 0L;
+
+    @Id
+    @Column(name = "id", unique = true, nullable = false)
     private Long id;
+
+    @Column(name = "message")
     private String message;
+
+    @Column(name = "priority")
     private int priority;
+
+    @Column(name = "timestamp", nullable = false)
     private LocalDateTime timestamp;
+
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private List<Log> logs;
+
+    @Column(name = "alarm_producer_Type")
     private AlarmProducerType alarmProducerType;
+
+    @Transient
+    private boolean isRetrievedFromSession;
 
     public Alarm() {
         id = ++sequencer;
         logs = new ArrayList<>();
         timestamp = LocalDateTime.now();
+        isRetrievedFromSession = false;
     }
 
     public Alarm(Long id, String message, LocalDateTime timestamp, List<Log> logs) {
@@ -26,6 +46,7 @@ public class Alarm {
         this.message = message;
         this.timestamp = timestamp;
         this.logs = logs;
+        this.isRetrievedFromSession = false;
     }
 
     public Long getId() {
@@ -74,5 +95,13 @@ public class Alarm {
 
     public void setAlarmProducerType(AlarmProducerType alarmProducerType) {
         this.alarmProducerType = alarmProducerType;
+    }
+
+    public boolean getIsRetrievedFromSession() {
+        return isRetrievedFromSession;
+    }
+
+    public void setIsRetrievedFromSession(boolean retrievedFromSession) {
+        isRetrievedFromSession = retrievedFromSession;
     }
 }

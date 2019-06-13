@@ -4,9 +4,11 @@ package com.bsep_sbz.SIEMCenter.service;
 import com.bsep_sbz.SIEMCenter.model.sbz.log.Log;
 import com.bsep_sbz.SIEMCenter.model.sbz.enums.log.LogCategory;
 import com.bsep_sbz.SIEMCenter.model.sbz.enums.log.LogLevel;
+import com.bsep_sbz.SIEMCenter.repository.AlarmRepository;
 import com.bsep_sbz.SIEMCenter.service.interfaces.IRuleService;
 import com.bsep_sbz.SIEMCenter.util.DebugAgendaEventListener;
 import com.bsep_sbz.SIEMCenter.util.KnowledgeSessionHelper;
+import com.bsep_sbz.SIEMCenter.websockets.Producer;
 import org.kie.api.runtime.KieContainer;
 import org.kie.api.runtime.KieSession;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +28,10 @@ import java.util.List;
 public class RuleService implements IRuleService {
 
     @Autowired
+    private Producer producer;
+    @Autowired
+    private AlarmRepository alarmRepository;
+    @Autowired
     private KieContainer kieContainer;
 
     //private DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd.MM.yyyy. HH:mm:ss");
@@ -41,7 +47,7 @@ public class RuleService implements IRuleService {
         //sessinName = "login-session";
         KieSession kSession = KnowledgeSessionHelper.getStatefulKnowledgeSession(kieContainer, sessinName);
 
-        kSession.addEventListener(new DebugAgendaEventListener());
+        kSession.addEventListener(new DebugAgendaEventListener(kSession, alarmRepository, producer));
 
         Log loginLog1 = null;
         Log loginLog2 = null;

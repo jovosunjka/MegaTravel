@@ -18,6 +18,7 @@ import { DbLogsComponent } from './siem/db-logs/db-logs.component';
 import { LoginTemplateComponent } from './siem/login-template/login-template.component';
 import { SessionLogsComponent } from './siem/session-logs/session-logs.component';
 import { LogsComponent } from './siem/logs/logs.component';
+import { AlarmsComponent } from './siem/alarms/alarms.component';
 
 
 
@@ -28,6 +29,7 @@ const appRoutes: Routes = [
   { path: 'dblogs', component: DbLogsComponent},
   { path: 'session_logs', component: SessionLogsComponent},
   { path: 'login_template', component: LoginTemplateComponent},
+  { path: 'alarms', component: AlarmsComponent},
   { path: '', // localhost:4200 redirect to localhost:4200/login
     redirectTo: '/login',
     pathMatch: 'full'
@@ -47,7 +49,8 @@ const appRoutes: Routes = [
     LogsComponent,
     LoginTemplateComponent,
     SessionLogsComponent,
-    LogsComponent
+    LogsComponent,
+    AlarmsComponent
   ],
   imports: [
     BrowserModule,

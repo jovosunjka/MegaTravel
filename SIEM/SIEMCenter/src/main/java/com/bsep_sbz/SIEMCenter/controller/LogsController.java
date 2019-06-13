@@ -4,6 +4,7 @@ import com.bsep_sbz.SIEMCenter.controller.dto.FilterDto;
 import com.bsep_sbz.SIEMCenter.controller.dto.LoginTemplateDto;
 import com.bsep_sbz.SIEMCenter.controller.dto.PageableDto;
 import com.bsep_sbz.SIEMCenter.helper.ValidationException;
+import com.bsep_sbz.SIEMCenter.model.sbz.log.Alarm;
 import com.bsep_sbz.SIEMCenter.model.sbz.log.Log;
 import java.io.IOException;
 import java.util.*;
@@ -27,6 +28,15 @@ public class LogsController
 
     @Autowired
     private ILogsService logsService;
+
+    @RequestMapping(value = "/alarms", method = RequestMethod.GET)
+    public ResponseEntity getAlarms(Pageable pageable) {
+        Page<Alarm> alarms = logsService.getAlarms(pageable);
+        if(alarms == null) {
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        }
+        return new ResponseEntity<>(alarms, HttpStatus.OK);
+    }
 
     @RequestMapping(value = "/process", consumes = MediaType.APPLICATION_JSON_VALUE,  method = RequestMethod.POST)
     public ResponseEntity processLogs(@RequestBody List<String> logs){

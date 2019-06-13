@@ -11,30 +11,6 @@ import java.util.ArrayList;
 
 global java.util.ArrayList<String> maliciousIpAddresses;
 
-query "Get all alarms"
-    $a: Alarm()
-end
-
-query "Get logs by type" (String $type)
-    $l: Log(eval(type.name().contains($type)))
-end
-
-query "Get logs by category" (String $category)
-    $l: Log(eval(category.name().contains($category)))
-end
-
-query "Get logs by source" (String $source)
-    $l: Log(eval(source.contains($source)))
-end
-
-query "Get logs by host_address" (String $hostAddress)
-    $l: Log(eval(hostAddress.contains($hostAddress)))
-end
-
-query "Get logs by message" (String $message)
-    $l: Log(eval(message.contains($message)))
-end
-
 declare window LoginAttempts
     @doc("last 24h login attempts")
     Log() over window:time( 24h )
@@ -119,4 +95,36 @@ rule "Payment system attack" // in this case source is ip address
         alarm.getLogs().add($log);
         insert(alarm);
         System.out.println("Payment system attack");
+end
+
+rule "Reset alarm"
+    agenda-group "alarm"
+    when
+        $a: Alarm(isRetrievedFromSession == false)
+    then
+        modify($a){setIsRetrievedFromSession(true)}
+end
+
+query "Get all alarms"
+    $a: Alarm(isRetrievedFromSession == false)
+end
+
+query "Get logs by type" (String $type)
+    $l: Log(eval(type.name().contains($type)))
+end
+
+query "Get logs by category" (String $category)
+    $l: Log(eval(category.name().contains($category)))
+end
+
+query "Get logs by source" (String $source)
+    $l: Log(eval(source.contains($source)))
+end
+
+query "Get logs by host_address" (String $hostAddress)
+    $l: Log(eval(hostAddress.contains($hostAddress)))
+end
+
+query "Get logs by message" (String $message)
+    $l: Log(eval(message.contains($message)))
 end

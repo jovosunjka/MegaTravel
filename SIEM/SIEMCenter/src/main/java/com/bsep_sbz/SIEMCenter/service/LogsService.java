@@ -5,7 +5,9 @@ import com.bsep_sbz.SIEMCenter.controller.dto.PageableDto;
 import com.bsep_sbz.SIEMCenter.helper.Constants;
 import com.bsep_sbz.SIEMCenter.helper.HelperMethods;
 import com.bsep_sbz.SIEMCenter.helper.ValidationException;
+import com.bsep_sbz.SIEMCenter.model.sbz.log.Alarm;
 import com.bsep_sbz.SIEMCenter.model.sbz.log.Log;
+import com.bsep_sbz.SIEMCenter.repository.AlarmRepository;
 import com.bsep_sbz.SIEMCenter.repository.LogsRepository;
 import com.bsep_sbz.SIEMCenter.service.interfaces.ILogsService;
 import java.io.FileInputStream;
@@ -15,12 +17,17 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.util.*;
+
+import com.bsep_sbz.SIEMCenter.util.DebugAgendaEventListener;
+import com.bsep_sbz.SIEMCenter.websockets.Producer;
 import org.apache.maven.shared.invoker.MavenInvocationException;
 import org.drools.template.ObjectDataCompiler;
 import org.kie.api.runtime.KieContainer;
 import org.kie.api.runtime.KieSession;
 import org.kie.api.runtime.rule.QueryResults;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.context.event.ApplicationReadyEvent;
+import org.springframework.context.event.EventListener;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -28,16 +35,23 @@ import org.springframework.stereotype.Service;
 @Service
 public class LogsService implements ILogsService
 {
+    @Autowired
+    private Producer producer;
+    @Autowired
+    private AlarmRepository alarmRepository;
+    @Autowired
+    private KieContainer kieContainer;
+    @Autowired
     private LogsRepository logsRepository;
-    private HashMap<String, KieSession> kieSessions;
+    private HashMap<String, KieSession> kieSessions = new HashMap<>();
     private static int loginTemplateCounter = 0;
 
-    @Autowired
-    public LogsService(KieContainer kieContainer, LogsRepository logsRepository) {
-        this.logsRepository = logsRepository;
-        kieSessions = new HashMap<>();
+    @EventListener(ApplicationReadyEvent.class)
+    public void initializeSessions() {
         String session1 = "login-session";
-        kieSessions.put(session1, kieContainer.newKieSession(session1));
+        KieSession loginSession = kieContainer.newKieSession(session1);
+        loginSession.addEventListener(new DebugAgendaEventListener(loginSession, alarmRepository, producer));
+        kieSessions.put(session1, loginSession);
     }
 
     @Override
@@ -111,6 +125,7 @@ public class LogsService implements ILogsService
     public void insertInSession(List<Log> logRet) {
         KieSession kieSession = kieSessions.get("login-session");
         logRet.forEach(kieSession::insert);
+        kieSession.fireAllRules();
     }
 
     @Override
@@ -155,9 +170,15 @@ public class LogsService implements ILogsService
         // 2) Sort by timestamp
         queryResults.forEach(x -> result.add((Log)x.get("$l")));
         result.sort(Comparator.comparing(Log::getTimestamp));
+        Collections.reverse(result);
 
         // 3) Take range
         return new PageableDto<>(result.subList(startIndex, endIndex), isFirstPage, isLastPage, numberOfPages);
+    }
+
+    @Override
+    public Page<Alarm> getAlarms(Pageable pageable) {
+        return alarmRepository.findAllWithPagination(pageable);
     }
 
     private boolean isColumnValid(String column) {
@@ -193,5 +214,4 @@ public class LogsService implements ILogsService
             throw new ValidationException("Time unit is not valid");
         }
     }
-
 }

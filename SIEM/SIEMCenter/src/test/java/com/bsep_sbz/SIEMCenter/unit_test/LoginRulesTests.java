@@ -30,7 +30,6 @@ public class LoginRulesTests {
 
     private static DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd-MMM-yy HH:mm:ss");
 
-
     @Test
     public void test_Pojava_loga_u_kojoj_se_nalazi_IP_adresa_sa_spiska_malicioznih_IP_adresa() {
         // Arrange

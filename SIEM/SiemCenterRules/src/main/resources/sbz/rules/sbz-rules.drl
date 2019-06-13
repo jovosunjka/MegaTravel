@@ -8,11 +8,6 @@ import com.bsep_sbz.SIEMCenter.model.sbz.log.Alarm;
 import java.lang.Number;
 import java.util.HashSet;
 
-
-query "Get all alarms"
-    $a: Alarm()
-end
-
 // Neuspešni pokušaji prijave na sistem na istoj mašini. Prijava može biti na nivou
 // operativnog sistema ili na nivou simuliranog informacionog sistema
 // mradovic: Put all logs in alarm ???
@@ -245,4 +240,36 @@ rule "Zahtev koji su povezani sa prijavom korisnika aktiviraju brute-force alarm
         //alarm.getLogs().add($log);
         alarm.setMessage("Zahtev koji su povezani sa prijavom korisnika aktiviraju brute-force alarm");
         insert(alarm);
+end
+
+rule "Reset alarm"
+    agenda-group "alarm"
+    when
+        $a: Alarm(isRetrievedFromSession == false)
+    then
+        modify($a){setIsRetrievedFromSession(true)}
+end
+
+query "Get all alarms"
+    $a: Alarm(isRetrievedFromSession == false)
+end
+
+query "Get logs by type" (String $type)
+    $l: Log(eval(type.name().contains($type)))
+end
+
+query "Get logs by category" (String $category)
+    $l: Log(eval(category.name().contains($category)))
+end
+
+query "Get logs by source" (String $source)
+    $l: Log(eval(source.contains($source)))
+end
+
+query "Get logs by host_address" (String $hostAddress)
+    $l: Log(eval(hostAddress.contains($hostAddress)))
+end
+
+query "Get logs by message" (String $message)
+    $l: Log(eval(message.contains($message)))
 end
