@@ -1,11 +1,20 @@
 package com.bsep_sbz.PKI.service.keystore;
 
+import org.bouncycastle.asn1.x500.X500Name;
+import org.bouncycastle.asn1.x500.style.BCStyle;
+import org.bouncycastle.asn1.x500.style.IETFUtils;
+import org.bouncycastle.cert.jcajce.JcaX509CertificateHolder;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.io.*;
 import java.security.*;
 import java.security.cert.Certificate;
+import java.security.cert.CertificateEncodingException;
 import java.security.cert.CertificateException;
+import java.security.cert.X509Certificate;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 @Service
@@ -16,7 +25,13 @@ public class KeyStoreWriterServiceImpl implements KeyStoreWriterService {
 	// - Privatni kljucevi
 	// - Tajni kljucevi, koji se koriste u simetricnima siframa
 	private KeyStore keyStore;
-	
+
+	@Value("${main_root_ca}")
+	private String MainRootCa;
+
+	@Value("${main_company_unit}")
+	private String MainCompanyUnit;
+
 	public KeyStoreWriterServiceImpl() {
 		try {
 			keyStore = KeyStore.getInstance("JKS", "SUN");
@@ -96,8 +111,19 @@ public class KeyStoreWriterServiceImpl implements KeyStoreWriterService {
 	@Override
 	public void write(String alias, PrivateKey privateKey, char[] password, Certificate certificate) {
 		try {
+			if (alias.equals(MainRootCa) && keyStore.containsAlias(MainRootCa)) {
+				// starijem sertifikatu, koji je bio main, menjamo alias, da bi njanoviji mogao biti main
+				PrivateKey olderPrivateKey = (PrivateKey) keyStore.getKey(MainRootCa, password);
+				Certificate olderCertificate = keyStore.getCertificate(alias);
+				String newAlias = getOrganizationalUnitName(olderCertificate);
+				keyStore.setKeyEntry(newAlias, olderPrivateKey, password, new Certificate[] {olderCertificate});
+			}
 			keyStore.setKeyEntry(alias, privateKey, password, new Certificate[] {certificate});
 		} catch (KeyStoreException e) {
+			e.printStackTrace();
+		} catch (UnrecoverableKeyException e) {
+			e.printStackTrace();
+		} catch (NoSuchAlgorithmException e) {
 			e.printStackTrace();
 		}
 	}
@@ -157,6 +183,19 @@ public class KeyStoreWriterServiceImpl implements KeyStoreWriterService {
 			}
 		}
 
+	}
+
+	@Override
+	public String getOrganizationalUnitName(java.security.cert.Certificate certificate) {
+		try {
+			X509Certificate x509Certificate = (X509Certificate) certificate;
+			X500Name x500Name = new JcaX509CertificateHolder(x509Certificate).getSubject();
+			String organizationalUnitName = IETFUtils.valueToString(x500Name.getRDNs(BCStyle.OU)[0].getFirst().getValue());
+			return organizationalUnitName;
+		} catch (CertificateEncodingException e) {
+			e.printStackTrace();
+		}
+		return null;
 	}
 
 }

@@ -16,4 +16,6 @@ public interface KeyStoreWriterService {
     void writeCertificate(String alias, Certificate certificate);
 
     void writeCertificates(Object fileOrFileName, char[] password, List<String> aliases, List<Certificate> certificates) throws Exception;
+
+    String getOrganizationalUnitName(java.security.cert.Certificate certificate);
 }

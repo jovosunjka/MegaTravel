@@ -11,6 +11,7 @@ import org.apache.http.conn.socket.PlainConnectionSocketFactory;
 import org.apache.http.conn.ssl.NoopHostnameVerifier;
 import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
 import org.apache.http.conn.ssl.TrustSelfSignedStrategy;
+import org.apache.http.conn.ssl.TrustStrategy;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
@@ -32,6 +33,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
 import java.security.KeyStore;
+import java.security.cert.CertificateException;
+import java.security.cert.X509Certificate;
 
 @EnableAutoConfiguration // ovo smo stavili jer Intellij vristi za RestTemplateBuilder, da ne moze pronaci bean
 @Configuration
@@ -63,6 +66,12 @@ public class RestTemplateConfig {
                 .loadKeyMaterial(keyStore.getFile(), keyStorePassword, keyStorePassword)
                 .setKeyStoreType(keyStoreType)
                 .loadTrustMaterial(trustStore.getFile(), trustStorePassword)
+                /*.loadTrustMaterial(trustStore.getFile(), trustStorePassword, new TrustStrategy() {
+                    @Override
+                    public boolean isTrusted(X509Certificate[] x509Certificates, String s) throws CertificateException {
+                        return false;
+                    }
+                })*/
                 //.setTrustManagerFactoryAlgorithm(TrustManagerFactory.)
                 .build();
 

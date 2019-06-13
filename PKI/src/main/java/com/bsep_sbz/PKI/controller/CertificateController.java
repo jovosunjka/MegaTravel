@@ -6,12 +6,18 @@ import com.bsep_sbz.PKI.dto.CertificateSigningRequest;
 import com.bsep_sbz.PKI.dto.TrustStoreConfigDTO;
 import com.bsep_sbz.PKI.model.*;
 import com.bsep_sbz.PKI.service.CertificateService;
+import org.bouncycastle.cert.X509CertificateHolder;
+import org.bouncycastle.cert.jcajce.JcaX509CertificateConverter;
+import org.bouncycastle.cert.ocsp.OCSPReq;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 
 import org.apache.tomcat.util.codec.binary.Base64;
+import sun.security.provider.certpath.OCSP;
+import sun.security.provider.certpath.OCSPResponse;
 
 import java.io.File;
 import java.security.cert.CertificateEncodingException;
@@ -24,7 +30,9 @@ import java.util.stream.Collectors;
 @RequestMapping(value = "/certificate")
 public class CertificateController {
 
-    private static final String MAIN_COMPANY_UNIT = "MegaTravelRootCA";
+    @Value("${main_company_unit}")
+    private String MainCompanyUnit;
+
     @Autowired
     private CertificateService certificateService;
 
@@ -81,15 +89,32 @@ public class CertificateController {
         return new ResponseEntity(message, responseEntity.getStatusCode());
     }
 
-    @RequestMapping(value = "/is-revoked", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity isRevoked(@RequestBody CertificateRevocationRequest request) {
+    @RequestMapping(value = "/is-revoked/{serial-number}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity isRevoked(@PathVariable("serial-number") long serialNumber) {
         try {
-            boolean retValue = certificateService.isRevoked(request.getSerialNumber());
-            return new ResponseEntity<>(new CertificateRevocationResponse(retValue, new Date()), HttpStatus.OK);
+            boolean retValue = certificateService.isRevoked(serialNumber);
+            //return new ResponseEntity<>(new CertificateRevocationResponse(retValue, new Date()), HttpStatus.OK);
+            return new ResponseEntity<>(retValue, HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
     }
+
+    /*@RequestMapping(value = "/is-revoked", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity isRevoked(@RequestBody OCSPReq ocspReq) {
+        try {
+            JcaX509CertificateConverter converter = new JcaX509CertificateConverter().setProvider( "BC" );
+
+            X509CertificateHolder[] certificateHolders = ocspReq.getCerts();
+
+            X509Certificate certificate0 = converter.getCertificate(certificateHolders[0]);
+            X509Certificate certificate1 = converter.getCertificate(certificateHolders[1]);
+            OCSP.RevocationStatus revocationStatus = OCSP.check(certificate0, certificate1);
+            return new ResponseEntity<>(revocationStatus, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
+    }*/
 
     @RequestMapping(value = "/revoke", method = RequestMethod.PUT, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity revoke(@RequestBody CertificateRevocationRequest request) {
@@ -127,7 +152,7 @@ public class CertificateController {
     public ResponseEntity sendTruststore(@RequestBody List<TrustStoreConfigDTO> trustStoreConfigDtos) {
         List<Certificate> nonRevokedCertificates = certificateService.getNonRevokedCertiificates();
 
-        trustStoreConfigDtos.parallelStream()
+        trustStoreConfigDtos.stream()
             .filter(tsConfigDTO -> {
                     ChangedTrustStoreConfig changedTrustStoreConfig = certificateService.isChangedTrustStoreConfig(tsConfigDTO, nonRevokedCertificates);
                     if(changedTrustStoreConfig.isChanged()) {
@@ -143,13 +168,11 @@ public class CertificateController {
                     // samo one trustStore konfiguracije koje su promenjene za odredjeni sertifikat (aplikaciju),
                     // se salju toj aplikaciji koristeci ftp
                     List<String> tscOrganizationalUnitNames = tsConfigDTO.getTrustStoreCertificateOrganizationalUnitNames();
-                    // svaka aplikacija treba da moze pricati preko HTTPS i sa PKI-jem
-                    tscOrganizationalUnitNames.add(MAIN_COMPANY_UNIT);
                     System.out.println("Saljem "+tsConfigDTO.getOrganizationalUnitName()+"-u njegov truststore...");
 
                     File trustStoreFile = null;
                     try {
-                        trustStoreFile = certificateService.prepareTrustStoreFile(tsConfigDTO.getOrganizationalUnitName(), tscOrganizationalUnitNames);
+                        trustStoreFile = certificateService.prepareTrustStoreFile(tsConfigDTO.getOrganizationalUnitName(), tscOrganizationalUnitNames, null);
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
@@ -171,7 +194,7 @@ public class CertificateController {
     public ResponseEntity<List<TrustStoreConfigDTO>> getTruststoreConfigs() {
         List<Certificate> certificates = certificateService.getNonRevokedCertiificates();
         List<TrustStoreConfigDTO> trustStoreConfigDTOS = certificates.stream()
-                .filter(cer -> !cer.getOrganizationalUnitName().equalsIgnoreCase(MAIN_COMPANY_UNIT))
+                .filter(cer -> !cer.getOrganizationalUnitName().toLowerCase().startsWith(MainCompanyUnit.toLowerCase()))
                 // iskljucujemo root ca-ov sertifikat
                 .map(cer -> new TrustStoreConfigDTO(cer.getOrganizationalUnitName(),
                         cer.getTrustStoreCertificates().stream()

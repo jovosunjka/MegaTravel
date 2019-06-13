@@ -6,6 +6,7 @@ import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
 
 import javax.net.ssl.SSLServerSocketFactory;
+import java.security.Security;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -15,6 +16,9 @@ public class PkiApplication {
 
 	public static void main(String[] args) {
 		SpringApplication.run(PkiApplication.class, args);
+
+		System.setProperty("com.sun.net.ssl.checkRevocation", "true");
+		Security.setProperty("ocsp.enable", "true");
 	}
 
 

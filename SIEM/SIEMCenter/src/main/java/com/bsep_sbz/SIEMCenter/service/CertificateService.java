@@ -13,6 +13,7 @@ import org.springframework.core.io.Resource;
 import java.io.*;
 import java.security.*;
 import java.security.cert.*;
+import java.util.UUID;
 
 
 @Service
@@ -50,7 +51,7 @@ public class CertificateService implements ICertificateService
     public CertificateSigningRequest prepareCSR(PublicKey publicKey) {
         String publicKeyStr = Base64.encodeBase64String(publicKey.getEncoded());
         CertificateSigningRequest csr = new CertificateSigningRequest("localhost", "MegaTravel",
-                "MegaTravelSiemCenter", "RS", "61897", publicKeyStr, myUrl);
+                "MegaTravelSiemCenter", "RS", UUID.randomUUID().toString(), publicKeyStr, myUrl);
         return csr;
     }
 

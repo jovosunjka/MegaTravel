@@ -13,4 +13,5 @@ public interface CertificateRepository extends JpaRepository<Certificate, Long> 
 
     Certificate save(Certificate c);
 
+    Certificate findByOrganizationalUnitName(String organizationalUnitName);
 }

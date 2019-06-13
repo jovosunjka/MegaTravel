@@ -10,11 +10,12 @@ import java.security.PublicKey;
 import java.security.cert.CertificateEncodingException;
 import java.security.cert.X509Certificate;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 public interface CertificateService {
 
     X509Certificate createCertificate(CertificateSigningRequest csr, CertificateType certificateType) throws Exception;
+
+    X509Certificate createRootCertificate() throws Exception;
 
     boolean isRevokedById(Long certificateId) throws Exception;
 
@@ -35,7 +36,7 @@ public interface CertificateService {
 
     void saveCertificate(Certificate certificate);
 
-    File prepareTrustStoreFile(String organizationalUnitName, List<String> trustStoreCertificateOrganizationalUnitNames) throws Exception;
+    File prepareTrustStoreFile(String organizationalUnitName, List<String> trustStoreCertificateOrganizationalUnitNames, List<java.security.cert.Certificate> trustStoreCertificates) throws Exception;
 
     void sendFile(File trustStoreFile, String organizationalUnitName) throws Exception;
 
@@ -44,4 +45,12 @@ public interface CertificateService {
     ChangedTrustStoreConfig isChangedTrustStoreConfig(TrustStoreConfigDTO trustStoreConfig, List<Certificate> nonRevokedCertificates);
 
 
+    List<Certificate> getTrustStoreCertificates(String organizationalUnitName);
+
+    String getOrganizationalUnitName(java.security.cert.Certificate certificate);
+
+    List<java.security.cert.Certificate> filterCertificates(List<java.security.cert.Certificate> certificates, List<com.bsep_sbz.PKI.model.Certificate> certificatesDB);
+
+    void replaceTrustStoresOfOtherApplications(Certificate newCertificate);
 }
+
