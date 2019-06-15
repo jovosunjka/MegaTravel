@@ -166,13 +166,17 @@ public class RuleService implements IRuleService {
         {
             String[] splittedMessage = message.split("\\s+");
             int i = 0;
+            boolean found = false;
             for(; i<splittedMessage.length; i++) {
                 if(splittedMessage[i].equals("username")) {
+                    found = true;
                     break;
                 }
             }
-            String username = splittedMessage[++i];
-            return username.replaceAll("'", "");
+            if(found) {
+                String username = splittedMessage[++i];
+                return username.replaceAll("'", "");
+            }
         }
 
         return "";

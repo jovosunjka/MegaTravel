@@ -17,7 +17,6 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.util.*;
-
 import com.bsep_sbz.SIEMCenter.util.DebugAgendaEventListener;
 import com.bsep_sbz.SIEMCenter.websockets.Producer;
 import org.apache.maven.shared.invoker.MavenInvocationException;
@@ -43,15 +42,13 @@ public class LogsService implements ILogsService
     private KieContainer kieContainer;
     @Autowired
     private LogsRepository logsRepository;
-    private HashMap<String, KieSession> kieSessions = new HashMap<>();
+    private KieSession kieSession;
     private static int loginTemplateCounter = 0;
 
     @EventListener(ApplicationReadyEvent.class)
     public void initializeSessions() {
-        String session1 = "login-session";
-        KieSession loginSession = kieContainer.newKieSession(session1);
-        loginSession.addEventListener(new DebugAgendaEventListener(loginSession, alarmRepository, producer));
-        kieSessions.put(session1, loginSession);
+        kieSession = kieContainer.newKieSession("logs-session");
+        kieSession.addEventListener(new DebugAgendaEventListener(kieSession, alarmRepository, producer));
     }
 
     @Override
@@ -123,7 +120,6 @@ public class LogsService implements ILogsService
 
     @Override
     public void insertInSession(List<Log> logRet) {
-        KieSession kieSession = kieSessions.get("login-session");
         logRet.forEach(kieSession::insert);
         kieSession.fireAllRules();
     }
@@ -145,9 +141,6 @@ public class LogsService implements ILogsService
             throw new ValidationException("Page number can not be lower than 0");
         }
 
-        List<Log> result = new ArrayList<>();
-        KieSession kieSession = kieSessions.get("login-session");
-
         // 1) Get logs
         QueryResults queryResults = kieSession.getQueryResults("Get logs by message", value);
 
@@ -168,6 +161,7 @@ public class LogsService implements ILogsService
         boolean isLastPage = pageNumber == numberOfPages - 1;
 
         // 2) Sort by timestamp
+        List<Log> result = new ArrayList<>();
         queryResults.forEach(x -> result.add((Log)x.get("$l")));
         result.sort(Comparator.comparing(Log::getTimestamp));
         Collections.reverse(result);

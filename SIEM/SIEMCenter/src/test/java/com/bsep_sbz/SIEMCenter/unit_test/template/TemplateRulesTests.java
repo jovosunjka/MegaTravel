@@ -19,6 +19,7 @@ import org.kie.api.runtime.KieSession;
 import org.kie.api.runtime.KieSessionConfiguration;
 import org.kie.api.runtime.conf.ClockTypeOption;
 import org.kie.api.runtime.rule.QueryResults;
+import org.kie.api.runtime.rule.QueryResultsRow;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -29,8 +30,8 @@ import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.List;
 import java.io.InputStream;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+
+import static org.junit.Assert.*;
 
 public class TemplateRulesTests {
 
@@ -96,11 +97,11 @@ public class TemplateRulesTests {
     }
 
     @Test
-    public void testLoginTemplateWholeFlow() throws IOException, MavenInvocationException {
+    public void testLoginTemplateWholeFlow() throws IOException, MavenInvocationException, InterruptedException {
         String templatePath = "..\\SiemCenterRules\\src\\main\\resources\\sbz\\" +
                 "rules\\templates\\login_attempt.drt";
         String drlPath = "..\\SiemCenterRules\\src\\main\\resources\\sbz\\" +
-                "rules\\template_rules\\LoginAttemptRule.drl";
+                "rules\\LoginAttemptRule.drl";
         String message = "Login attempt rule_0";
 
         // 1) Read template
@@ -122,33 +123,41 @@ public class TemplateRulesTests {
         String host = "12.21.21.22";
         List<Log> logs = getLoginLogsWithSameHost(10, host);
         //KieSession kieSession = getDefaultKieSessionWithPseudoClock();
-        KieSession kieSession = KnowledgeSessionHelper.getKieSession("TemplateRulesSession");
+        KieSession kieSession = KnowledgeSessionHelper.getKieSession("logs-session");
         logs.forEach(kieSession::insert);
+        kieSession.getAgenda().getAgendaGroup("app").setFocus();
         int numOfFiredRules = kieSession.fireAllRules();
 
         // 6) assert alarm
-        assertEquals(10, numOfFiredRules);
+        assertEquals(2, numOfFiredRules);
         QueryResults results = kieSession.getQueryResults("Get all alarms");
-        assertEquals(10, results.size());
-        Alarm alarm = (Alarm) results.iterator().next().get("$a");
+        assertEquals(2, results.size());
+        Alarm alarm = null;
+        for(QueryResultsRow r : results) {
+            Alarm a = (Alarm)r.get("$a");
+            if(a.getMessage().equals(message)) {
+                alarm = a;
+                break;
+            }
+        }
+        assertNotNull(alarm);
         assertEquals(1, alarm.getLogs().size());
         assertEquals(host, alarm.getLogs().get(0).getHostAddress());
-        assertEquals(message, alarm.getMessage());
 
         // 7) delete rule
         boolean isDeleted = (new File(drlPath)).delete();
         assertTrue(isDeleted);
     }
 
-    private List<Log> getLoginLogsWithSameHost(int count, String host) {
+    private List<Log> getLoginLogsWithSameHost(int count, String host) throws InterruptedException {
         List<Log> logs = new ArrayList<>();
         for(int i = 0; i < count; i++) {
+            Thread.sleep(100);
             Log log = new Log();
             log.setId(i + 1L);
             log.setType(LogLevel.WARN);
             log.setHostAddress(host);
             log.setSource(String.format("127.%d2.8%d.1", i, i));
-            log.setMessage("login_successful:false");
             log.setCategory(LogCategory.LOGIN);
             logs.add(log);
         }

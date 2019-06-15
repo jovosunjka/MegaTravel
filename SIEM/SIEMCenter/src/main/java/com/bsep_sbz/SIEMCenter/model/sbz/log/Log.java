@@ -14,7 +14,7 @@ import java.util.concurrent.TimeUnit;
 @Entity
 @org.kie.api.definition.type.Role(Role.Type.EVENT)
 @org.kie.api.definition.type.Timestamp("timestamp")
-//@org.kie.api.definition.type.Expires()
+@org.kie.api.definition.type.Expires("3m")
 public class Log {
     @Id
     @Column(name = "id", unique = true, nullable = false)
@@ -67,11 +67,9 @@ public class Log {
         this.hostAddress = hostAddress;
         this.message = message;
     }
-
+    // koristi se za pravilo 90+ days of inactivity
     public long diffrenceInHours(Date date) {
-        long difference = TimeUnit.DAYS.convert(date.getTime() - timestamp.getTime(), TimeUnit.HOURS);
-        System.out.println("diffrenceInHours(): " + difference);
-        return difference;
+        return TimeUnit.DAYS.convert(date.getTime() - timestamp.getTime(), TimeUnit.HOURS);
     }
 
     public static long getDaysOfInactivity(long first, long second) {
@@ -79,10 +77,26 @@ public class Log {
     }
 
     public String getUsername() {
-        String str = StringUtils.substringBetween(message+",","username:", ",");
-        // za svaki slucaj dodajemo zarez na kraj
-        //System.out.println("getUsername(): " + str);
-        return str;
+        if(message != null) {
+            if (message.contains("username")) {
+                //
+                String[] messageSplit = message.split("\\s+");
+                int i = 0;
+                boolean found = false;
+                for (; i < messageSplit.length; i++) {
+                    if (messageSplit[i].equals("username")) {
+                        found = true;
+                        break;
+                    }
+                }
+                if(found) {
+                    String username = messageSplit[++i];
+                    return username.replaceAll("'", "");
+                }
+            }
+        }
+
+        return null;
     }
 
     public Long getId() {
@@ -108,15 +122,6 @@ public class Log {
     public String getSource() { return source; }
 
     public void setSource(String source) { this.source = source; }
-
-    /*public LocalDateTime getTimestamp() {
-        return timestamp;
-    }
-
-    public void setTimestamp(LocalDateTime timestamp) {
-        this.timestamp = timestamp;
-    }
-    */
 
     public Date getTimestamp() {
         return timestamp;

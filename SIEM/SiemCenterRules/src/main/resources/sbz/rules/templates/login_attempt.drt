@@ -6,28 +6,24 @@ hostRelation
 sourceRelation
 loginSuccess
 
-package template_rules;
+package sbz.rules;
 
 import com.bsep_sbz.SIEMCenter.model.sbz.enums.log.LogCategory
 import com.bsep_sbz.SIEMCenter.model.sbz.log.Alarm;
 import com.bsep_sbz.SIEMCenter.model.sbz.log.Log;
 
-query "Get all alarms"
-    $a: Alarm()
-end
-
 template "login_attempt"
 
 rule "Login attempt rule_@{row.rowNumber}"
+    agenda-group "app"
     when
-        $log: Log($s: source, $h: hostAddress, category == LogCategory.LOGIN,
-            message.contains("login_successful:@{loginSuccess}")) and
+        $log: Log($s: source, $h: hostAddress, $c: category == LogCategory.LOGIN) not
+        Log(source == $s, hostAddress == $h, category == $c, this after $log) and
         Number(intValue >= @{loginAttemptCount}) from accumulate(
                        $l: Log(
                            hostAddress @{hostRelation} $h,
-                           this == $log || source @{sourceRelation} $s,
-                           category == LogCategory.LOGIN,
-                           message.contains("login_successful:@{loginSuccess}")
+                           source @{sourceRelation} $s,
+                           category == LogCategory.LOGIN
                        ) over window:time(@{timeCount}@{timeUnit}),
                        count($l)
                    )
@@ -36,7 +32,6 @@ rule "Login attempt rule_@{row.rowNumber}"
         alarm.setMessage("Login attempt rule_@{row.rowNumber}");
         alarm.getLogs().add($log);
         insert(alarm);
-        System.out.println("Login attempt rule_@{row.rowNumber}");
 end
 
 end template

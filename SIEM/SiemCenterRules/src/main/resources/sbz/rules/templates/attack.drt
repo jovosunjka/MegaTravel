@@ -3,7 +3,7 @@ category
 loginAttemptCount
 time
 
-package templates_rules;
+package sbz.rules;
 
 import com.bsep_sbz.SIEMCenter.model.sbz.enums.log.LogCategory
 import com.bsep_sbz.SIEMCenter.model.sbz.log.Alarm;
@@ -12,6 +12,7 @@ import com.bsep_sbz.SIEMCenter.model.sbz.log.Log;
 template "attack-rules"
 
 rule "Attack rule_@{row.rowNumber}"
+    agenda-group "app"
     when
         $log: Log($id: id, $s: source, $h: hostAddress, category == LogCategory.@{category}) and
         Number(intValue >= @{loginAttemptCount}) from accumulate(
@@ -27,7 +28,6 @@ rule "Attack rule_@{row.rowNumber}"
         alarm.setMessage($log.getLogCategory().name() + " аttack");
         alarm.getLogs().add($log);
         insert(alarm);
-        System.out.println($log.getLogCategory().name() + " аttack");
 end
 
 end template
