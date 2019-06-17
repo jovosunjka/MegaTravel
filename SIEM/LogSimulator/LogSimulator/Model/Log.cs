@@ -9,7 +9,7 @@ namespace LogSimulator.Model
 
         public long EventId { get; set; }
 
-        public DateTime Timestamp { get; set; }
+        public long Timestamp { get; set; }
 
         public LogLevelType LogLevel { get; set; }
 

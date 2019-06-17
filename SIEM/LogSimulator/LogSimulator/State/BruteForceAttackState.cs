@@ -12,7 +12,7 @@ namespace LogSimulator.State
             var count = int.Parse(appSettings.AttackRequestNum);
             for (int i = 0; i < count; i++)
             {
-                var log = logService.GetLog($"Login attempt with username '{appSettings.MaliciousIpAddress}' from ip address '{appSettings.MaliciousIpAddress}'", LogCategory.LOGIN);
+                var log = logService.GetLog($"Login attempt with username '{appSettings.MaliciousIpAddress}' from ip address '{appSettings.MaliciousIpAddress}'", LogCategory.LOGIN, LogLevelType.WARN);
                 logService.WriteLogToFile(appSettings.LoginLogsFolderPath, log);
             }
         }

@@ -12,7 +12,7 @@ namespace LogSimulator.State
 
         public void Simulate(IAppSettings appSettings, ILogService logService)
         {
-            var log = logService.GetLog($"Login attempt with username '{appSettings.MaliciousUsername}' from ip address '{appSettings.MaliciousIpAddress}'", LogCategory.LOGIN);
+            var log = logService.GetLog($"Login attempt with username '{appSettings.MaliciousUsername}' from ip address '{appSettings.MaliciousIpAddress}'", LogCategory.LOGIN, LogLevelType.WARN);
             logService.WriteLogToFile(appSettings.LoginLogsFolderPath, log);
         }
     }

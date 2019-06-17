@@ -220,11 +220,11 @@ public class LogsSender {
             System.out.println("Filtered new log in file " + file.getAbsolutePath() + ": " + fNewLog);
         }
 
-        /*try {
+        try {
             logsService.sendLogs(filteredNewLogs);
         } catch (IOException e) {
             e.printStackTrace();
-        }*/
+        }
 
 
         return rlr.getNumberOfCharactersOrBytesRead();

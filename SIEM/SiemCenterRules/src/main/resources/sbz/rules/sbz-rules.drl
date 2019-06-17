@@ -3,7 +3,6 @@ package sbz.rules;
 import com.bsep_sbz.SIEMCenter.model.sbz.log.Log;
 import com.bsep_sbz.SIEMCenter.model.sbz.enums.log.LogLevel;
 import com.bsep_sbz.SIEMCenter.model.sbz.enums.log.LogCategory;
-import com.bsep_sbz.SIEMCenter.model.sbz.enums.log.AlarmProducerType;
 import com.bsep_sbz.SIEMCenter.model.sbz.log.Alarm;
 import java.lang.Number;
 import java.util.HashSet;
@@ -46,6 +45,10 @@ query "Get logs by message" (String $message)
     $l: Log(eval(message.contains($message)))
 end
 
+query "Get all logs"
+    $l: Log()
+end
+
 query "Get all alarms"
     $a: Alarm(isRetrievedFromSession == false)
 end
@@ -68,7 +71,7 @@ rule "Pojava loga čiji tip je ERROR"
         $l: Log(type == LogLevel.ERROR)
     then
         Alarm alarm = new Alarm();
-        alarm.setAlarmProducerType(AlarmProducerType.APP);
+        alarm.setAlarmProducerType($l.getCategory());
         alarm.getLogs().add($l);
         alarm.setMessage("Pojava loga čiji tip je ERROR");
         insert(alarm);
@@ -82,7 +85,7 @@ rule "Prijava ili pokušaj prijave sa IP adrese koje se nalazi na spisku malicio
                 maliciousIpAddresses contains source)
     then
         Alarm alarm = new Alarm();
-        alarm.setAlarmProducerType(AlarmProducerType.LOGIN);
+        alarm.setAlarmProducerType(LogCategory.LOGIN);
         alarm.getLogs().add($l);
         alarm.setMessage("Try to login from malicious ip address");
         insert(alarm);
@@ -96,7 +99,7 @@ rule "Pojava loga u kojoj se nalazi IP adresa sa spiska malicioznih IP adresa"
         $l: Log(maliciousIpAddresses contains source)
     then
         Alarm alarm = new Alarm();
-        alarm.setAlarmProducerType(AlarmProducerType.APP);
+        alarm.setAlarmProducerType($l.getCategory());
         alarm.getLogs().add($l);
         alarm.setMessage("Pojava loga u kojoj se nalazi IP adresa sa spiska malicioznih IP adresa");
         insert(alarm);
@@ -105,10 +108,11 @@ end
 // Neuspešni pokušaji prijave na sistem na istoj mašini. Prijava može biti na nivou
 // operativnog sistema ili na nivou simuliranog informacionog sistema
 rule "Neuspesni pokusaji prijave na sistem na istoj masini 2+"
+    salience 5
     agenda-group "app"
     when
         exists (
-            Log($id: id,
+            $log: Log($id: id,
                 $t: type == LogLevel.WARN,
                 $c: category == LogCategory.LOGIN,
                 $ha: hostAddress
@@ -118,14 +122,14 @@ rule "Neuspesni pokusaji prijave na sistem na istoj masini 2+"
                             //id != $id,
                             type == $t,
                             category == $c,
-                            hostAddress == $ha
+                            this == $log || hostAddress == $ha
                         ),
                         count($l)
                     )
              )
     then
         Alarm alarm = new Alarm();
-        alarm.setAlarmProducerType(AlarmProducerType.LOGIN);
+        alarm.setAlarmProducerType(LogCategory.LOGIN);
         //alarm.getLogs().add($log);
         alarm.setMessage("Neuspesni pokusaji prijave na sistem na istoj masini 2+");
         insert(alarm);
@@ -134,10 +138,11 @@ end
 // Neuspešni pokušaji prijave na sistem sa istim korisničkim imenom. Prijava može biti na nivou
 // operativnog sistema na ili nivou simuliranog informacionog sistema
 rule "Neuspesni pokusaji prijave sa istim username-om 2+"
+    salience 5
     agenda-group "app"
     when
         exists (
-            Log(type == LogLevel.WARN,
+            $log: Log(type == LogLevel.WARN,
                 category == LogCategory.LOGIN,
                 $u: username,
                 username != null) and
@@ -145,14 +150,14 @@ rule "Neuspesni pokusaji prijave sa istim username-om 2+"
                             $l: Log(
                                 type == LogLevel.WARN,
                                 category == LogCategory.LOGIN,
-                                username == $u
+                                $log == this || username == $u
                             ),
                             count($l)
                         )
         )
     then
         Alarm alarm = new Alarm();
-        alarm.setAlarmProducerType(AlarmProducerType.LOGIN);
+        alarm.setAlarmProducerType(LogCategory.LOGIN);
         //alarm.getLogs().add($log);
         alarm.setMessage("Neuspesni pokusaji prijave sa istim username-om 2+");
         insert(alarm);
@@ -181,7 +186,7 @@ rule "Uspesna prijava na sistem pracena sa izmenom korisnickih podataka ukoliko 
             )
     then
         Alarm alarm = new Alarm();
-        alarm.setAlarmProducerType(AlarmProducerType.LOGIN);
+        alarm.setAlarmProducerType(LogCategory.LOGIN);
         //alarm.getLogs().add($log);
         alarm.setMessage("Uspesna prijava na sistem pracena sa izmenom korisnickih podataka ukoliko je sa iste IP adrese");
         insert(alarm);
@@ -193,7 +198,7 @@ rule "Prijavljivanje na sistem u razmaku manjem od 10 sekundi sa razlicitih IP a
     agenda-group "app"
     when
         exists (
-            Log($ipAddress: source,
+            $log: Log($ipAddress: source,
                 type == LogLevel.INFO,
                 category == LogCategory.LOGIN,
                 $username: getUsername() != null) and
@@ -201,8 +206,8 @@ rule "Prijavljivanje na sistem u razmaku manjem od 10 sekundi sa razlicitih IP a
                         Log(
                             type == LogLevel.INFO,
                             category == LogCategory.LOGIN,
-                            getUsername() == $username,
-                            source != $ipAddress,
+                            this == $log || getUsername() == $username,
+                            this == $log || source != $ipAddress,
                             $ha: hostAddress
                         )
                         over window: time(10s),
@@ -214,7 +219,7 @@ rule "Prijavljivanje na sistem u razmaku manjem od 10 sekundi sa razlicitih IP a
             )
     then
         Alarm alarm = new Alarm();
-        alarm.setAlarmProducerType(AlarmProducerType.LOGIN);
+        alarm.setAlarmProducerType(LogCategory.LOGIN);
         //alarm.getLogs().add($log);
         alarm.setMessage("Prijavljivanje na sistem u razmaku manjem od 10 sekundi sa razlicitih IP adresa");
         insert(alarm);
@@ -229,7 +234,7 @@ rule "Zahtevi bilo kog tipa aktiviraju alarm za DoS napad"
                     )
     then
         Alarm alarm = new Alarm();
-        alarm.setAlarmProducerType(AlarmProducerType.APP);
+        alarm.setAlarmProducerType(LogCategory.APP);
         //alarm.getLogs().add($log);
         alarm.setMessage("Zahtevi bilo kog tipa aktiviraju alarm za DoS napad");
         insert(alarm);
@@ -244,7 +249,7 @@ rule "Zahtev koji su povezani sa prijavom korisnika aktiviraju brute-force alarm
                     )
     then
         Alarm alarm = new Alarm();
-        alarm.setAlarmProducerType(AlarmProducerType.APP);
+        alarm.setAlarmProducerType(LogCategory.LOGIN);
         //alarm.getLogs().add($log);
         alarm.setMessage("Zahtev koji su povezani sa prijavom korisnika aktiviraju brute-force alarm");
         insert(alarm);
@@ -253,20 +258,16 @@ end
 rule "Payment system attack" // in this case source is ip address
     agenda-group "app"
     when
-        $log: Log($id: id, $s: source, $h: hostAddress, category == LogCategory.PAYMENT_SYSTEM) not
-        Log(source == $s, hostAddress == $h, category == LogCategory.PAYMENT_SYSTEM, this after $log)  and
         Number(intValue >= 50) from accumulate(
                        $l: Log(
-                           source == $s,
-                           hostAddress == $h,
                            category == LogCategory.PAYMENT_SYSTEM
                        ) from window Attack,
                        count($l)
                    )
     then
         Alarm alarm = new Alarm();
+        alarm.setAlarmProducerType(LogCategory.PAYMENT_SYSTEM);
         alarm.setMessage("Payment system attack");
-        alarm.getLogs().add($log);
         insert(alarm);
 end
 
@@ -288,7 +289,7 @@ rule "Pokusaj prijave na nalog koji nije bio aktivan 90+ dana"
                                 )
     then
         Alarm alarm = new Alarm();
-        alarm.setAlarmProducerType(AlarmProducerType.LOGIN);
+        alarm.setAlarmProducerType(LogCategory.LOGIN);
         alarm.getLogs().add($l);
         alarm.setMessage("Pokusaj prijave na nalog koji nije bio aktivan 90+ dana");
         insert(alarm);
@@ -299,7 +300,7 @@ rule "15 ili više neuspešnih pokušaja prijave na različite delove informacio
     agenda-group "app-long"
     when
         exists (
-            Log($s: source,
+            $log: Log($s: source,
                 $h: hostAddress,
                 type == LogLevel.WARN,
                 category == LogCategory.LOGIN) and
@@ -308,8 +309,8 @@ rule "15 ili više neuspešnih pokušaja prijave na različite delove informacio
                         //id != $id,
                         type == LogLevel.WARN,
                         category == LogCategory.LOGIN,
-                        source == $s,
-                        hostAddress != $h
+                        this == $log || source == $s,
+                        this == $log || hostAddress != $h
                     )
                     over window: time(5d),
                     count($l)
@@ -317,7 +318,7 @@ rule "15 ili više neuspešnih pokušaja prijave na različite delove informacio
             )
     then
         Alarm alarm = new Alarm();
-        alarm.setAlarmProducerType(AlarmProducerType.LOGIN);
+        alarm.setAlarmProducerType(LogCategory.LOGIN);
         //alarm.getLogs().add($log);
         alarm.setMessage("15 ili više neuspešnih pokušaja prijave na različite delove informacionog sistema");
         insert(alarm);
@@ -365,7 +366,7 @@ rule "Pojava loga u kome antivirus registruje pretnju, a da u roku od 1h se ne g
 
     then
         Alarm alarm = new Alarm();
-        alarm.setAlarmProducerType(AlarmProducerType.APP);
+        alarm.setAlarmProducerType(LogCategory.ANTIVIRUS);
         alarm.getLogs().add($al1);
         alarm.getLogs().add($al2);
         alarm.setMessage("Pojava loga u kome antivirus registruje pretnju, a da u roku od 1h se ne generise log o uspesnom eliminisanju pretnje");
@@ -394,7 +395,7 @@ rule "U periodu od 10 dana registrovano 7 ili vise pretnji od strane antivirusa 
             )
     then
         Alarm alarm = new Alarm();
-        alarm.setAlarmProducerType(AlarmProducerType.APP);
+        alarm.setAlarmProducerType(LogCategory.ANTIVIRUS);
         //alarm.getLogs().add($log);
         alarm.setMessage("U periodu od 10 dana registrovano 7 ili vise pretnji od strane antivirusa za isti racunar");
         insert(alarm);

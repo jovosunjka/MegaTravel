@@ -48,7 +48,6 @@ public class LogsController
             return new ResponseEntity(HttpStatus.BAD_REQUEST);
         }
 
-        logRet.forEach(System.out::println);
         logsService.save(logRet);
         logsService.insertInSession(logRet);
 

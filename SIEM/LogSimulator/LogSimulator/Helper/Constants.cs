@@ -29,6 +29,8 @@
             public const string BruteForceAttack = "Brute force attack";
 
             public const string ChangeUserInfo = "Change user info";
+
+            public const string LoginAttemptFromDiffSources = "Login attempt from different sources";
         }
     }
 }

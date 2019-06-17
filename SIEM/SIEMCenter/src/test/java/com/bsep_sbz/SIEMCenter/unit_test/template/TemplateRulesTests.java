@@ -5,29 +5,26 @@ import com.bsep_sbz.SIEMCenter.model.sbz.enums.log.LogCategory;
 import com.bsep_sbz.SIEMCenter.model.sbz.enums.log.LogLevel;
 import com.bsep_sbz.SIEMCenter.model.sbz.log.Alarm;
 import com.bsep_sbz.SIEMCenter.model.sbz.log.Log;
+import com.bsep_sbz.SIEMCenter.model.sbz.rule.LoginData;
 import com.bsep_sbz.SIEMCenter.sbz.KnowledgeSessionHelper;
 import com.bsep_sbz.SIEMCenter.unit_test.template.model.AttackData;
-import com.bsep_sbz.SIEMCenter.unit_test.template.model.LoginData;
 import org.apache.maven.shared.invoker.*;
 import org.codehaus.plexus.util.StringUtils;
-import org.drools.core.ClockType;
 import org.drools.template.*;
 import org.junit.Test;
-import org.kie.api.KieServices;
-import org.kie.api.runtime.KieContainer;
 import org.kie.api.runtime.KieSession;
-import org.kie.api.runtime.KieSessionConfiguration;
-import org.kie.api.runtime.conf.ClockTypeOption;
 import org.kie.api.runtime.rule.QueryResults;
 import org.kie.api.runtime.rule.QueryResultsRow;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.io.InputStream;
 
@@ -74,8 +71,10 @@ public class TemplateRulesTests {
                         "rules\\templates\\login_attempt.drt");
 
         List<LoginData> data = new ArrayList<>();
-        data.add(new LoginData(2,10,"s", "==", "!=", "true"));
-        data.add(new LoginData(30,5,"h", "!=", "==", "false"));
+        data.add(new LoginData(2,10,"s", "==", "!=",
+                true, 0));
+        data.add(new LoginData(30,5,"h", "!=", "==",
+                false, 1));
 
         ObjectDataCompiler compiler = new ObjectDataCompiler();
 
@@ -87,6 +86,8 @@ public class TemplateRulesTests {
         int numOfRules = StringUtils.countMatches(drl, "when");
         assertEquals(2, numOfRules);
         assertTrue(drl.contains("source == $s"));
+        assertTrue(drl.contains("Login attempt rule_0"));
+        assertTrue(drl.contains("Login attempt rule_1"));
         assertTrue(drl.contains("source != $s"));
         assertTrue(drl.contains("hostAddress == $h"));
         assertTrue(drl.contains("hostAddress != $h"));
@@ -97,11 +98,13 @@ public class TemplateRulesTests {
     }
 
     @Test
-    public void testLoginTemplateWholeFlow() throws IOException, MavenInvocationException, InterruptedException {
+    public void testLoginTemplateWholeFlow() throws IOException, MavenInvocationException {
+        KieSession kieSession = KnowledgeSessionHelper.getKieSession("logs-session");
+
         String templatePath = "..\\SiemCenterRules\\src\\main\\resources\\sbz\\" +
                 "rules\\templates\\login_attempt.drt";
         String drlPath = "..\\SiemCenterRules\\src\\main\\resources\\sbz\\" +
-                "rules\\LoginAttemptRule.drl";
+                "rules\\LoginAttemptRule0.drl";
         String message = "Login attempt rule_0";
 
         // 1) Read template
@@ -109,7 +112,8 @@ public class TemplateRulesTests {
 
         // 2) Compile template to drl rule
         List<LoginData> data = new ArrayList<>();
-        data.add(new LoginData(10,5,"s", "==", "!=", "false"));
+        data.add(new LoginData(10,20,"s", "==", "!=",
+                false, 0));
         String drl = (new ObjectDataCompiler()).compile(data, template);
         assertTrue(drl.contains(message));
 
@@ -122,16 +126,12 @@ public class TemplateRulesTests {
         // 5) trigger rule
         String host = "12.21.21.22";
         List<Log> logs = getLoginLogsWithSameHost(10, host);
-        //KieSession kieSession = getDefaultKieSessionWithPseudoClock();
-        KieSession kieSession = KnowledgeSessionHelper.getKieSession("logs-session");
         logs.forEach(kieSession::insert);
         kieSession.getAgenda().getAgendaGroup("app").setFocus();
-        int numOfFiredRules = kieSession.fireAllRules();
+        kieSession.fireAllRules();
 
         // 6) assert alarm
-        assertEquals(2, numOfFiredRules);
         QueryResults results = kieSession.getQueryResults("Get all alarms");
-        assertEquals(2, results.size());
         Alarm alarm = null;
         for(QueryResultsRow r : results) {
             Alarm a = (Alarm)r.get("$a");
@@ -141,24 +141,23 @@ public class TemplateRulesTests {
             }
         }
         assertNotNull(alarm);
-        assertEquals(1, alarm.getLogs().size());
-        assertEquals(host, alarm.getLogs().get(0).getHostAddress());
 
         // 7) delete rule
         boolean isDeleted = (new File(drlPath)).delete();
         assertTrue(isDeleted);
     }
 
-    private List<Log> getLoginLogsWithSameHost(int count, String host) throws InterruptedException {
+    private List<Log> getLoginLogsWithSameHost(int count, String host) {
         List<Log> logs = new ArrayList<>();
         for(int i = 0; i < count; i++) {
-            Thread.sleep(100);
             Log log = new Log();
             log.setId(i + 1L);
             log.setType(LogLevel.WARN);
             log.setHostAddress(host);
             log.setSource(String.format("127.%d2.8%d.1", i, i));
             log.setCategory(LogCategory.LOGIN);
+            Date date = Date.from(LocalDateTime.now().atZone(ZoneId.systemDefault()).toInstant());
+            log.setTimestamp(date);
             logs.add(log);
         }
         return logs;

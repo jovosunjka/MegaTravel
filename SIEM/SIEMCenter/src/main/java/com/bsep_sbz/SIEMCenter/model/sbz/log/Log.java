@@ -1,8 +1,8 @@
 package com.bsep_sbz.SIEMCenter.model.sbz.log;
 
+import com.bsep_sbz.SIEMCenter.helper.HelperMethods;
 import com.bsep_sbz.SIEMCenter.model.sbz.enums.log.LogCategory;
 import com.bsep_sbz.SIEMCenter.model.sbz.enums.log.LogLevel;
-import org.apache.commons.lang3.StringUtils;
 import org.kie.api.definition.type.Role;
 import javax.persistence.*;
 import java.text.ParseException;
@@ -38,6 +38,9 @@ public class Log {
     @Column(name = "message", nullable = false)
     private String message;
     // attribute1:value1,attribute2:value2,attribute3:value3, ...  (message format)
+
+    @Column(name = "username")
+    private String username;
 
     @Transient
     private final SimpleDateFormat sdf1 = new SimpleDateFormat("dd-MMM-yy HH:mm:ss");
@@ -77,26 +80,16 @@ public class Log {
     }
 
     public String getUsername() {
-        if(message != null) {
-            if (message.contains("username")) {
-                //
-                String[] messageSplit = message.split("\\s+");
-                int i = 0;
-                boolean found = false;
-                for (; i < messageSplit.length; i++) {
-                    if (messageSplit[i].equals("username")) {
-                        found = true;
-                        break;
-                    }
-                }
-                if(found) {
-                    String username = messageSplit[++i];
-                    return username.replaceAll("'", "");
-                }
-            }
+        String username = HelperMethods.getUsername(message);
+        if(!username.equals("")) {
+            return username;
         }
 
         return null;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
     }
 
     public Long getId() {
@@ -152,11 +145,7 @@ public class Log {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Log log = (Log) o;
-        return id.equals(log.id) &&
-                type == log.type &&
-                timestamp.equals(log.timestamp) &&
-                hostAddress.equals(log.hostAddress) &&
-                message.equals(log.message);
+        return this.hashCode() == o.hashCode();
     }
 
     @Override

@@ -1,7 +1,6 @@
 package com.bsep_sbz.SIEMCenter.model.sbz.log;
 
-import com.bsep_sbz.SIEMCenter.model.sbz.enums.log.AlarmProducerType;
-
+import com.bsep_sbz.SIEMCenter.model.sbz.enums.log.LogCategory;
 import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -29,7 +28,7 @@ public class Alarm {
     private List<Log> logs;
 
     @Column(name = "alarm_producer_Type")
-    private AlarmProducerType alarmProducerType;
+    private LogCategory alarmProducerType;
 
     @Transient
     private boolean isRetrievedFromSession;
@@ -89,19 +88,19 @@ public class Alarm {
         this.priority = priority;
     }
 
-    public AlarmProducerType getAlarmProducerType() {
-        return alarmProducerType;
-    }
-
-    public void setAlarmProducerType(AlarmProducerType alarmProducerType) {
-        this.alarmProducerType = alarmProducerType;
-    }
-
     public boolean getIsRetrievedFromSession() {
         return isRetrievedFromSession;
     }
 
     public void setIsRetrievedFromSession(boolean retrievedFromSession) {
         isRetrievedFromSession = retrievedFromSession;
+    }
+
+    public LogCategory getAlarmProducerType() {
+        return alarmProducerType;
+    }
+
+    public void setAlarmProducerType(LogCategory alarmProducerType) {
+        this.alarmProducerType = alarmProducerType;
     }
 }

@@ -6,8 +6,10 @@ import org.kie.api.runtime.KieContainer;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
+import org.springframework.scheduling.annotation.EnableScheduling;
 
 @SpringBootApplication
+@EnableScheduling
 public class SiemCenterApplication {
 
 	public static void main(String[] args) {
@@ -21,7 +23,7 @@ public class SiemCenterApplication {
         KieContainer kContainer = ks
                 .newKieContainer(ks.newReleaseId("com.bsep_sbz", "SiemCenterRules", "0.0.1-SNAPSHOT"));
         KieScanner kScanner = ks.newKieScanner(kContainer);
-        kScanner.start(10_000);
+        kScanner.start(1000);
         return kContainer;
     }
 

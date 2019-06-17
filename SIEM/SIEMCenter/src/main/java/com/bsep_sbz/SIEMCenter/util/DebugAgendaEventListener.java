@@ -10,16 +10,21 @@ import org.kie.api.runtime.KieSession;
 import org.kie.api.runtime.rule.QueryResults;
 import org.kie.api.runtime.rule.QueryResultsRow;
 
+import javax.transaction.Transactional;
+
 public class DebugAgendaEventListener extends DefaultAgendaEventListener
 {
+   /*
    private KieSession kieSession;
    private AlarmRepository alarmRepository;
    private Producer producer;
+   private final Object mutex;
 
    public DebugAgendaEventListener(KieSession kieSession, AlarmRepository alarmRepository, Producer producer) {
       this.kieSession = kieSession;
       this.alarmRepository = alarmRepository;
       this.producer = producer;
+      this.mutex = new Object();
    }
 
    @Override
@@ -35,25 +40,31 @@ public class DebugAgendaEventListener extends DefaultAgendaEventListener
       // this method is finished, so we need to create separate thread to get alarm
       Thread t = new Thread(new Runnable() {
          @Override
+         @Transactional
          public void run() {
-            QueryResults results = kieSession.getQueryResults("Get all alarms");
-            // save new alarms
-            for(QueryResultsRow queryResult : results){
-               Alarm a = (Alarm) queryResult.get("$a");
-               alarmRepository.save(a);
-            }
-            // prevent alarms from retrieving again
-            kieSession.getAgenda().getAgendaGroup("alarm").setFocus();
-            kieSession.fireAllRules();
-            // revert focus
-            kieSession.getAgenda().getAgendaGroup("MAIN").setFocus();
-            // send on view
-            for(QueryResultsRow queryResult : results){
-               Alarm a = (Alarm) queryResult.get("$a");
-               producer.sendMessage(a);
-            }
+             synchronized (mutex) {
+                 QueryResults results = kieSession.getQueryResults("Get all alarms");
+                 // save new alarms
+                 for (QueryResultsRow queryResult : results) {
+                     Alarm a = (Alarm) queryResult.get("$a");
+                     System.out.println("****************************************************************");
+                     System.out.println(a.getMessage());
+                     alarmRepository.save(a);
+                 }
+                 // prevent alarms from retrieving again
+                 kieSession.getAgenda().getAgendaGroup("alarm").setFocus();
+                 kieSession.fireAllRules();
+                 // revert focus
+                 kieSession.getAgenda().getAgendaGroup("MAIN").setFocus();
+                 // send on view
+                 for (QueryResultsRow queryResult : results) {
+                     Alarm a = (Alarm) queryResult.get("$a");
+                     producer.sendMessage(a);
+                 }
+             }
          }
       });
       t.start();
    }
+   */
 }

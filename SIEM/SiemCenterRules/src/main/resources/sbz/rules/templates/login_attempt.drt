@@ -4,34 +4,40 @@ timeCount
 timeUnit
 hostRelation
 sourceRelation
-loginSuccess
+type
+loginTemplateNumber
 
 package sbz.rules;
 
-import com.bsep_sbz.SIEMCenter.model.sbz.enums.log.LogCategory
+import com.bsep_sbz.SIEMCenter.model.sbz.enums.log.LogCategory;
+import com.bsep_sbz.SIEMCenter.model.sbz.enums.log.LogLevel;
 import com.bsep_sbz.SIEMCenter.model.sbz.log.Alarm;
 import com.bsep_sbz.SIEMCenter.model.sbz.log.Log;
 
 template "login_attempt"
 
-rule "Login attempt rule_@{row.rowNumber}"
+rule "Login attempt rule_@{loginTemplateNumber}"
+    salience 100
     agenda-group "app"
     when
-        $log: Log($s: source, $h: hostAddress, $c: category == LogCategory.LOGIN) not
-        Log(source == $s, hostAddress == $h, category == $c, this after $log) and
-        Number(intValue >= @{loginAttemptCount}) from accumulate(
+        exists(
+            $log: Log($s: source, $h: hostAddress, $t: type == LogLevel.@{type}, $c: category == LogCategory.LOGIN) and
+            Number(intValue >= @{loginAttemptCount}) from accumulate(
                        $l: Log(
-                           hostAddress @{hostRelation} $h,
-                           source @{sourceRelation} $s,
-                           category == LogCategory.LOGIN
+                           this == $log || hostAddress @{hostRelation} $h,
+                           this == $log || source @{sourceRelation} $s,
+                           category == $c,
+                           type == $t
                        ) over window:time(@{timeCount}@{timeUnit}),
                        count($l)
                    )
+              )
     then
         Alarm alarm = new Alarm();
-        alarm.setMessage("Login attempt rule_@{row.rowNumber}");
-        alarm.getLogs().add($log);
+        alarm.setAlarmProducerType(LogCategory.LOGIN);
+        alarm.setMessage("Login attempt rule_@{loginTemplateNumber}");
         insert(alarm);
 end
 
 end template
+

@@ -1,10 +1,13 @@
 package com.bsep_sbz.SIEMCenter.repository;
 
+import com.bsep_sbz.SIEMCenter.model.sbz.enums.log.LogCategory;
 import com.bsep_sbz.SIEMCenter.model.sbz.log.Log;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.PagingAndSortingRepository;
+
+import java.util.*;
 
 public interface LogsRepository extends PagingAndSortingRepository<Log, Long>
 {
@@ -30,4 +33,6 @@ public interface LogsRepository extends PagingAndSortingRepository<Log, Long>
 
     @Query(value = "SELECT * FROM log WHERE message rlike ?1 order by timestamp desc", nativeQuery = true)
     Page<Log> findByMessageRegexAndPagination(String regex, Pageable pageable);
+
+    List<Log> findByCategoryAndTimestampGreaterThan(LogCategory logCategory, Date timestamp);
 }

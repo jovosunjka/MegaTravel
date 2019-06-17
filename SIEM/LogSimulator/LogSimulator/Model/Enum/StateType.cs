@@ -11,6 +11,7 @@
         LoginAttemptWithCommonIp,
         LoginWithCommonIp,
         NoAlarm,
-        PaymentSystemAttack
+        PaymentSystemAttack,
+        LoginAttemptFromDiffSources
     }
 }

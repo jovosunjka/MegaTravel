@@ -85,6 +85,9 @@ export class LogsComponent implements OnInit {
   private getLogs() {
     this.genericService.post(this.getLogsUrlSuffix(), {'regExp': this.regExp, 'column': this.column }).subscribe(res => {
       this.logs = res.content;
+      if (this.logs.length === 0) {
+        this.toast.warning('No elements found');
+      }
       this.isLastPage = res.last;
       this.isFirstPage = res.first;
       this.numOfTotalPages = res.totalPages;

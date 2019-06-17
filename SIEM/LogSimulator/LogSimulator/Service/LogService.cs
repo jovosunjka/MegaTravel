@@ -26,7 +26,7 @@ namespace LogSimulator.Service
             {
                 Id = id,
                 EventId = id,
-                Timestamp = DateTime.UtcNow,
+                Timestamp = (long)(DateTime.UtcNow - new DateTime(1970, 1, 1)).TotalMilliseconds,
                 LogLevel = logLevelType,
                 LogCategory = logCategory,
                 Message = message

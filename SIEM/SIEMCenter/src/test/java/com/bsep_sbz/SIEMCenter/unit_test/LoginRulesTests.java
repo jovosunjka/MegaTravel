@@ -306,9 +306,6 @@ public class LoginRulesTests {
         QueryResults results = kieSession.getQueryResults("Get all alarms");
         assertEquals(1, results.size());
         Alarm alarm = (Alarm) results.iterator().next().get("$a");
-        assertEquals(1, alarm.getLogs().size());
-        assertEquals(ip, alarm.getLogs().get(0).getSource());
-        assertEquals(host, alarm.getLogs().get(0).getHostAddress());
         assertEquals("Payment system attack", alarm.getMessage());
     }
 
@@ -530,7 +527,7 @@ public class LoginRulesTests {
         try {
             for(int i = 0; i < 51; i++) {
                 kieSession.insert(new Log(new Long(i), LogLevel.INFO, LogCategory.APP,
-                        dtf.format(LocalDateTime.now().minusSeconds(i)),
+                        dtf.format(LocalDateTime.now()),
                         "ipAddress"+i, "hostAddress"+i, "message"+i));
             }
         } catch (ParseException e) {
@@ -647,7 +644,7 @@ public class LoginRulesTests {
             Log log = null;
             try {
                 log = new Log(i +1L, LogLevel.WARN, LogCategory.PAYMENT_SYSTEM,
-                        dtf.format(LocalDateTime.now().plusSeconds(i+1)), source, host, "");
+                        dtf.format(LocalDateTime.now()), source, host, "");
             } catch (ParseException e) {
                 e.printStackTrace();
             }

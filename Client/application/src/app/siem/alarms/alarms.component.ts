@@ -70,6 +70,9 @@ export class AlarmsComponent implements OnInit, OnDestroy {
   getDbAlarms() {
     this.genericService.get(`/logs/alarms?page=${this.page}&size=${this.size}`).subscribe(res => {
       this.alarms = res.content;
+      if (this.alarms.length === 0) {
+        this.toast.warning('No elements found');
+      }
       this.isLastPage = res.last;
       this.isFirstPage = res.first;
       this.numOfTotalPages = res.totalPages;

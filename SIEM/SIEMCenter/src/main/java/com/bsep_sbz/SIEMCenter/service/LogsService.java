@@ -5,10 +5,13 @@ import com.bsep_sbz.SIEMCenter.controller.dto.PageableDto;
 import com.bsep_sbz.SIEMCenter.helper.Constants;
 import com.bsep_sbz.SIEMCenter.helper.HelperMethods;
 import com.bsep_sbz.SIEMCenter.helper.ValidationException;
+import com.bsep_sbz.SIEMCenter.model.sbz.enums.log.LogCategory;
 import com.bsep_sbz.SIEMCenter.model.sbz.log.Alarm;
 import com.bsep_sbz.SIEMCenter.model.sbz.log.Log;
+import com.bsep_sbz.SIEMCenter.model.sbz.rule.LoginData;
 import com.bsep_sbz.SIEMCenter.repository.AlarmRepository;
 import com.bsep_sbz.SIEMCenter.repository.LogsRepository;
+import com.bsep_sbz.SIEMCenter.sbz.KnowledgeSessionHelper;
 import com.bsep_sbz.SIEMCenter.service.interfaces.ILogsService;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -16,7 +19,10 @@ import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.*;
+import java.util.stream.Collectors;
 import com.bsep_sbz.SIEMCenter.util.DebugAgendaEventListener;
 import com.bsep_sbz.SIEMCenter.websockets.Producer;
 import org.apache.maven.shared.invoker.MavenInvocationException;
@@ -24,11 +30,13 @@ import org.drools.template.ObjectDataCompiler;
 import org.kie.api.runtime.KieContainer;
 import org.kie.api.runtime.KieSession;
 import org.kie.api.runtime.rule.QueryResults;
+import org.kie.api.runtime.rule.QueryResultsRow;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -44,11 +52,17 @@ public class LogsService implements ILogsService
     private LogsRepository logsRepository;
     private KieSession kieSession;
     private static int loginTemplateCounter = 0;
+    private LocalDateTime appLongLastTimeFired = LocalDateTime.now();
+    private LocalDateTime antivirusLastTimeFired = LocalDateTime.now();
+    private LocalDateTime antivirusLongLastTimeFired = LocalDateTime.now();
 
     @EventListener(ApplicationReadyEvent.class)
     public void initializeSessions() {
-        kieSession = kieContainer.newKieSession("logs-session");
-        kieSession.addEventListener(new DebugAgendaEventListener(kieSession, alarmRepository, producer));
+        kieSession = getKieSession();
+    }
+
+    private KieSession getKieSession() {
+        return kieContainer.newKieSession("logs-session");
     }
 
     @Override
@@ -92,23 +106,27 @@ public class LogsService implements ILogsService
     }
 
     @Override
-    public void generateRule(LoginTemplateDto loginTemplateDto)
+    public void generateRule(LoginTemplateDto dto)
             throws ValidationException, IOException, MavenInvocationException {
         // 0) Validate request
-        validateLoginTemplateRequestDto(loginTemplateDto);
+        validateLoginTemplateRequestDto(dto);
         // WARNING !!! Kada se pokrene spring-boot:run working directory je tamo gde se nalazi pom.xml pokrenutog projekta,
         // a ako se pokrene u debug rezimu onda je working directory MegaTravel root folder !!!
         String templatePath = "..\\SiemCenterRules\\src\\main\\resources\\sbz\\" +
                 "rules\\templates\\login_attempt.drt";
         String drlPath = "..\\SiemCenterRules\\src\\main\\resources\\sbz\\" +
-                "rules\\template_rules\\LoginAttemptRule" + loginTemplateCounter++ + ".drl";
+                "rules\\LoginAttemptRule" + loginTemplateCounter + ".drl";
 
         // 1) Read template
         InputStream template = new FileInputStream(templatePath);
 
         // 2) Compile template to drl rule
-        List<LoginTemplateDto> data = new ArrayList<>();
-        data.add(loginTemplateDto);
+        LoginData loginData = new LoginData(dto.getLoginAttemptCount(), dto.getTimeCount(), dto.getTimeUnit(),
+                dto.getHostRelation(), dto.getSourceRelation(), dto.isLoginSuccess(),
+                loginTemplateCounter);
+        ++loginTemplateCounter;
+        List<LoginData> data = new ArrayList<>();
+        data.add(loginData);
         String drl = (new ObjectDataCompiler()).compile(data, template);
 
         // 3) Save drl rule to file
@@ -120,17 +138,74 @@ public class LogsService implements ILogsService
 
     @Override
     public void insertInSession(List<Log> logRet) {
-        logRet.forEach(kieSession::insert);
-        kieSession.fireAllRules();
+        // antivirus logs will be retrieved from db and inserted in session later
+        List<Log> nonAntivirusLogs = logRet.stream().filter(x -> x.getCategory() != LogCategory.ANTIVIRUS)
+                .collect(Collectors.toList());
+        if(!nonAntivirusLogs.isEmpty()) {
+            // app agenda-group
+            nonAntivirusLogs.forEach(kieSession::insert);
+            kieSession.getAgenda().getAgendaGroup("app").setFocus();
+            kieSession.fireAllRules();
+        }
+
+        // app-long agenda-group
+        if(LocalDateTime.now().compareTo(appLongLastTimeFired.plusHours(1)) > 0) {
+            KieSession appLongKieSession = getKieSession();
+            // insertuj u sesiju login alarme za poslednjih 24h npr
+            // za svaki slucaj oduzmemo jos neko vreme -------------------------------|
+            Date date = Date.from(LocalDateTime.now().minusDays(1).minusHours(1)//  <-|
+                    .atZone(ZoneId.systemDefault()).toInstant());
+            List<Log> logs = logsRepository.findByCategoryAndTimestampGreaterThan(
+                    LogCategory.LOGIN, date);
+            if(!logs.isEmpty()) {
+                logs.forEach(appLongKieSession::insert);
+                appLongKieSession.getAgenda().getAgendaGroup("app-long").setFocus();
+                appLongKieSession.fireAllRules();
+                appLongLastTimeFired = LocalDateTime.now();
+            }
+            appLongKieSession.dispose();
+            // appLongKieSession will be disposed after this line
+        }
+
+        // antivirus agenda-group
+        if(LocalDateTime.now().compareTo(antivirusLastTimeFired.plusMinutes(10)) > 0) {
+            KieSession anitivirusKieSession = getKieSession();
+            // insertuj u sesiju antivirus alarme za poslednjih sat vremena npr
+            Date antivirusDate = Date.from(LocalDateTime.now().minusHours(1).minusMinutes(10)
+                    .atZone(ZoneId.systemDefault()).toInstant());
+            List<Log> antivirusLogs = logsRepository.findByCategoryAndTimestampGreaterThan(
+                    LogCategory.ANTIVIRUS, antivirusDate);
+            if (!antivirusLogs.isEmpty()) {
+                antivirusLogs.forEach(anitivirusKieSession::insert);
+                anitivirusKieSession.getAgenda().getAgendaGroup("antivirus").setFocus();
+                anitivirusKieSession.fireAllRules();
+                antivirusLastTimeFired = LocalDateTime.now();
+            }
+            anitivirusKieSession.dispose();
+        }
+
+        // antivirus-long agenda-group
+        if(LocalDateTime.now().compareTo(antivirusLongLastTimeFired.plusDays(1)) > 0) {
+            KieSession antivirusLongKieSession = getKieSession();
+            // insertuj u sesiju antivirus alarme za poslednjih par dana(vidi pravila)
+            Date antivirusLongDate = Date.from(LocalDateTime.now().minusDays(7).minusHours(1)
+                .atZone(ZoneId.systemDefault()).toInstant());
+            List<Log> antivirusLongLogs = logsRepository.findByCategoryAndTimestampGreaterThan(
+                    LogCategory.ANTIVIRUS, antivirusLongDate);
+            if(!antivirusLongLogs.isEmpty()) {
+                antivirusLongLogs.forEach(antivirusLongKieSession::insert);
+                antivirusLongKieSession.getAgenda().getAgendaGroup("antivirus-long").setFocus();
+                antivirusLongKieSession.fireAllRules();
+                antivirusLongLastTimeFired = LocalDateTime.now();
+            }
+            antivirusLongKieSession.dispose();
+        }
     }
 
     @Override
     public PageableDto<Log> getSessionLogs(String column, String value, int pageNumber, int pageSize)
             throws ValidationException{
         // 0) Validate
-        if(!isColumnValid(column)) {
-            throw new ValidationException("Column is not valid");
-        }
         if(value.isEmpty()) {
             throw new ValidationException("Filter param can not be empty");
         }
@@ -142,7 +217,26 @@ public class LogsService implements ILogsService
         }
 
         // 1) Get logs
-        QueryResults queryResults = kieSession.getQueryResults("Get logs by message", value);
+        QueryResults queryResults;
+        switch (column) {
+            case Constants.LogFields.type:
+                queryResults = kieSession.getQueryResults("Get logs by type", value);
+                break;
+            case Constants.LogFields.category:
+                queryResults = kieSession.getQueryResults("Get logs by category", value);
+                break;
+            case Constants.LogFields.source:
+                queryResults = kieSession.getQueryResults("Get logs by source", value);
+                break;
+            case Constants.LogFields.host_address:
+                queryResults = kieSession.getQueryResults("Get logs by host_address", value);
+                break;
+            case Constants.LogFields.message:
+                queryResults = kieSession.getQueryResults("Get logs by message", value);
+                break;
+            default:
+                throw new ValidationException("Column is not valid");
+        }
 
         int resultsCount = queryResults.size();
         int startIndex = pageNumber * pageSize;
@@ -175,21 +269,6 @@ public class LogsService implements ILogsService
         return alarmRepository.findAllWithPagination(pageable);
     }
 
-    private boolean isColumnValid(String column) {
-        switch (column) {
-            case Constants.LogFields.id:
-            case Constants.LogFields.type:
-            case Constants.LogFields.category:
-            case Constants.LogFields.source:
-            case Constants.LogFields.timestamp:
-            case Constants.LogFields.host_address:
-            case Constants.LogFields.message:
-                return true;
-            default:
-                return false;
-        }
-    }
-
     private void validateLoginTemplateRequestDto(LoginTemplateDto loginTemplateDto) throws ValidationException {
         if(loginTemplateDto.getLoginAttemptCount() < 1) {
             throw new ValidationException("Login attempt count can not be lower than 1");
@@ -206,6 +285,30 @@ public class LogsService implements ILogsService
         List<String> possibleTimeUnits = new ArrayList<>(Arrays.asList("s", "m", "h", "d", "M", "y"));
         if(!possibleTimeUnits.contains(loginTemplateDto.getTimeUnit())) {
             throw new ValidationException("Time unit is not valid");
+        }
+    }
+
+    @Scheduled(fixedDelay = 2000, initialDelay = 5000)
+    public void retrieveAlarms() {
+        QueryResults results = kieSession.getQueryResults("Get all alarms");
+        if(results.size() == 0) {
+            return;
+        }
+        // save new alarms
+        for (QueryResultsRow queryResult : results) {
+            Alarm a = (Alarm) queryResult.get("$a");
+            System.out.println(a.getMessage());
+            alarmRepository.save(a);
+        }
+        // prevent alarms from retrieving again
+        kieSession.getAgenda().getAgendaGroup("alarm").setFocus();
+        kieSession.fireAllRules();
+        // revert focus
+        kieSession.getAgenda().getAgendaGroup("MAIN").setFocus();
+        // send on view
+        for (QueryResultsRow queryResult : results) {
+            Alarm a = (Alarm) queryResult.get("$a");
+            producer.sendMessage(a);
         }
     }
 }
