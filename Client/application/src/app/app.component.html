@@ -1,9 +1,10 @@
 
 <h1>
-  BSEP & SBZ
+  BSEP & SBZ 
   <span> 
     <h3>
-    <a *ngIf="authenticationService.isLoggedIn()" class="btn btn-secondary btn-lg" [routerLinkActive]="['active']" href="#" [routerLink]="['/login']" (click)="authenticationService.logout()">
+    <a class="btn btn-secondary btn-lg" href="#" (click)="myKeycloakService.logout()">
+    <!--<a *ngIf="authenticationService.isLoggedIn()" class="btn btn-secondary btn-lg" [routerLinkActive]="['active']" href="#" [routerLink]="['/login']" (click)="authenticationService.logout()"> -->
         Log out
     </a>
   </h3>

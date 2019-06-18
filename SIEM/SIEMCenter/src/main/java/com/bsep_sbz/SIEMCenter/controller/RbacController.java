@@ -1,9 +1,9 @@
 package com.bsep_sbz.SIEMCenter.controller;
 
 import com.bsep_sbz.SIEMCenter.controller.dto.AddPermissonToRoleDTO;
-import com.bsep_sbz.SIEMCenter.model.Permission;
-import com.bsep_sbz.SIEMCenter.model.Role;
 import com.bsep_sbz.SIEMCenter.controller.dto.UserDTO;
+import com.bsep_sbz.SIEMCenter.model.authentication_and_authorization_entities.PermissionEntity;
+import com.bsep_sbz.SIEMCenter.model.authentication_and_authorization_entities.RoleEntity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -15,6 +15,7 @@ import com.bsep_sbz.SIEMCenter.service.interfaces.IRbacService;
 
 import java.util.List;
 
+@CrossOrigin
 @RestController
 @RequestMapping(value = "/rbac")
 public class RbacController {
@@ -135,25 +136,24 @@ public class RbacController {
 
 	@PreAuthorize("hasAuthority('READ_ROLES_AND_PERMISSIONS')")
 	@RequestMapping(value = "/get_roles", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<List<Role>> getRoles() {
+	public ResponseEntity<List<RoleEntity>> getRoles() {
 		try {
-			List<Role> roles = iRbacService.getRolesWithPermissions();
-			return new ResponseEntity<List<Role>>(roles, HttpStatus.CREATED);
+			List<RoleEntity> roles = iRbacService.getRolesWithPermissions();
+			return new ResponseEntity<List<RoleEntity>>(roles, HttpStatus.CREATED);
 		} catch (Exception e) {
-			return new ResponseEntity<List<Role>>(HttpStatus.BAD_REQUEST);
+			return new ResponseEntity<List<RoleEntity>>(HttpStatus.BAD_REQUEST);
 		}
 
 	}
 
-
 	@PreAuthorize("hasAuthority('READ_ROLES_AND_PERMISSIONS')")
 	@RequestMapping(value = "/get_permissions", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<List<Permission>> getPermissions() {
+	public ResponseEntity<List<PermissionEntity>> getPermissions() {
 		try {
-			List<Permission> permissions = iRbacService.getPermissions();
-			return new ResponseEntity<List<Permission>>(permissions, HttpStatus.CREATED);
+			List<PermissionEntity> permissions = iRbacService.getPermissions();
+			return new ResponseEntity<List<PermissionEntity>>(permissions, HttpStatus.CREATED);
 		} catch (Exception e) {
-			return new ResponseEntity<List<Permission>>(HttpStatus.BAD_REQUEST);
+			return new ResponseEntity<List<PermissionEntity>>(HttpStatus.BAD_REQUEST);
 		}
 
 	}

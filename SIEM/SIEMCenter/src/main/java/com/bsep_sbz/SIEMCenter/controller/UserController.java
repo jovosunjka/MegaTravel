@@ -1,7 +1,6 @@
 package com.bsep_sbz.SIEMCenter.controller;
 
 import com.bsep_sbz.SIEMCenter.controller.dto.LoginDTO;
-import com.bsep_sbz.SIEMCenter.security.TokenUtils;
 import com.bsep_sbz.SIEMCenter.service.interfaces.IUserService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -25,7 +24,7 @@ import java.util.Map;
 public class UserController {
 
     private final Logger logger = LogManager.getLogger(this.getClass());
-
+/*
 	@Autowired
     AuthenticationManager authenticationManager;
 	
@@ -60,6 +59,6 @@ public class UserController {
             return new ResponseEntity<String>("Invalid login", HttpStatus.BAD_REQUEST);
         }
     	
-    }
+    }*/
 
 }

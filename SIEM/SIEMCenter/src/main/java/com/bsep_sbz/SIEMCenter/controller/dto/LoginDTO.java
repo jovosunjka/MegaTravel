@@ -1,6 +1,6 @@
 package com.bsep_sbz.SIEMCenter.controller.dto;
 
-import com.bsep_sbz.SIEMCenter.model.User;
+import com.bsep_sbz.SIEMCenter.model.authentication_and_authorization_entities.UserEntity;
 
 public class LoginDTO {
 
@@ -11,7 +11,7 @@ public class LoginDTO {
 
     }
 
-    public LoginDTO(User user) {
+    public LoginDTO(UserEntity user) {
         this(user.getUsername(), user.getPassword());
     }
 

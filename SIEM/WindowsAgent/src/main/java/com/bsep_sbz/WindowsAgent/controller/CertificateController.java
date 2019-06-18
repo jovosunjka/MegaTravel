@@ -41,7 +41,7 @@ public class CertificateController {
      * @return
      */
     @RequestMapping(value = "/send-request", method = RequestMethod.POST)
-    @EventListener(ApplicationReadyEvent.class)
+    //@EventListener(ApplicationReadyEvent.class)
     public ResponseEntity sendRequestForCertificate() {
         KeyPair keyPair = certificateService.generateKeyPair();
         CertificateSigningRequest csr = certificateService.prepareCSR(keyPair.getPublic());

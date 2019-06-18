@@ -1,7 +1,7 @@
 package com.bsep_sbz.SIEMCenter.service.interfaces;
 
-import com.bsep_sbz.SIEMCenter.model.Permission;
-import com.bsep_sbz.SIEMCenter.model.Role;
+import com.bsep_sbz.SIEMCenter.model.authentication_and_authorization_entities.PermissionEntity;
+import com.bsep_sbz.SIEMCenter.model.authentication_and_authorization_entities.RoleEntity;
 
 import java.util.List;
 
@@ -14,9 +14,9 @@ public interface IRbacService {
 	public boolean addUser(String username, String password, String name);
 
 
-	List<Role> getRolesWithPermissions();
+	List<RoleEntity> getRolesWithPermissions();
 
 	boolean removePermissionFromRole(Long roleId, Long permissionId);
 
-	List<Permission> getPermissions();
+	List<PermissionEntity> getPermissions();
 }

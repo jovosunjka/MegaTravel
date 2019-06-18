@@ -3,17 +3,16 @@ package com.bsep_sbz.SIEMCenter.repository;
 
 import java.util.List;
 
+import com.bsep_sbz.SIEMCenter.model.authentication_and_authorization_entities.RoleEntity;
 import org.springframework.data.repository.Repository;
 
-import com.bsep_sbz.SIEMCenter.model.Role;
 
-
-public interface RoleRepository extends Repository<Role, Long> {
+public interface RoleRepository extends Repository<RoleEntity, Long> {
 	
-	Role save(Role role);
-	List<Role> findAll();
-	Role findById(Long id);
-	Role findByName(String name);
+	RoleEntity save(RoleEntity role);
+	List<RoleEntity> findAll();
+	RoleEntity findById(Long id);
+	RoleEntity findByName(String name);
 	
 
 

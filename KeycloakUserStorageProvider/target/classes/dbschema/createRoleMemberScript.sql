@@ -1,0 +1,5 @@
+CREATE TABLE RoleMember (
+  UserId INTEGER NOT NULL,
+  RoleId INTEGER NOT NULL,
+  CONSTRAINT PK_RoleMembers PRIMARY KEY (UserId, RoleId)
+);

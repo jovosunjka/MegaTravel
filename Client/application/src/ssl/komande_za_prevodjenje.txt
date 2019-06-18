@@ -1,3 +1,8 @@
-openssl x509 -in hostname.crt -inform DER -out hostname.crt.pem -outform PEM
-openssl rsa -in hostname.key -out hostname.key.pem -outform PEM
+localhost.key.pem ces dobiti tako sto ces podesiti da WindowsAgent aplikacija salje CSR sa podacima
+za MegaTravelClient-a i u WindowsAgent-u u CertificateService imas neku metodu koja cuva Private Key
+u pem formatu 
+
+openssl x509 -in MegaTravelClient.cer -inform DER -out MegaTravelClient.pem -outform PEM
 openssl pkcs12 -export -in MegaTravelClient.pem -inkey localhost.key.pem -out client_keystore.p12
+
+Enter Export Password:client

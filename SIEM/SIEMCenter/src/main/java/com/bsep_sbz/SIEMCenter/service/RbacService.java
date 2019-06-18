@@ -1,15 +1,14 @@
 package com.bsep_sbz.SIEMCenter.service;
 
-import com.bsep_sbz.SIEMCenter.model.Permission;
-import com.bsep_sbz.SIEMCenter.model.User;
+import com.bsep_sbz.SIEMCenter.model.authentication_and_authorization_entities.PermissionEntity;
+import com.bsep_sbz.SIEMCenter.model.authentication_and_authorization_entities.RoleEntity;
+import com.bsep_sbz.SIEMCenter.model.authentication_and_authorization_entities.UserEntity;
 import com.bsep_sbz.SIEMCenter.repository.PermissionRepository;
 import com.bsep_sbz.SIEMCenter.repository.RoleRepository;
 import com.bsep_sbz.SIEMCenter.repository.UserRepository;
 import com.bsep_sbz.SIEMCenter.service.interfaces.IRbacService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import com.bsep_sbz.SIEMCenter.model.Role;
 
 import java.util.List;
 
@@ -24,7 +23,7 @@ public class RbacService implements IRbacService {
     UserRepository userRepository;
 
 	public boolean addRole(String roleName) {
-		Role role = new Role(roleName);
+		RoleEntity role = new RoleEntity(roleName);
 		role = roleRepository.save(role);
 		if (role!=null) return true;
 		return false;
@@ -33,7 +32,7 @@ public class RbacService implements IRbacService {
 
 	@Override
 	public boolean addPermission(String permissionName) {
-		Permission permission = new Permission(permissionName);
+		PermissionEntity permission = new PermissionEntity(permissionName);
 		permission = permissionRepository.save(permission);
 		if (permission!=null) return true;
 		return false;
@@ -47,7 +46,7 @@ public class RbacService implements IRbacService {
 				return false;
 			if (existsUsername(username))
 				return false;
-			User user = new User(name, username,password);
+			UserEntity user = new UserEntity(username,password);
 			try {
 				userRepository.save(user);
 			} catch (Exception e) {
@@ -57,16 +56,16 @@ public class RbacService implements IRbacService {
 	}
 
 	@Override
-	public List<Role> getRolesWithPermissions() {
+	public List<RoleEntity> getRolesWithPermissions() {
 		return roleRepository.findAll();
 	}
 
 	@Override
 	public boolean removePermissionFromRole(Long roleId, Long permissionId) {
 		try {
-			Role role = roleRepository.findById(roleId);
-			Permission permission = null;
-			for(Permission p : role.getPermissions()) {
+			RoleEntity role = roleRepository.findById(roleId);
+			PermissionEntity permission = null;
+			for(PermissionEntity p : role.getPermissions()) {
 				if(p.getId().longValue() == roleId.longValue()) {
 					permission = p;
 					break;
@@ -83,23 +82,23 @@ public class RbacService implements IRbacService {
 	}
 
 	@Override
-	public List<Permission> getPermissions() {
+	public List<PermissionEntity> getPermissions() {
 		return permissionRepository.findAll();
 	}
 
 
 	public boolean existsUsername(String username) {
 
-		User user = userRepository.findByUsername(username);
+		UserEntity user = userRepository.findByUsername(username);
 
 		return user != null;
 }
 
 	@Override
 	public boolean addPermissionToRole(Long roleId, Long permissionId) {
-		Role role = roleRepository.findById(roleId);
+		RoleEntity role = roleRepository.findById(roleId);
 		if (role == null) return false;
-		Permission permission = permissionRepository.findById(permissionId);
+		PermissionEntity permission = permissionRepository.findById(permissionId);
 		if (permission == null) return false;
 		role.getPermissions().add(permission);
 		roleRepository.save(role);
@@ -108,9 +107,9 @@ public class RbacService implements IRbacService {
 
 	@Override
 	public boolean addRoleToUser(String userName, String roleName) {
-		Role role = roleRepository.findByName(roleName);
+		RoleEntity role = roleRepository.findByName(roleName);
 		if (role == null) return false;
-		User user = userRepository.findByUsername(userName);
+		UserEntity user = userRepository.findByUsername(userName);
 		if (user == null) return false;
 		user.getRoles().add(role);
 		userRepository.save(user);

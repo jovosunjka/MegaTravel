@@ -19,6 +19,8 @@
     <modules>
         <module>PKI</module>
         <module>SIEM</module>
+        <module>KeycloakUserStorageProvider</module>
+        <module>KeycloakPasswordProvider</module>
     </modules>
 
 </project>

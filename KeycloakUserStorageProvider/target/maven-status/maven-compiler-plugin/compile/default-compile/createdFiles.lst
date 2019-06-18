@@ -1,0 +1,9 @@
+com\bsep_sbz\KeycloakUserStorageProvider\adapter\RoleAdapter.class
+com\bsep_sbz\KeycloakUserStorageProvider\entities\RoleEntity.class
+com\bsep_sbz\KeycloakUserStorageProvider\adapter\UserAdapter.class
+com\bsep_sbz\KeycloakUserStorageProvider\provider\MyKeycloakUserStorageProviderFactory.class
+com\bsep_sbz\KeycloakUserStorageProvider\entities\RoleMemberIdEntity.class
+com\bsep_sbz\KeycloakUserStorageProvider\entities\RoleMemberEntity.class
+com\bsep_sbz\KeycloakUserStorageProvider\provider\MyKeycloakUserStorageProvider.class
+com\bsep_sbz\KeycloakUserStorageProvider\entities\PermissionEntity.class
+com\bsep_sbz\KeycloakUserStorageProvider\entities\UserEntity.class

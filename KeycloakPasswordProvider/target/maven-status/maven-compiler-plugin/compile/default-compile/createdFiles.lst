@@ -1,0 +1,2 @@
+com\bsep_sbz\KeycloakPasswordProvider\bcrypt\MyBCryptPasswordHashProvider.class
+com\bsep_sbz\KeycloakPasswordProvider\bcrypt\MyBCryptPasswordHashProviderFactory.class
