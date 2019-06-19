@@ -1,0 +1,3 @@
+id:15791|eventid:15791|timestamp:1560870441931|loglevel:ERROR|logcategory:APP|message:Exception in thread main java.lang.NullPointerException
+id:15792|eventid:15791|timestamp:1560870441940|loglevel:TRACE|logcategory:APP|message:at com.example.myproject.Flight.getTitle(Flight.java:16)
+id:15793|eventid:15791|timestamp:1560870441959|loglevel:TRACE|logcategory:APP|message:at com.example.myproject.Ticket.getBookTitles(Ticket.java:25)

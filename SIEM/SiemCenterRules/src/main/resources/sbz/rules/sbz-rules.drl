@@ -228,10 +228,17 @@ end
 rule "Zahtevi bilo kog tipa aktiviraju alarm za DoS napad"
     agenda-group "app"
     when
-        Number(intValue > 50) from accumulate(
-                        $l: Log() over window: time(60s),
-                        count($l)
-                    )
+        exists (
+            Log($s: source,
+                $h: hostAddress) and
+            Number(intValue > 50) from accumulate(
+                    $l: Log(
+                        source == $s,
+                        hostAddress == $h
+                    ) over window: time(60s),
+                    count($l)
+                )
+            )
     then
         Alarm alarm = new Alarm();
         alarm.setAlarmProducerType(LogCategory.APP);
@@ -243,10 +250,19 @@ end
 rule "Zahtev koji su povezani sa prijavom korisnika aktiviraju brute-force alarm"
     agenda-group "app"
     when
-        Number(intValue > 50) from accumulate(
-                        $l: Log(category == LogCategory.LOGIN) over window: time(60s),
-                        count($l)
-                    )
+        exists (
+            Log($s: source,
+                $h: hostAddress,
+                category == LogCategory.LOGIN) and
+            Number(intValue >= 50) from accumulate(
+                    $l: Log(
+                        source == $s,
+                        hostAddress == $h,
+                        category == LogCategory.LOGIN
+                    ) over window: time(60s),
+                    count($l)
+                )
+            )
     then
         Alarm alarm = new Alarm();
         alarm.setAlarmProducerType(LogCategory.LOGIN);
@@ -333,26 +349,27 @@ rule "Ukoliko sa iste IP adrese registruje 30 ili više neuspešnih pokušaja pr
                   $c: category == LogCategory.LOGIN,
                   $t: type == LogLevel.WARN,
                   source not memberOf maliciousIpAddresses) not
-        Log(source == $s,
-            category == $c,
-            type == $t,
-            this after $log) and
+        Log(source == $s, category == $c, type == $t, source not memberOf maliciousIpAddresses, this after $log) and
         Number(intValue >= 30) from accumulate(
                        $l: Log(
                            source == $s,
                            category == $c,
-                           type == $t
+                           type == $t,
+                           source not memberOf maliciousIpAddresses
                        ) from window LoginAttempts,
                        count($l)
                    )
     then
-        maliciousIpAddresses.add($log.getSource());
-        drools.getKnowledgeRuntime().setGlobal("maliciousIpAddresses", maliciousIpAddresses);
-        Alarm alarm = new Alarm();
-        alarm.setMessage("Ukoliko sa iste IP adrese registruje 30 ili više neuspešnih pokušaja prijave");
-        // bice dodat "najstariji" log od tih 30 jer koristimo 'not' i kasnije 'this after $log'
-        alarm.getLogs().add($log);
-        insert(alarm);
+        if(!maliciousIpAddresses.contains($log.getSource())) {
+            System.out.println(String.format("Ubacujem '%s' ip adresu u maliciozne", $log.getSource()));
+            maliciousIpAddresses.add($log.getSource());
+            drools.getKnowledgeRuntime().setGlobal("maliciousIpAddresses", maliciousIpAddresses);
+            Alarm alarm = new Alarm();
+            alarm.setMessage("Ukoliko sa iste IP adrese registruje 30 ili više neuspešnih pokušaja prijave");
+            alarm.setAlarmProducerType(LogCategory.LOGIN);
+            insert(alarm);
+            System.out.println(String.format("Ip adresa '%s' uspesno ubacena", $log.getSource()));
+        }
 end
 
 // antivirus -------------------------------------------------
@@ -379,24 +396,20 @@ rule "U periodu od 10 dana registrovano 7 ili vise pretnji od strane antivirusa 
     agenda-group "antivirus-long"
     when
         exists (
-            Log(type == LogLevel.WARN,
-                category == LogCategory.ANTIVIRUS,
-                $ha: hostAddress) and
-            Number(intValue >= 7) from accumulate(
-                    $l: Log(
-                        //id != $id,
-                        type == LogLevel.WARN,
-                        category == LogCategory.ANTIVIRUS,
-                        hostAddress == $ha
-                    )
-                    over window: time(10d),
-                    count($l)
+        $log: Log($h: hostAddress, type == LogLevel.WARN, category == LogCategory.ANTIVIRUS) and
+        Number(intValue >= 7) from accumulate(
+                $l: Log(
+                    type == LogLevel.WARN,
+                    category == LogCategory.ANTIVIRUS,
+                    this == $log || $h == hostAddress
                 )
+                over window: time(10d),
+                count($l)
             )
+        )
     then
         Alarm alarm = new Alarm();
         alarm.setAlarmProducerType(LogCategory.ANTIVIRUS);
-        //alarm.getLogs().add($log);
         alarm.setMessage("U periodu od 10 dana registrovano 7 ili vise pretnji od strane antivirusa za isti racunar");
         insert(alarm);
 end

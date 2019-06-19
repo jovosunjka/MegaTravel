@@ -11,6 +11,9 @@ public class Alarm {
     @Transient
     private static Long sequencer = 0L;
 
+    @Transient
+    private final static Object mutex = new Object();
+
     @Id
     @Column(name = "id", unique = true, nullable = false)
     private Long id;
@@ -34,7 +37,9 @@ public class Alarm {
     private boolean isRetrievedFromSession;
 
     public Alarm() {
-        id = ++sequencer;
+        synchronized (mutex) {
+            id = ++sequencer;
+        }
         logs = new ArrayList<>();
         timestamp = LocalDateTime.now();
         isRetrievedFromSession = false;

@@ -99,8 +99,6 @@ public class TemplateRulesTests {
 
     @Test
     public void testLoginTemplateWholeFlow() throws IOException, MavenInvocationException {
-        KieSession kieSession = KnowledgeSessionHelper.getKieSession("logs-session");
-
         String templatePath = "..\\SiemCenterRules\\src\\main\\resources\\sbz\\" +
                 "rules\\templates\\login_attempt.drt";
         String drlPath = "..\\SiemCenterRules\\src\\main\\resources\\sbz\\" +
@@ -124,6 +122,7 @@ public class TemplateRulesTests {
         HelperMethods.mavenCleanAndInstallRules();
 
         // 5) trigger rule
+        KieSession kieSession = KnowledgeSessionHelper.getKieSession("logs-session");
         String host = "12.21.21.22";
         List<Log> logs = getLoginLogsWithSameHost(10, host);
         logs.forEach(kieSession::insert);
@@ -140,8 +139,13 @@ public class TemplateRulesTests {
                 break;
             }
         }
-        assertNotNull(alarm);
-
+        try {
+            assertNotNull(alarm);
+        } catch (AssertionError e) {
+            boolean isDeleted = (new File(drlPath)).delete();
+            assertTrue(isDeleted);
+            throw e;
+        }
         // 7) delete rule
         boolean isDeleted = (new File(drlPath)).delete();
         assertTrue(isDeleted);

@@ -8,7 +8,7 @@ public class HelperMethods
 {
     public static void mavenCleanAndInstallRules() throws MavenInvocationException {
         InvocationRequest request = new DefaultInvocationRequest();
-        request.setPomFile( new File( "..\\SiemCenterRules\\pom.xml" ) );
+        request.setPomFile( new File( "../SiemCenterRules/pom.xml" ) );
         request.setGoals( Arrays.asList( "clean", "install" ) );
 
         Invoker invoker = new DefaultInvoker();

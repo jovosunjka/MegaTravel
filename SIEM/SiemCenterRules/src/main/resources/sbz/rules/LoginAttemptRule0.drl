@@ -1,0 +1,30 @@
+package sbz.rules;
+import com.bsep_sbz.SIEMCenter.model.sbz.enums.log.LogCategory;
+import com.bsep_sbz.SIEMCenter.model.sbz.enums.log.LogLevel;
+import com.bsep_sbz.SIEMCenter.model.sbz.log.Alarm;
+import com.bsep_sbz.SIEMCenter.model.sbz.log.Log;
+
+rule "Login attempt rule_0"
+    salience 100
+    agenda-group "app"
+    when
+        exists(
+            $log: Log($s: source, $h: hostAddress, $t: type == LogLevel.WARN, $c: category == LogCategory.LOGIN) and
+            Number(intValue >= 10) from accumulate(
+                       $l: Log(
+                           this == $log || hostAddress == $h,
+                           this == $log || source == $s,
+                           category == $c,
+                           type == $t
+                       ) over window:time(10s),
+                       count($l)
+                   )
+              )
+    then
+        Alarm alarm = new Alarm();
+        alarm.setAlarmProducerType(LogCategory.LOGIN);
+        alarm.setMessage("Login attempt rule_0");
+        insert(alarm);
+end
+
+

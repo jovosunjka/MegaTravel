@@ -14,7 +14,7 @@ import java.util.concurrent.TimeUnit;
 @Entity
 @org.kie.api.definition.type.Role(Role.Type.EVENT)
 @org.kie.api.definition.type.Timestamp("timestamp")
-@org.kie.api.definition.type.Expires("3m")
+@org.kie.api.definition.type.Expires("10m")
 public class Log {
     @Id
     @Column(name = "id", unique = true, nullable = false)

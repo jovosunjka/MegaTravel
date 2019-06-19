@@ -11,7 +11,6 @@ import com.bsep_sbz.SIEMCenter.model.sbz.log.Log;
 import com.bsep_sbz.SIEMCenter.model.sbz.rule.LoginData;
 import com.bsep_sbz.SIEMCenter.repository.AlarmRepository;
 import com.bsep_sbz.SIEMCenter.repository.LogsRepository;
-import com.bsep_sbz.SIEMCenter.sbz.KnowledgeSessionHelper;
 import com.bsep_sbz.SIEMCenter.service.interfaces.ILogsService;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -23,7 +22,6 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.*;
 import java.util.stream.Collectors;
-import com.bsep_sbz.SIEMCenter.util.DebugAgendaEventListener;
 import com.bsep_sbz.SIEMCenter.websockets.Producer;
 import org.apache.maven.shared.invoker.MavenInvocationException;
 import org.drools.template.ObjectDataCompiler;
@@ -50,7 +48,14 @@ public class LogsService implements ILogsService
     private KieContainer kieContainer;
     @Autowired
     private LogsRepository logsRepository;
-    private KieSession kieSession;
+    private KieSession appKieSession;
+    private KieSession appLongKieSession;
+    private KieSession antivirusKieSession;
+    private KieSession antivirusLongKieSession;
+    private final Object appMutex = new Object();
+    private final Object appLongMutex = new Object();
+    private final Object antivirusMutex = new Object();
+    private final Object antivirusLongMutex = new Object();
     private static int loginTemplateCounter = 0;
     private LocalDateTime appLongLastTimeFired = LocalDateTime.now();
     private LocalDateTime antivirusLastTimeFired = LocalDateTime.now();
@@ -58,7 +63,8 @@ public class LogsService implements ILogsService
 
     @EventListener(ApplicationReadyEvent.class)
     public void initializeSessions() {
-        kieSession = getKieSession();
+        appKieSession = getKieSession();
+        appKieSession.setGlobal("maliciousIpAddresses", new ArrayList<String>());
     }
 
     private KieSession getKieSession() {
@@ -142,63 +148,77 @@ public class LogsService implements ILogsService
         List<Log> nonAntivirusLogs = logRet.stream().filter(x -> x.getCategory() != LogCategory.ANTIVIRUS)
                 .collect(Collectors.toList());
         if(!nonAntivirusLogs.isEmpty()) {
-            // app agenda-group
-            nonAntivirusLogs.forEach(kieSession::insert);
-            kieSession.getAgenda().getAgendaGroup("app").setFocus();
-            kieSession.fireAllRules();
+            synchronized (appMutex) {
+                nonAntivirusLogs.forEach(appKieSession::insert);
+            }
         }
+    }
 
+    @Scheduled(fixedRate = 2000, initialDelay = 10000)
+    public void fireRules() {
+        // app agenda-group
+        synchronized (appMutex) {
+            try {
+                appKieSession.getAgenda().getAgendaGroup("app").setFocus();
+                appKieSession.fireAllRules();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
         // app-long agenda-group
         if(LocalDateTime.now().compareTo(appLongLastTimeFired.plusHours(1)) > 0) {
-            KieSession appLongKieSession = getKieSession();
-            // insertuj u sesiju login alarme za poslednjih 24h npr
-            // za svaki slucaj oduzmemo jos neko vreme -------------------------------|
-            Date date = Date.from(LocalDateTime.now().minusDays(1).minusHours(1)//  <-|
-                    .atZone(ZoneId.systemDefault()).toInstant());
-            List<Log> logs = logsRepository.findByCategoryAndTimestampGreaterThan(
-                    LogCategory.LOGIN, date);
-            if(!logs.isEmpty()) {
-                logs.forEach(appLongKieSession::insert);
-                appLongKieSession.getAgenda().getAgendaGroup("app-long").setFocus();
-                appLongKieSession.fireAllRules();
-                appLongLastTimeFired = LocalDateTime.now();
+            synchronized (appLongMutex) {
+                appLongKieSession = getKieSession();
+                appLongKieSession.setGlobal("maliciousIpAddresses", appKieSession.getGlobal("maliciousIpAddresses"));
+                // insertuj u sesiju login alarme za poslednjih 24h npr
+                // za svaki slucaj oduzmemo jos neko vreme -------------------------------|
+                Date date = Date.from(LocalDateTime.now().minusDays(1).minusHours(1)//  <-|
+                        .atZone(ZoneId.systemDefault()).toInstant());
+                List<Log> logs = logsRepository.findByCategoryAndTimestampGreaterThan(
+                        LogCategory.LOGIN, date);
+                if (!logs.isEmpty()) {
+                    logs.forEach(appLongKieSession::insert);
+                    appLongKieSession.getAgenda().getAgendaGroup("app-long").setFocus();
+                    appLongKieSession.fireAllRules();
+                    appLongLastTimeFired = LocalDateTime.now();
+                }
             }
-            appLongKieSession.dispose();
-            // appLongKieSession will be disposed after this line
         }
 
         // antivirus agenda-group
         if(LocalDateTime.now().compareTo(antivirusLastTimeFired.plusMinutes(10)) > 0) {
-            KieSession anitivirusKieSession = getKieSession();
-            // insertuj u sesiju antivirus alarme za poslednjih sat vremena npr
-            Date antivirusDate = Date.from(LocalDateTime.now().minusHours(1).minusMinutes(10)
-                    .atZone(ZoneId.systemDefault()).toInstant());
-            List<Log> antivirusLogs = logsRepository.findByCategoryAndTimestampGreaterThan(
-                    LogCategory.ANTIVIRUS, antivirusDate);
-            if (!antivirusLogs.isEmpty()) {
-                antivirusLogs.forEach(anitivirusKieSession::insert);
-                anitivirusKieSession.getAgenda().getAgendaGroup("antivirus").setFocus();
-                anitivirusKieSession.fireAllRules();
-                antivirusLastTimeFired = LocalDateTime.now();
+            synchronized (antivirusMutex) {
+                antivirusKieSession = getKieSession();
+                // insertuj u sesiju antivirus alarme za poslednjih sat vremena npr
+                Date antivirusDate = Date.from(LocalDateTime.now().minusHours(1).minusMinutes(10)
+                        .atZone(ZoneId.systemDefault()).toInstant());
+                List<Log> antivirusLogs = logsRepository.findByCategoryAndTimestampGreaterThan(
+                        LogCategory.ANTIVIRUS, antivirusDate);
+                if (!antivirusLogs.isEmpty()) {
+                    antivirusLogs.forEach(antivirusKieSession::insert);
+                    antivirusKieSession.getAgenda().getAgendaGroup("antivirus").setFocus();
+                    antivirusKieSession.fireAllRules();
+                    antivirusLastTimeFired = LocalDateTime.now();
+                }
             }
-            anitivirusKieSession.dispose();
         }
 
         // antivirus-long agenda-group
         if(LocalDateTime.now().compareTo(antivirusLongLastTimeFired.plusDays(1)) > 0) {
-            KieSession antivirusLongKieSession = getKieSession();
-            // insertuj u sesiju antivirus alarme za poslednjih par dana(vidi pravila)
-            Date antivirusLongDate = Date.from(LocalDateTime.now().minusDays(7).minusHours(1)
-                .atZone(ZoneId.systemDefault()).toInstant());
-            List<Log> antivirusLongLogs = logsRepository.findByCategoryAndTimestampGreaterThan(
-                    LogCategory.ANTIVIRUS, antivirusLongDate);
-            if(!antivirusLongLogs.isEmpty()) {
-                antivirusLongLogs.forEach(antivirusLongKieSession::insert);
-                antivirusLongKieSession.getAgenda().getAgendaGroup("antivirus-long").setFocus();
-                antivirusLongKieSession.fireAllRules();
-                antivirusLongLastTimeFired = LocalDateTime.now();
+            synchronized (antivirusLongMutex) {
+                antivirusLongKieSession = getKieSession();
+                // insertuj u sesiju antivirus alarme za poslednjih par dana(vidi pravila)
+                Date antivirusLongDate = Date.from(LocalDateTime.now().minusDays(7).minusHours(1)
+                        .atZone(ZoneId.systemDefault()).toInstant());
+                List<Log> antivirusLongLogs = logsRepository.findByCategoryAndTimestampGreaterThan(
+                        LogCategory.ANTIVIRUS, antivirusLongDate);
+                if (!antivirusLongLogs.isEmpty()) {
+                    antivirusLongLogs.forEach(antivirusLongKieSession::insert);
+                    antivirusLongKieSession.getAgenda().getAgendaGroup("antivirus-long").setFocus();
+                    antivirusLongKieSession.fireAllRules();
+                    antivirusLongLastTimeFired = LocalDateTime.now();
+                }
             }
-            antivirusLongKieSession.dispose();
         }
     }
 
@@ -220,20 +240,30 @@ public class LogsService implements ILogsService
         QueryResults queryResults;
         switch (column) {
             case Constants.LogFields.type:
-                queryResults = kieSession.getQueryResults("Get logs by type", value);
-                break;
+                synchronized (appMutex) {
+                    queryResults = appKieSession.getQueryResults("Get logs by type", value);
+                    break;
+                }
             case Constants.LogFields.category:
-                queryResults = kieSession.getQueryResults("Get logs by category", value);
-                break;
+                synchronized (appMutex) {
+                    queryResults = appKieSession.getQueryResults("Get logs by category", value);
+                    break;
+                }
             case Constants.LogFields.source:
-                queryResults = kieSession.getQueryResults("Get logs by source", value);
-                break;
+                synchronized (appMutex) {
+                    queryResults = appKieSession.getQueryResults("Get logs by source", value);
+                    break;
+                }
             case Constants.LogFields.host_address:
-                queryResults = kieSession.getQueryResults("Get logs by host_address", value);
-                break;
+                synchronized (appMutex) {
+                    queryResults = appKieSession.getQueryResults("Get logs by host_address", value);
+                    break;
+                }
             case Constants.LogFields.message:
-                queryResults = kieSession.getQueryResults("Get logs by message", value);
-                break;
+                synchronized (appMutex) {
+                    queryResults = appKieSession.getQueryResults("Get logs by message", value);
+                    break;
+                }
             default:
                 throw new ValidationException("Column is not valid");
         }
@@ -288,8 +318,38 @@ public class LogsService implements ILogsService
         }
     }
 
-    @Scheduled(fixedDelay = 2000, initialDelay = 5000)
+    @Scheduled(fixedRate = 3000, initialDelay = 10000)
     public void retrieveAlarms() {
+        synchronized (appMutex) {
+            retrieveAlarmsFromSession(appKieSession);
+        }
+
+        synchronized (appLongMutex) {
+            if (appLongKieSession != null) {
+                retrieveAlarmsFromSession(appLongKieSession);
+                appLongKieSession.dispose();
+                appLongKieSession = null;
+            }
+        }
+
+        synchronized (antivirusMutex) {
+            if (antivirusKieSession != null) {
+                retrieveAlarmsFromSession(antivirusKieSession);
+                antivirusKieSession.dispose();
+                antivirusKieSession = null;
+            }
+        }
+
+        synchronized (antivirusLongMutex) {
+            if (antivirusLongKieSession != null) {
+                retrieveAlarmsFromSession(antivirusLongKieSession);
+                antivirusLongKieSession.dispose();
+                antivirusLongKieSession = null;
+            }
+        }
+    }
+
+    private void retrieveAlarmsFromSession(KieSession kieSession) {
         QueryResults results = kieSession.getQueryResults("Get all alarms");
         if(results.size() == 0) {
             return;
@@ -297,7 +357,6 @@ public class LogsService implements ILogsService
         // save new alarms
         for (QueryResultsRow queryResult : results) {
             Alarm a = (Alarm) queryResult.get("$a");
-            System.out.println(a.getMessage());
             alarmRepository.save(a);
         }
         // prevent alarms from retrieving again

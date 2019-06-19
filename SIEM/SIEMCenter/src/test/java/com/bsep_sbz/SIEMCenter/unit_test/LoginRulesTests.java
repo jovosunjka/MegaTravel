@@ -237,12 +237,12 @@ public class LoginRulesTests {
         kieSession.setGlobal("maliciousIpAddresses", new ArrayList<>());
 
         String ip = "123.2.2.2";
-        List<Log> logs = getLoginLogsWithSameSource(30, ip);
+        List<Log> logs = getLoginLogsWithSameSource(35, ip);
         logs.forEach(kieSession::insert);
 
         // Act
         kieSession.getAgenda().getAgendaGroup("app-long").setFocus();
-        int numOfFiredRules = kieSession.fireAllRules();
+        kieSession.fireAllRules();
 
         // Assert
         QueryResults results = kieSession.getQueryResults("Get all alarms");
@@ -255,8 +255,6 @@ public class LoginRulesTests {
             }
         }
         assertNotNull(alarm);
-        assertEquals(1, alarm.getLogs().size());
-        assertEquals(ip, alarm.getLogs().get(0).getSource());
         List<String> maliciousIps = (List<String>)kieSession.getGlobal("maliciousIpAddresses");
         assertEquals(1, maliciousIps.size());
         assertEquals(ip, maliciousIps.get(0));
@@ -336,22 +334,15 @@ public class LoginRulesTests {
         KieSession kieSession = KnowledgeSessionHelper.getKieSession("logs-session");
         String source = "ipAddress";
         List<Log> logs = new ArrayList<>();
-        try {
-            for(int i = 0; i < 25; i++) {
-                Log log = new Log(new Long(1000+i), LogLevel.WARN, LogCategory.LOGIN ,
-                        dtf.format(LocalDateTime.now().minusMinutes(i)), source,
-                        "hostAddress"+i, "");
-                logs.add(log);
-                kieSession.insert(log);
-            }
-            Log log = new Log(new Long(999), LogLevel.WARN, LogCategory.LOGIN ,
-                    dtf.format(LocalDateTime.now().minusDays(5).plusMinutes(1)),
-                    source, "hostAddress", "");
+        for(int i = 0; i < 18; i++) {
+            Log log = new Log();
+            log.setSource(source);
+            log.setHostAddress("host" + i);
+            log.setCategory(LogCategory.LOGIN);
+            log.setType(LogLevel.WARN);
             logs.add(log);
-            kieSession.insert(log);
-        } catch (ParseException e) {
-            e.printStackTrace();
         }
+        logs.forEach(kieSession::insert);
 
         // Act
         kieSession.getAgenda().getAgendaGroup("app-long").setFocus();
@@ -402,16 +393,15 @@ public class LoginRulesTests {
         // Arrange
         KieSession kieSession = KnowledgeSessionHelper.getKieSession("logs-session");
         List<Log> logs = new ArrayList<>();
-        try {
-            for(int i = 0; i < 14; i++){
-                Log log = new Log(new Long(i), LogLevel.WARN, LogCategory.ANTIVIRUS , dtf.format(LocalDateTime.now().minusDays(i)),
-                        "", "hostAddress", "");
-                logs.add(log);
-                kieSession.insert(log);
-            }
-        } catch (ParseException e) {
-            e.printStackTrace();
+        String hostAddress = "h";
+        for(int i = 0; i < 10; i++) {
+            Log log = new Log();
+            log.setHostAddress(hostAddress);
+            log.setCategory(LogCategory.ANTIVIRUS);
+            log.setType(LogLevel.WARN);
+            logs.add(log);
         }
+        logs.forEach(kieSession::insert);
 
         // Act
         kieSession.getAgenda().getAgendaGroup("antivirus-long").setFocus();
@@ -523,32 +513,35 @@ public class LoginRulesTests {
     public void test_Activate_Zahtevi_bilo_kog_tipa_aktiviraju_alarm_za_DoS_napad() {
         // Arrange
         KieSession kieSession = KnowledgeSessionHelper.getKieSession("logs-session");
-
-        try {
-            for(int i = 0; i < 51; i++) {
-                kieSession.insert(new Log(new Long(i), LogLevel.INFO, LogCategory.APP,
-                        dtf.format(LocalDateTime.now()),
-                        "ipAddress"+i, "hostAddress"+i, "message"+i));
-            }
-        } catch (ParseException e) {
-            e.printStackTrace();
+        String message = "Zahtevi bilo kog tipa aktiviraju alarm za DoS napad";
+        String source = "s";
+        String host = "h";
+        List<Log> logs = new ArrayList<>();
+        for(int i = 0; i < 55; i++){
+            Log log = new Log();
+            log.setHostAddress(host);
+            log.setSource(source);
+            log.setCategory(LogCategory.APP);
+            log.setType(LogLevel.INFO);
+            logs.add(log);
         }
+        logs.forEach(kieSession::insert);
 
         // Act
         kieSession.getAgenda().getAgendaGroup("app").setFocus();
-        int numOfFiredRules = kieSession.fireAllRules();
+        kieSession.fireAllRules();
 
         // Assert
-        //assertEquals(1, numOfFiredRules);
         QueryResults results = kieSession.getQueryResults("Get all alarms");
+        Alarm alarm = null;
         for(QueryResultsRow r : results) {
             Alarm a = (Alarm)r.get("$a");
-            System.out.println(a.getMessage());
+            if(a.getMessage().equals(message)) {
+                alarm = a;
+                break;
+            }
         }
-        //assertEquals(1, results.size());
-        Alarm alarm = (Alarm) results.iterator().next().get("$a");
-       // assertEquals(2, alarm.getLogs().size());
-        assertEquals("Zahtevi bilo kog tipa aktiviraju alarm za DoS napad", alarm.getMessage());
+        assertNotNull(alarm);
     }
 
     @Test
@@ -560,13 +553,18 @@ public class LoginRulesTests {
         LogLevel[] typeEnums = LogLevel.values();
         try {
             for(int i = 0; i < 50; i++) {
-                kieSession.insert(new Log(new Long(i), typeEnums[i % typeEnums.length], enums[i % enums.length], dtf.format(LocalDateTime.now()),
-                        "ipAddress"+i, "hostAddress"+i, "message"+i));
+                kieSession.insert(new Log(new Long(i), typeEnums[i % typeEnums.length], enums[i % enums.length],
+                        dtf.format(LocalDateTime.now()),
+                        "ipAddress", "hostAddress", "message"+i));
             }
         } catch (ParseException e) {
             e.printStackTrace();
         }
-
+        Log log = new Log();
+        log.setSource("ipAddress");
+        log.setHostAddress("hostAddress");
+        log.setTimestamp(Date.from(LocalDateTime.now().minusMinutes(2).atZone(ZoneId.systemDefault()).toInstant()));
+        kieSession.insert(log);
         // Act
         int numOfFiredRules = kieSession.fireAllRules();
 
@@ -581,9 +579,9 @@ public class LoginRulesTests {
 
         try {
             for(int i = 0; i < 51; i++) {
-                kieSession.insert(new Log(new Long(i), LogLevel.INFO, LogCategory.APP,
+                kieSession.insert(new Log(new Long(i), LogLevel.INFO, LogCategory.LOGIN,
                         dtf.format(LocalDateTime.now().minusSeconds(i)),
-                        "ipAddress"+i, "hostAddress"+i, "message"+i));
+                        "ipAddress", "hostAddress", "message"+i));
             }
         } catch (ParseException e) {
             e.printStackTrace();
@@ -591,15 +589,19 @@ public class LoginRulesTests {
 
         // Act
         kieSession.getAgenda().getAgendaGroup("app").setFocus();
-        int numOfFiredRules = kieSession.fireAllRules();
+        kieSession.fireAllRules();
 
         // Assert
-        assertEquals(1, numOfFiredRules);
         QueryResults results = kieSession.getQueryResults("Get all alarms");
-        assertEquals(1, results.size());
-        Alarm alarm = (Alarm) results.iterator().next().get("$a");
-        // assertEquals(2, alarm.getLogs().size());
-        assertEquals("Zahtevi bilo kog tipa aktiviraju alarm za DoS napad", alarm.getMessage());
+        Alarm alarm = null;
+        for(QueryResultsRow r : results) {
+            Alarm a = (Alarm)r.get("$a");
+            if(a.getMessage().equals("Zahtev koji su povezani sa prijavom korisnika aktiviraju brute-force alarm")) {
+                alarm = a;
+                break;
+            }
+        }
+        assertNotNull(alarm);
     }
 
     @Test
