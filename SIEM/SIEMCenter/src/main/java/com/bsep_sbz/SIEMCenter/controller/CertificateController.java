@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.http.*;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -40,8 +41,9 @@ public class CertificateController {
      * sto je valjda i smisao POST metoda.
      * @return
     */
+    @PreAuthorize("hasAuthority('CERTIFICATE_SIGNING_REQUEST')")
     @RequestMapping(value = "/send-request", method = RequestMethod.POST)
-    @EventListener(ApplicationReadyEvent.class)
+    //@EventListener(ApplicationReadyEvent.class)
     public ResponseEntity sendRequestForCertificate() {
         KeyPair keyPair = certificateService.generateKeyPair();
         CertificateSigningRequest csr = certificateService.prepareCSR(keyPair.getPublic());

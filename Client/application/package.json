@@ -23,6 +23,8 @@
     "core-js": "^2.5.4",
     "net": "^1.0.2",
     "ngx-toastr": "^10.0.2",
+    "keycloak-angular": "^6.1.0",
+    "keycloak-js": "^4.0.0",
     "rxjs": "~6.3.3",
     "sockjs-client": "latest",
     "stompjs": "latest",

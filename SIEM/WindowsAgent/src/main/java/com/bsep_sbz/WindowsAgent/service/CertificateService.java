@@ -49,6 +49,32 @@ public class CertificateService implements ICertificateService
     private String directoryStoresPath = directoryClassesPath + "stores"; // target/classes/stores folder
 
 
+    /*
+    @Override
+    public CertificateSigningRequest prepareCSR(PublicKey publicKey) {
+        String publicKeyStr = Base64.encodeBase64String(publicKey.getEncoded());
+        CertificateSigningRequest csr = new CertificateSigningRequest("localhost", "MegaTravel",
+                "MegaTravelKeyCloak", "RS", UUID.randomUUID().toString(), publicKeyStr, "https://localhost:8444");
+        return csr;
+    }*/
+
+    /*@Override
+    public CertificateSigningRequest prepareCSR(PublicKey publicKey) {
+        String publicKeyStr = Base64.encodeBase64String(publicKey.getEncoded());
+        CertificateSigningRequest csr = new CertificateSigningRequest("localhost", "MegaTravel",
+                "MegaTravelSiemLinuxAgent", "RS", UUID.randomUUID().toString(), publicKeyStr, "https://localhost:8082/api/certificate/send-request");
+        return csr;
+    }*/
+
+    /*
+    @Override
+    public CertificateSigningRequest prepareCSR(PublicKey publicKey) {
+        String publicKeyStr = Base64.encodeBase64String(publicKey.getEncoded());
+        CertificateSigningRequest csr = new CertificateSigningRequest("localhost", "MegaTravel",
+                "MegaTravelClient", "RS", UUID.randomUUID().toString(), publicKeyStr, "https://localhost:4200");
+        return csr;
+    }*/
+
     @Override
     public CertificateSigningRequest prepareCSR(PublicKey publicKey) {
         String publicKeyStr = Base64.encodeBase64String(publicKey.getEncoded());
@@ -56,14 +82,6 @@ public class CertificateService implements ICertificateService
                 "MegaTravelSiemWindowsAgent", "RS", UUID.randomUUID().toString(), publicKeyStr, myUrl);
         return csr;
     }
-
-    /*@Override
-    public CertificateSigningRequest prepareCSR(PublicKey publicKey) {
-        String publicKeyStr = Base64.encodeBase64String(publicKey.getEncoded());
-        CertificateSigningRequest csr = new CertificateSigningRequest("localhost", "MegaTravel",
-                "MegaTravelClient", "RS", UUID.randomUUID().toString(), publicKeyStr, "https://localhost:4200");
-        return csr;
-    }*/
 
     @Override
     public void saveCertificate(PrivateKey privateKey, X509Certificate certificate) throws IOException {

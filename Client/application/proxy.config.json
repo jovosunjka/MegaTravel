@@ -1,7 +1,14 @@
 {
-    "/pki": {
+    "/pki/*": {
       "target": "https://localhost:8443",
-      "secure": true,
-      "changeOrigin": true
+      "secure": false,
+      "logLevel": "debug"
+    },
+
+    "/api/*": {
+      "target": "https://localhost:8081",
+      "secure": false,
+      "logLevel": "debug"
     }
-  }
+
+}

@@ -1,17 +1,17 @@
 package com.bsep_sbz.SIEMCenter.service.interfaces;
 
-import com.bsep_sbz.SIEMCenter.model.User;
 
+import com.bsep_sbz.SIEMCenter.model.authentication_and_authorization_entities.UserEntity;
 
 public interface IUserService {
 
-	User getLoggedUser() throws Exception;
+	UserEntity getLoggedUser() throws Exception;
 	
-    void save(User user) throws Exception;
+    void save(UserEntity user) throws Exception;
 
-    User getUser(String username);
+    UserEntity getUser(String username);
     
-    User getUser(String username, String password);
+    UserEntity getUser(String username, String password);
 
     boolean exists(String username);
 

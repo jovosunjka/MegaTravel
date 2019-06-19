@@ -17,8 +17,10 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+@CrossOrigin
 @RestController
 @RequestMapping(value = "/logs")
 public class LogsController
@@ -29,6 +31,7 @@ public class LogsController
     @Autowired
     private ILogsService logsService;
 
+    @PreAuthorize("hasAuthority('READ_ALARM')")
     @RequestMapping(value = "/alarms", method = RequestMethod.GET)
     public ResponseEntity getAlarms(Pageable pageable) {
         Page<Alarm> alarms = logsService.getAlarms(pageable);
@@ -38,6 +41,7 @@ public class LogsController
         return new ResponseEntity<>(alarms, HttpStatus.OK);
     }
 
+    @PreAuthorize("hasAuthority('WRITE_LOG')")
     @RequestMapping(value = "/process", consumes = MediaType.APPLICATION_JSON_VALUE,  method = RequestMethod.POST)
     public ResponseEntity processLogs(@RequestBody List<String> logs){
         List<Log> logRet = ruleService.makeLogs(logs);
@@ -54,6 +58,7 @@ public class LogsController
         return new ResponseEntity(HttpStatus.OK);
     }
 
+    @PreAuthorize("hasAuthority('READ_LOG')")
     @RequestMapping(value = "/filter", consumes = MediaType.APPLICATION_JSON_VALUE,  method = RequestMethod.POST)
     public ResponseEntity<Page<Log>> getFilteredLogs(@RequestBody FilterDto filterDto, Pageable pageable) {
         Page<Log> logs = logsService.getFilteredLogs(filterDto.getColumn(), filterDto.getRegExp(), pageable);
@@ -63,6 +68,7 @@ public class LogsController
         return new ResponseEntity<>(logs, HttpStatus.OK);
     }
 
+    @PreAuthorize("hasAuthority('CREATE_RULE')")
     @RequestMapping(value = "/template", consumes = MediaType.APPLICATION_JSON_VALUE,  method = RequestMethod.POST)
     public ResponseEntity createNewRule(@RequestBody LoginTemplateDto loginTemplateDto)
             throws IOException, MavenInvocationException {
@@ -74,6 +80,7 @@ public class LogsController
         return new ResponseEntity(HttpStatus.CREATED);
     }
 
+    @PreAuthorize("hasAuthority('READ_LOG')")
     @RequestMapping(value = "/session", consumes = MediaType.APPLICATION_JSON_VALUE,  method = RequestMethod.POST)
     public ResponseEntity getSessionLogs(@RequestBody FilterDto filterDto, Pageable pageable)
     {

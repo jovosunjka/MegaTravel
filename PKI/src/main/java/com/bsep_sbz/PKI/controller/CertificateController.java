@@ -12,6 +12,7 @@ import org.bouncycastle.cert.ocsp.OCSPReq;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 
@@ -26,6 +27,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@CrossOrigin
 @RestController
 @RequestMapping(value = "/certificate")
 public class CertificateController {
@@ -39,7 +41,7 @@ public class CertificateController {
     @Autowired
     private RestTemplate restTemplate;
 
-
+    @PreAuthorize("hasAuthority('GENERATE_CERTIFICATE')")
     @RequestMapping(value = "/create", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<String> createCertificate(@RequestBody CertificateSigningRequest csr) {
         X509Certificate certificate = null;
@@ -58,6 +60,11 @@ public class CertificateController {
             e.printStackTrace();
         }
         return new ResponseEntity<String>(certificateStr, HttpStatus.CREATED);
+    }
+
+    @RequestMapping(value = "/cao", method = RequestMethod.GET)
+    public ResponseEntity<String> cao() {
+        return new ResponseEntity("Cao svima", HttpStatus.OK);
     }
 
     @RequestMapping(value = "/send", method = RequestMethod.GET)
@@ -147,6 +154,7 @@ public class CertificateController {
         return new ResponseEntity<String>("Komunikacija uspesno izvrsena", HttpStatus.OK);
     }
 
+    @PreAuthorize("hasAuthority('WRITE_TRUST_STORE')")
     @RequestMapping(value = "/save-and-send-truststore", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE)
     //@EventListener(ApplicationReadyEvent.class)
     public ResponseEntity sendTruststore(@RequestBody List<TrustStoreConfigDTO> trustStoreConfigDtos) {
@@ -189,6 +197,7 @@ public class CertificateController {
         return new ResponseEntity(HttpStatus.OK);
     }
 
+    @PreAuthorize("hasAuthority('READ_TRUST_STORE')")
     @RequestMapping(value = "/get-trust-store-configs", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     //@EventListener(ApplicationReadyEvent.class)
     public ResponseEntity<List<TrustStoreConfigDTO>> getTruststoreConfigs() {

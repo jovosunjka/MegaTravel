@@ -1,0 +1,51 @@
+.\bin\standalone.bat
+Ova komanda ce pokrenuti keycloak na http://localhost:8080.
+Posto smo napravili sertifikat za keycloak i stavili ga u
+folder \keycloak-6.0.1\standalone\configuration\store
+(ovaj folder smo mi napravili), zatim smo pokrenuli
+keycloak server u cmd-u koristeci komandu .\bin\standalone.bat,
+onda smo pokrenuli \keycloak-6.0.1\bin\jboss-cli.bat (otvorice se novi cmd),
+u novom cmd-u smo otkucali komandu connect i tako se konektovali na
+ranije pokrenuti keycloak server. Onda smo izvrsili tri komande nadjene
+na: https://www.keycloak.org/docs/latest/server_installation/index.html#setting-up-https-ssl.
+Prva komanda: /core-service=management/security-realm=UndertowRealm:add()
+Druga komanda: /core-service=management/security-realm=UndertowRealm/server-identity=ssl:add(keystore-path=store/keystore.jks, keystore-relative-to=jboss.server.config.dir, keystore-password=key_store_pass)
+# u ovoj drugoj komandi setujemo relativnu putanju do keystore.jks koji se nalazi u \keycloak-6.0.1\standalone\configuration\store,
+# ali posto se gleda u odnosu na \keycloak-6.0.1\standalone\configuration onda je relativna putanja store/keystore.jks,
+# i jos postavljamo keystore-password na key_store_pass jer je to password od naseg keystore-a
+Treca komanda: /subsystem=undertow/server=default-server/https-listener=https:write-attribute(name=security-realm, value=UndertowRealm)
+Za svaku od ove tri komande ocekujemo output => success.
+Ostalo nam je jos samo da ugasimo ovaj cmd koristeci komandu: quit.
+Sad idemo u prvi cmd, gde je pokrenut keycloak server. Gasimo ga koristeciL Ctrl + C.
+Pa ga ponovo pokrecemo koristeci komandu .\bin\standalone.bat. I sad mozemo pristupi keycloak-u u browseru na adresi https://localhost:8443.
+Kao sto vidimo default-ni port za https je 8443. Mi smo to izmenili u
+\keycloak-6.0.1\standalone\configuration\standalone.xml fajlu.
+Konkretno u tagu <socket-binding-group> nadjemo tag
+<socket-binding name="https" port="${jboss.https.port:8443}"/>
+i promenimo na <socket-binding name="https" port="${jboss.https.port:8444}"/>.
+Zato sad keycloak-u u browseru pristupamo na adresi https://localhost:8444.
+
+
+.\bin\standalone.bat -Djboss.socket.binding.port-offset=100
+ova komanda ce pokrenuti keycloak na http://localhost:8180
+
+
+Url do autentifikacije admina http://localhost:8080/auth
+ili mozda http://localhost:8180/auth
+
+
+Url do autentifikacije usera http://localhost:8080/relams/neki_relam/auth
+ili mozda http://localhost:8080/relams/neki_relam/auth
+
+
+mvn clean install wildfly:deploy
+Komanda za deploy SIEMCenter-0.0.1-SNAPSHOT.jar (u kom se nalazi implementacija UserStorageProvider)
+u Keycloak. Za ovu komandu potrebno je imati maven plugin wildfly:deploy.
+Pored toga sto ce se instaliranje u lokalni maven repositorijum, u fajlu \keycloak-6.0.1\standalone\configuration\standalone.xml
+(na dnu fajla) bice dodati tagovi <deployments> i <deployments> sa odgovarajucim podacima.
+
+Deploy je moguce odraditi tako sto cemo odraditi maven clean package (ili mvn clean install), a zatim dobijeni
+.jar (\KeycloakUserStorageProvider\target\myKeyCloakDatabaseConnector.jar) fajl treba prekopirati
+u folder \keycloak-6.0.1\standalone\deployments
+
+myKeyCloakDatabaseConnector.jar

@@ -93,7 +93,8 @@
 		<dependency>
 			<groupId>mysql</groupId>
 			<artifactId>mysql-connector-java</artifactId>
-			<scope>runtime</scope>
+			<version>8.0.15</version>
+			<!--<scope>runtime</scope>-->
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -151,17 +152,53 @@
 		</dependency>
 
 		<dependency>
+			<groupId>org.keycloak</groupId>
+			<artifactId>keycloak-spring-boot-starter</artifactId>
+		</dependency>
+
+		<!--<dependency>
+			<groupId>org.keycloak</groupId>
+			<artifactId>keycloak-spring-boot-2-starter</artifactId>
+		</dependency>-->
+
+		<dependency>
 			<groupId>com.bsep_sbz</groupId>
 			<artifactId>SiemCenterRules</artifactId>
 			<type>jar</type>
 			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
 
-
 	</dependencies>
+
+	<dependencyManagement>
+		<dependencies>
+			<dependency>
+				<groupId>org.keycloak.bom</groupId>
+				<artifactId>keycloak-adapter-bom</artifactId>
+				<version>6.0.1</version>
+				<!--<version>4.0.0.Final</version>-->
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
 
 	<build>
 		<plugins>
+			<!--<plugin>
+				<groupId>org.wildfly.plugins</groupId>
+				<artifactId>wildfly-maven-plugin</artifactId>
+				<version>2.0.1.Final</version>
+				<executions>
+					<execution>
+						<phase>install</phase>
+						<goals>
+							<goal>deploy</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>-->
+
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>

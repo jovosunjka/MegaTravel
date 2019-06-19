@@ -1,8 +1,21 @@
 <form class="form" (ngSubmit)="save()">
   <div class="form-group">
-      <label for="id_name">&nbsp;&nbsp;Message</label>
-      <input type="text" class="form-control" id="id_name" [(ngModel)]="message" name="message"/>
+      <label for="id_organizitionl_units">Organizational Unit:&nbsp;&nbsp;</label>
+    
+      <select id="id_organizitionl_units" [(ngModel)]="currentTrustStoreConfig" name="currentTrustStoreConfig">
+        <option *ngFor="let tsConfig of trustStoreConfigs" [ngValue]="tsConfig">{{tsConfig.organizationalUnitName}}</option>
+      </select>
+      <ul>
+          <ng-template ngFor let-tsConfig [ngForOf]="trustStoreConfigs">
+              <li *ngIf="currentTrustStoreConfig.organizationalUnitName !== tsConfig.organizationalUnitName">
+                  <input type="checkbox" [checked]="currentTrustStoreConfig.trustStoreCertificateOrganizationalUnitNames.includes(tsConfig.organizationalUnitName)"
+                    (change)="changedState(tsConfig.organizationalUnitName)"/> {{tsConfig.organizationalUnitName}}
+              </li>
+          </ng-template>
+      </ul>  
   </div>
   <br/>
   <input type="submit" class="btn btn-primary btn-lg" value="Save"/>
 </form>
+
+<br/>

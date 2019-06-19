@@ -34,6 +34,7 @@ import java.security.cert.CertificateEncodingException;
 import java.security.cert.X509Certificate;
 import java.security.spec.X509EncodedKeySpec;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Date;
@@ -423,18 +424,18 @@ public class CertificateServiceImpl implements CertificateService {
 
     @Override
     public SubjectData generateSubjectData(CertificateSigningRequest csr, CertificateType certificateType, PublicKey publicKey) {
-        LocalDate startLocalDate = LocalDate.now();
-        //LocalDate startLocalDate = LocalDate.now().minusYears(ROOT_CERTIFICATE_DURATION).plusDays(10);
+        LocalDateTime startLocalDateTime = LocalDateTime.now();
+        //LocalDateTime startLocalDateTime = LocalDateTime.now().minusYears(ROOT_CERTIFICATE_DURATION).plusDays(10);
 
         long years;
         if(certificateType == CertificateType.ROOT) years = ROOT_CERTIFICATE_DURATION;
         //else if(certificateType == CertificateType.INTERMEDIATE) years = INTERMEDIATE_CERTIFICATE_DURATION;
         else years = OTHER_CERTIFICATE_DURATION;
 
-        LocalDate endLocalDate = startLocalDate.plusYears(years);
+        LocalDateTime endLocalDateTime = startLocalDateTime.plusYears(years);
         //LocalDate endLocalDate = startLocalDate.plusDays(2);
-        Date startDate = asDate(startLocalDate);
-        Date endDate = asDate(endLocalDate);
+        Date startDate = asDate(startLocalDateTime);
+        Date endDate = asDate(endLocalDateTime);
 
         //Serijski broj sertifikata
         String sn="1";
@@ -513,8 +514,8 @@ public class CertificateServiceImpl implements CertificateService {
         return null;
     }
 
-    private Date asDate(LocalDate localDate) {
-        return Date.from(localDate.atStartOfDay().atZone(ZoneId.systemDefault()).toInstant());
+    private Date asDate(LocalDateTime localDateTime) {
+        return Date.from(localDateTime.atZone(ZoneId.systemDefault()).toInstant());
     }
 
     @Override
@@ -601,7 +602,7 @@ public class CertificateServiceImpl implements CertificateService {
     private String getOrganizationalUnitName(Certificate certificate, List<String> organizationalUnitNames) {
         return organizationalUnitNames.stream()
                 .filter(oun -> oun.equals(certificate.getOrganizationalUnitName()))
-                .findFirst().orElseGet(null);
+                .findFirst().orElse(null);
     }
 
     public void replaceTrustStoresOfOtherApplications(Certificate newCertificate) {

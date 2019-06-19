@@ -1,7 +1,7 @@
 package com.bsep_sbz.SIEMCenter.service;
 
 
-import com.bsep_sbz.SIEMCenter.model.User;
+import com.bsep_sbz.SIEMCenter.model.authentication_and_authorization_entities.UserEntity;
 import com.bsep_sbz.SIEMCenter.repository.UserRepository;
 import com.bsep_sbz.SIEMCenter.service.interfaces.IUserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,14 +19,14 @@ public class UserService implements IUserService {
 	@Autowired
 	private UserRepository userRepository;
 
-	@Autowired
-	private PasswordEncoder passwordEncoder;
+	//Autowired
+	//private PasswordEncoder passwordEncoder;
 
 
 
 	@Transactional(readOnly = true, propagation = Propagation.REQUIRED)
 	@Override
-	public User getLoggedUser() throws Exception {
+	public UserEntity getLoggedUser() throws Exception {
 		final Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 		try {
 			org.springframework.security.core.userdetails.User user = (org.springframework.security.core.userdetails.User) auth
@@ -42,26 +42,26 @@ public class UserService implements IUserService {
 
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRED)
 	@Override
-	public void save(User user) throws Exception {
+	public void save(UserEntity user) throws Exception {
 		userRepository.save(user);
 	}
 
 	@Transactional(readOnly = true, propagation = Propagation.REQUIRED)
 	@Override
-	public User getUser(String username) {
+	public UserEntity getUser(String username) {
 		return userRepository.findByUsername(username);
 	}
 
 	@Transactional(readOnly = true, propagation = Propagation.REQUIRED)
 	@Override
-	public User getUser(String username, String password) {
+	public UserEntity getUser(String username, String password) {
 		return userRepository.findByUsernameAndPassword(username, password);
 	}
 
 	@Transactional(readOnly = true, propagation = Propagation.REQUIRED)
 	@Override
 	public boolean exists(String username) {
-		User u = userRepository.findByUsername(username);
+		UserEntity u = userRepository.findByUsername(username);
 		return u != null;
 	}
 
@@ -76,7 +76,7 @@ public class UserService implements IUserService {
 		if (exists(username))
 			return false;
 
-		User user = new User(name, username, passwordEncoder.encode(password));
+		UserEntity user = new UserEntity(username, password/*passwordEncoder.encode(password)*/);
 		try {
 			userRepository.save(user);
 		} catch (Exception e) {
